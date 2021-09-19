@@ -1,0 +1,11 @@
+T_KEYWORD states 1 1
+T_SEPARATOR : 1 7
+T_STATE empty 1 9
+T_STATE full 1 15
+T_KEYWORD start 2 1
+T_SEPARATOR : 2 6
+T_STATE empty 2 8
+T_KEYWORD terminals 3 1
+T_SEPARATOR : 3 10
+T_STATE f 3 12
+ERROR in line 3, symbol @

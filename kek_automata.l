@@ -12,7 +12,7 @@ int string_pos = 1;
 %option noyywrap
 
 KEYWORD     states|start|terminals|alphabet|transitions
-SEPARATOR     [:|;]
+SEPARATOR    :|;
 SYMBOL     \'[A-Za-z_0-9]*\'
 STATE     [A-Za-z_0-9]*
 

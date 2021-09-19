@@ -1,0 +1,5 @@
+states: empty full
+start: empty
+terminals: full
+alphabet: 'a'
+transitions: empty;full,'a' full;full;'a'
