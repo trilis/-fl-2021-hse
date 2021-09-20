@@ -3,28 +3,27 @@
 #include <stdlib.h>
 
 enum token {
-  T_ID = 1, T_INT = 2, T_OP = 3
+  WORD = 1, T_INT = 2, T_OP = 3
 };
-int n;
-char c;
+int current_char = 0;
 %}
 
 %option yylineno
 %option noyywrap
 
-ID     [A-Za-z_][A-Za-z_0-9]*
-INT    -?[1-9][0-9]*
-OP     [-+*/^=]
+WORD [0-9a-zA-Z]*
+
 
 %%
 
  /* Print identifiers, integers and operators. */
-{INT}       {n = atoi(yytext); return T_INT; }
-{ID}        {return T_ID; }
-{OP}        {c = yytext[0]; return T_OP;}
+{INT} {n = atoi(yytext); return T_INT; }
+{WORD} {
+
+  return T_ID; 
+}
 
  /* Ignore comments and whitespace. */
-#[^\n]*     {}
 [ \t\r\n]   {}
 
 <<EOF>>     {printf("(eof %u)\n", yylineno); return 0;}
