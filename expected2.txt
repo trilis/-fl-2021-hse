@@ -1,0 +1,26 @@
+left-parenthesis in line 1, pos: 1
+start vertex "s[0]" line: 1 pos: 2
+edge "->[2]" line: 1 pos: 6
+default vertex "d[1]" line: 1 pos: 11
+right-parenthesis in line: 1, pos: 15
+left-parenthesis in line 2, pos: 1
+default vertex "d[1]" line: 2 pos: 2
+edge "->[1]" line: 2 pos: 6
+default vertex "d[1]" line: 2 pos: 11
+right-parenthesis in line: 2, pos: 15
+left-parenthesis in line 3, pos: 1
+default vertex "d[1]" line: 3 pos: 2
+edge "->[2]" line: 3 pos: 6
+default vertex "d[1]" line: 3 pos: 11
+right-parenthesis in line: 3, pos: 15
+left-parenthesis in line 4, pos: 1
+start vertex "s[0]" line: 4 pos: 2
+edge "->[1]" line: 4 pos: 6
+terminal vertex "t[2]" line: 4 pos: 11
+right-parenthesis in line: 4, pos: 15
+left-parenthesis in line 5, pos: 1
+terminal vertex "t[2]" line: 5 pos: 2
+edge "->[1]" line: 5 pos: 6
+terminal vertex "t[2]" line: 5 pos: 11
+right-parenthesis in line: 5, pos: 15
+

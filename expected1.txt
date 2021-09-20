@@ -1,0 +1,8 @@
+left-parenthesis in line 1, pos: 1
+start vertex "s[1]" line: 1 pos: 2
+edge "->[23]" line: 1 pos: 6
+default vertex "d[3]" line: 1 pos: 12
+right-parenthesis in line: 1, pos: 16
+left-parenthesis in line 2, pos: 1
+ERROR in line 2, position 2, symbol d
+

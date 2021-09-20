@@ -11,6 +11,7 @@ T_VERTEX_START s\[[0-9]+\]
 T_EDGE    ->\[[0-9]+\]
 T_VERTEX_TERM t\[[0-9]+\]
 T_VERTEX_DEF d\[[0-9]+\]
+T_VERTEX_TERM_AND_START st\[[0-9]+\]
 
 %%
 
@@ -26,7 +27,7 @@ T_VERTEX_DEF d\[[0-9]+\]
 {T_EDGE}        {printf("edge \"%s\" line: %u pos: %d\n", yytext, yylineno, position); position += strlen(yytext);}
 {T_VERTEX_TERM}        {printf("terminal vertex \"%s\" line: %u pos: %d\n", yytext, yylineno, position); position += strlen(yytext);}
 {T_VERTEX_DEF}      {printf("default vertex \"%s\" line: %u pos: %d\n", yytext, yylineno, position); position += strlen(yytext);}
-
+{T_VERTEX_TERM_AND_START}   {printf("start and terminal vertex \"%s\" line: %u pos: %d\n", yytext, yylineno, position); position += strlen(yytext);}
 #[^\n]*     {}
 
 <<EOF>>     {printf("(eof in line: %u, position: %d)\n", yylineno, position); return 0;}

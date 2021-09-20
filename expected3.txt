@@ -1,0 +1,60 @@
+left-parenthesis in line 1, pos: 1
+start vertex "s[0]" line: 1 pos: 2
+edge "->[1]" line: 1 pos: 6
+default vertex "d[1]" line: 1 pos: 11
+right-parenthesis in line: 1, pos: 15
+left-parenthesis in line 2, pos: 1
+start vertex "s[1]" line: 2 pos: 2
+edge "->[3]" line: 2 pos: 6
+default vertex "d[1]" line: 2 pos: 11
+right-parenthesis in line: 2, pos: 15
+left-parenthesis in line 3, pos: 1
+start vertex "s[0]" line: 3 pos: 2
+edge "->[2]" line: 3 pos: 6
+terminal vertex "t[2]" line: 3 pos: 11
+right-parenthesis in line: 3, pos: 15
+left-parenthesis in line 4, pos: 1
+start vertex "s[0]" line: 4 pos: 2
+edge "->[4]" line: 4 pos: 6
+terminal vertex "t[2]" line: 4 pos: 11
+right-parenthesis in line: 4, pos: 15
+left-parenthesis in line 5, pos: 1
+default vertex "d[1]" line: 5 pos: 2
+edge "->[1]" line: 5 pos: 6
+default vertex "d[1]" line: 5 pos: 11
+right-parenthesis in line: 5, pos: 15
+left-parenthesis in line 6, pos: 1
+default vertex "d[1]" line: 6 pos: 2
+edge "->[3]" line: 6 pos: 6
+default vertex "d[1]" line: 6 pos: 11
+right-parenthesis in line: 6, pos: 15
+left-parenthesis in line 7, pos: 1
+default vertex "d[1]" line: 7 pos: 2
+edge "->[2]" line: 7 pos: 6
+terminal vertex "t[2]" line: 7 pos: 11
+right-parenthesis in line: 7, pos: 15
+left-parenthesis in line 8, pos: 1
+default vertex "d[1]" line: 8 pos: 2
+edge "->[4]" line: 8 pos: 6
+terminal vertex "t[2]" line: 8 pos: 11
+right-parenthesis in line: 8, pos: 15
+left-parenthesis in line 9, pos: 1
+terminal vertex "t[2]" line: 9 pos: 2
+edge "->[1]" line: 9 pos: 6
+default vertex "d[1]" line: 9 pos: 11
+right-parenthesis in line: 9, pos: 15
+left-parenthesis in line 10, pos: 1
+terminal vertex "t[2]" line: 10 pos: 2
+edge "->[3]" line: 10 pos: 6
+default vertex "d[1]" line: 10 pos: 11
+right-parenthesis in line: 10, pos: 15
+left-parenthesis in line 11, pos: 1
+terminal vertex "t[2]" line: 11 pos: 2
+edge "->[2]" line: 11 pos: 6
+default vertex "d[2]" line: 11 pos: 11
+right-parenthesis in line: 11, pos: 15
+left-parenthesis in line 12, pos: 1
+terminal vertex "t[2]" line: 12 pos: 2
+edge "->[4]" line: 12 pos: 6
+terminal vertex "t[2]" line: 12 pos: 11
+right-parenthesis in line: 12, pos: 15
