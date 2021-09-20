@@ -1,0 +1,8 @@
+T_STATE "start_" line: 1, pos: 1
+T_PUNC ":" line: 1, pos: 7
+T_L_BRACE "{" line: 1, pos: 8
+T_KEYWORD "start" line: 1, pos: 9
+T_PUNC "=" line: 1, pos: 14
+T_CONST "true" line: 1, pos: 15
+ERROR in line 1, got "finish", expected T_PUNC
+ 

@@ -1,0 +1,1 @@
+start_ : {start = true finish = false, states: {finish_ : "a", neutral_ : "b"}}
