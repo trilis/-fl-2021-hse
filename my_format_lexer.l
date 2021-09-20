@@ -8,6 +8,7 @@ enum Token {
     T_INVALID_TOKEN,
     T_STATE_QUANTITY,
     T_LINK_QUANTITY,
+    T_ALPHABET_INIT_CHAR,
     T_ALPHABET_CHAR,
     T_STATE,
     T_COMMA_SEPARATOR,
@@ -36,6 +37,7 @@ UINT  (0|[1-9][0-9]*)
 ALPHA ([^,\n]+)
 
 %%
+<<EOF>>     { return T_EOF;}
 
  /* Print delimiters. */
 [,]         {
@@ -58,7 +60,7 @@ ALPHA ([^,\n]+)
     }
     else if (yylineno == ALPHABET_LINE) {
         strcpy(buffer, yytext);
-        response =  T_ALPHABET_CHAR;
+        response =  T_ALPHABET_INIT_CHAR;
     }
     else if (yylineno > TOTAL_LINKS_LINE && yylineno <= TOTAL_LINKS_LINE + total_links) {
         strcpy(buffer, yytext);
@@ -97,7 +99,7 @@ ALPHA ([^,\n]+)
         }
     }
     else if (yylineno == ALPHABET_LINE) {
-        response = T_ALPHABET_CHAR;
+        response = T_ALPHABET_INIT_CHAR;
     }
     else {
         response = T_INVALID_TOKEN;
@@ -105,15 +107,12 @@ ALPHA ([^,\n]+)
     return response;
 }
 
-<<EOF>>     { return T_EOF;}
-
 %%
 
 int main(int argc, char* argv[]) {
-
+    printf("in main\n");
     for (;;) {
         enum Token t = yylex();
-        /* printf("%d\n\n", (int)t); */
         switch (t) {
             case T_STATE_QUANTITY:
                 printf("T_STATE_QUANTITY %d %u %d", total_states, yylineno, cur_char - (int)strlen(yytext));
@@ -123,6 +122,9 @@ int main(int argc, char* argv[]) {
                 break;
             case T_ALPHABET_CHAR:
                 printf("T_ALPHABET_CHAR %s %u %d", buffer, yylineno, cur_char - (int)strlen(yytext));
+                break;
+            case T_ALPHABET_INIT_CHAR:
+                printf("T_ALPHABET_INIT_CHAR %s %u %d", buffer, yylineno, cur_char - (int)strlen(yytext));
                 break;
             case T_STATE:
                 printf("T_STATE %s %u %d", buffer, yylineno, cur_char - (int)strlen(yytext));
