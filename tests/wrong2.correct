@@ -8,4 +8,4 @@ T_STATE empty 2 8
 T_KEYWORD terminals 3 1
 T_SEPARATOR : 3 10
 T_STATE f 3 12
-ERROR in line 3, symbol @
+ERROR in line 3, pos 13, symbol @

@@ -27,7 +27,7 @@ STATE     [A-Za-z_0-9]*
 [\n] {string_pos = 1;}
 
 . {
-  printf("ERROR in line %u, symbol %s\n", yylineno, yytext);
+  printf("ERROR in line %u, pos %u, symbol %s\n", yylineno, string_pos, yytext);
   exit(1);
 }
 

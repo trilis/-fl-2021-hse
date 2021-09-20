@@ -16,4 +16,4 @@ T_SEPARATOR : 5 12
 T_STATE empty 5 14
 T_SEPARATOR ; 5 19
 T_STATE full 5 20
-ERROR in line 5, symbol ,
+ERROR in line 5, pos 24, symbol ,
