@@ -1,0 +1,11 @@
+cond q1 = start
+cond q2 = regular
+cond q3 = terminate
+alph a1 = {1}
+alph a2 = {0}
+edge e1 = (q1, q2, a1)
+edge e2 = (q2, q2, a2)
+edge e3 = (q2, q3, {1}) // Язык крутой, он поддерживает  
+                        // неявные преобразования и комментарии 
+edge e4 = (q3, q3, {0})
+edge e5 = (q1, q3, {0})

@@ -1,0 +1,9 @@
+cond q1 = start
+cond q2 = stock
+cond q3 = terminate
+alph a = {a, b, c}
+edge e1 = (q1, q3, a)
+edge e2 = (q1, q2, / a)
+edge e3 = (q3, q2, / a)
+edge e4 = (q3, q3, a)
+edge e4 = (q2, q2, / {})    // {} --- пустой алфавит

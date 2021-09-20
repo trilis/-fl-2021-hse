@@ -1,0 +1,8 @@
+cond q1 = start
+cond q2 = stock
+cond q3 = terminate
+edge e1 = (q1, q3, {1, 0})
+edge e2 = (q1, q2, / {1, 0})
+edge e3 = (q3, q2, / {1, 0})
+edge e4 = (q3, q3, {1, 0})
+edge e4 = (q2, q2, / {})
