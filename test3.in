@@ -1,0 +1,10 @@
+symb0 symb1 symb2 symb3 symb4 symb5 symb6 symb7 symb8 symb9
+q1 s
+q2 t
+q3 t
+q4 n
+e q1 q2 {symb1 , symb2 , symb3 , symb4 , symb5 , symb6 , symb7 , symb8 , symb9}
+e q1 q3 {symb0}
+e q2 q2 {symb0 , symb1 , symb2 , symb3 , symb4 , symb5 , symb6 , symb7 , symb8 , symb9}
+e q3 q4 {symb0 , symb1 , symb2 , symb3 , symb4 , symb5 , symb6 , symb7 , symb8 , symb9}
+e q4 q4 {symb0 , symb1 , symb2 , symb3 , symb4 , symb5 , symb6 , symb7 , symb8 , symb9}
