@@ -62,7 +62,7 @@ int main(int argc, char* argv[]) {
 
             if(regcomp(&regex, buf, 0)) {
                 printf("ERROR in line %u, position %d, symbol %s. Regular expression doesn't seem to be correct.\n", yylineno, num_chars, buf);
-                exit(1);
+                exit(2);
             }
 
             printf("T_LINK %s %u %d\n", yytext, yylineno, num_chars);
