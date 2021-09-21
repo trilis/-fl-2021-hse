@@ -3,25 +3,31 @@
 #include <stdlib.h>
 
 enum token {
-  T_ID = 1, T_INT = 2, T_OP = 3
+  T_DELIM = 1, T_STATE_ID = 2, T_OP = 3, T_TYPE = 4, T_JUMP_ARG = 5 
 };
 int n;
 char c;
+int arg;
 %}
 
 %option yylineno
 %option noyywrap
 
-ID     [A-Za-z_][A-Za-z_0-9]*
-INT    -?[1-9][0-9]*
-OP     [-+*/^=]
+DELIM    ___
+STATE_ID [1-9][0-9]*
+OP       :|->|,|\(|\)
+TYPE     s|q|t|d
+JUMP_ARG ([\(|,]\K[0-9]+)
 
 %%
 
  /* Print identifiers, integers and operators. */
-{INT}       {n = atoi(yytext); return T_INT; }
-{ID}        {return T_ID; }
-{OP}        {c = yytext[0]; return T_OP;}
+{DELIM}     {return T_DELIM;}
+{STATE_ID}  {n = atoi(yytext); return T_STATE_ID;}
+{OP}        {return T_OP;}
+{TYPE}      {return T_TYPE;}
+{JUMP_ARG}  {arg = atoi(yytext); return T_JUMP_ARG;}
+
 
  /* Ignore comments and whitespace. */
 #[^\n]*     {}
@@ -42,12 +48,16 @@ int main(int argc, char* argv[]) {
     if (t == 0) {
       break;
     }
-    if (t == T_INT) {
-      printf("T_INT %u\n", n);
-    } else if (t == T_ID) {
-      printf("T_ID %s\n", yytext);
+    if (t == T_DELIM) {
+      printf("T_DELIM %s\n", "___");
+    } else if (t == T_STATE_ID) {
+      printf("T_STATE_ID %u\n", n);
     } else if (t == T_OP) {
-      printf("T_OP %c\n", c);
+      printf("T_OP %s\n", yytext);
+    } else if (t == T_TYPE) {
+      printf("T_TYPE %s\n", yytext);
+    } else if (t == T_JUMP_ARG) {
+      printf("T_JUMP_ARG %u\n", arg);
     }
   };
   return EXIT_SUCCESS ;
