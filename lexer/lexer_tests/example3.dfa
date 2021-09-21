@@ -1,0 +1,19 @@
+example3 {
+
+    states {
+        q0 ,
+        q1
+    }
+
+    start {
+        q0
+    }
+
+    transitions {
+        q0 --{1}--> q0 ,
+        q0 --{0}--> q1 ,
+        q1 --{0}--> q1 ,
+        q1 --{1}--> q0
+    }
+
+}
