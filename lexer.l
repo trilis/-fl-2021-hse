@@ -29,10 +29,13 @@ TAB     \t
 {ID}        {return T_ID;}
 {LINK}      {return T_LINK;}
 
+<<EOF>>     {return 0;}
+
 . {
     printf("ERROR in line %u, position %d, symbol %s\n", yylineno, num_chars, yytext);
     exit(1);
 }
+
 %%
 
 int main(int argc, char* argv[]) {
@@ -55,7 +58,7 @@ int main(int argc, char* argv[]) {
             printf("T_TAB \"\\t\" %u %d\n", yylineno, num_chars);
         }
 
-        num_chars += strlen(yytext);
+        num_chars += yyleng;
     }
     return EXIT_SUCCESS ;
 }
