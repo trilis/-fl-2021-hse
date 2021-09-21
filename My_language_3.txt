@@ -1,0 +1,9 @@
+ALPHABET {a, b};
+NODES {S1, S2, S3, S4, S5, S6};
+START {S1};
+END {S6};
+S1: S2{a} S1{b};
+S2: S1{b} S3{a};
+S3: S1{b} S4{a};
+S4: S1{b} S5{a};
+S5: S1{a} S6{b};

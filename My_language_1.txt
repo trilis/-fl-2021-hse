@@ -1,0 +1,8 @@
+ALPHABET {a, b, c, d, e, f};
+NODES {S1, S2, S3, S4};
+START {S1};
+END {S4};
+S1: S2{a, b} S3{c, d, e, f};
+S2:;
+S3: S2{a, b} S4{c, d, e, f};
+S4: S4{a, b, c, d, e, f};
