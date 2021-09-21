@@ -15,11 +15,11 @@ unsigned int yycolumnno = 0;
 %option yylineno
 %option noyywrap
 
-ALPHABET      \(\ *[^q][A-Za-z0-9]*(\ *,\ *[^q][A-Za-z0-9]+)*\ *\)
+ALPHABET      \(\ *[^q ][A-Za-z0-9]*(\ *,\ *[^q ][A-Za-z0-9]*)*\ *\)
 STATES        \(\ *q_[A-Za-z0-9]+(\ *,\ *q_[A-Za-z0-9]+)*\ *\)
 INITIAL_STATE q_[A-Za-z0-9]+
 FINAL_STATES  f\(\ *q_[A-Za-z0-9]+(\ *,\ *q_[A-Za-z0-9]+)*\ *\)
-TRANSITION    \(\ *q_[A-Za-z0-9]+\ *,\ *q_[A-Za-z0-9]+\ *,\ *\([^q][A-Za-z0-9]*(\ *,\ *[^q][A-Za-z0-9]*)*\ *\)\)
+TRANSITION    \(\ *q_[A-Za-z0-9]+\ *,\ *q_[A-Za-z0-9]+\ *,\ *\([^q ][A-Za-z0-9]*(\ *,\ *[^q ][A-Za-z0-9]*)*\ *\)\)
 
 %%
 

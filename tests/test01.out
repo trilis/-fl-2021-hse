@@ -1,0 +1,16 @@
+T_ALPHABET (0, 1) 1 0
+comma , 1 6
+T_STATES (q_1, q_2, q_3) 1 8
+comma , 1 23
+T_INITIAL q_1 1 25
+comma , 1 28
+T_FINAL_STATES f(q_1, q_2) 1 30
+comma , 1 41
+left-bracket [ 1 43
+T_TRANSITION (q_1, q_2, (0, 1)) 1 44
+comma , 1 62
+T_TRANSITION (q_2, q_3, (0, 1)) 1 64
+comma , 1 82
+T_TRANSITION (q_3, q_3, (0, 1)) 1 84
+right-bracket ] 1 102
+(eof 1)
