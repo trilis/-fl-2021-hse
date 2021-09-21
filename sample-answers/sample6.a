@@ -1,0 +1,6 @@
+T_KEY links 1 0
+T_ID hello 1 6
+T_COLON : 1 11
+T_TAB "\t" 2 0
+T_ID world 2 1
+ERROR in line 2, position 7, symbol [34-4-4-43]. Regular expression doesn't seem to be correct.

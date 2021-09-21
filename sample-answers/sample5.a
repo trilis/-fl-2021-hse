@@ -1,0 +1,10 @@
+T_KEY states 1 0
+T_ID hard 1 7
+T_COLON : 1 11
+T_TAB "\t" 2 0
+T_SPEC beginning 2 1
+T_SPEC terminal 2 11
+T_ID some 3 0
+T_ID stuff 3 5
+T_ID XAE12 4 0
+ERROR in line 5, position 0, symbol [

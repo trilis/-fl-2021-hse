@@ -1,6 +1,7 @@
 %{
 #include <stdio.h>
 #include <stdlib.h>
+#include <regex.h>
 enum token {
     T_SPEC = 1, T_KEY = 2, T_ID = 3, T_LINK = 4, T_COLON = 5, T_TAB = 6
 };
@@ -19,7 +20,7 @@ TAB     \t
 
 %%
 
-\/\/.*    {}
+\/\/.*      {}
 [\r\n]      {num_chars = 0;}
 [ ]         {++num_chars;}
 
@@ -54,6 +55,16 @@ int main(int argc, char* argv[]) {
         } else if (t == T_COLON) {
             printf("T_COLON %s %u %d\n", yytext, yylineno, num_chars);
         } else if (t == T_LINK) {
+            regex_t regex;
+            char buf[1000];
+            strncpy(buf, yytext, yyleng - 1);
+            buf[yyleng - 1] = '\0';
+
+            if(regcomp(&regex, buf, 0)) {
+                printf("ERROR in line %u, position %d, symbol %s. Regular expression doesn't seem to be correct.\n", yylineno, num_chars, buf);
+                exit(1);
+            }
+
             printf("T_LINK %s %u %d\n", yytext, yylineno, num_chars);
         } else if (t == T_TAB) {
             printf("T_TAB \"\\t\" %u %d\n", yylineno, num_chars);
