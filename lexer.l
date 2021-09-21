@@ -19,6 +19,7 @@ TAB     \t
 
 %%
 
+\/\/.*    {}
 [\r\n]      {num_chars = 0;}
 [ ]         {++num_chars;}
 
