@@ -1,0 +1,10 @@
+Alphabet: (a-z)
+Start: {q0}
+Accept: {q3} 
+Stock: {q4} 
+Edge: (q0, q1), {f} 
+Edge: (q1, q2), {a-z} 
+Edge: (q2, q3), {a-z} 
+Edge: (q3, q4), {a-z} 
+Edge: (q4, q4), {a-z}
+Edge: (q0, q4), {a-e, g-z}
