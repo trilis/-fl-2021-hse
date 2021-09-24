@@ -9,27 +9,32 @@ int symbol=0;
 %option yylineno
 %option noyywrap
 
-ALPH       (([a-zA-Z0-9]|\.\.)+,)+
-TERMINAL   (fls|tru)
-STATE      \"[a-zA-Z0-9_><=]*\"
+ALPH         ([a-zA-Z0-9])
+STATE        \"[a-zA-Z0-9_><=]*\"
+TERMINAL     (fls|tru)
+RIGHTBRACE   \} 
+LEFTBRACE    \{
+DOTS         \.\.
+COMMA        \,
+SEP          \|   
 
 %%
 
- /* Print delimiters. */
-[{]         {printf("{\n");symbol++;}
-[}]         {printf("}\n");symbol++;}
-[|]         {printf("|\n");symbol++;}
-
  /* Print identifiers, integers and operators. */
 
-{ALPH}       {printf("(alph \"%s\" %u %d)\n",yytext, yylineno,symbol);symbol+=strlen(yytext);}
-{TERMINAL}   {printf("(terminal \"%s\" %u %d)\n", yytext, yylineno,symbol);symbol+=strlen(yytext);}
-{STATE}      {printf("(state \"%s\" %u %d)\n", yytext, yylineno,symbol);symbol+=strlen(yytext);}
+{ALPH}         {printf("(alph \"%s\" %u %d)\n",yytext, yylineno,symbol);symbol+=strlen(yytext);}
+{TERMINAL}     {printf("(terminal \"%s\" %u %d)\n", yytext, yylineno,symbol);symbol+=strlen(yytext);}
+{STATE}        {printf("(state \"%s\" %u %d)\n", yytext, yylineno,symbol);symbol+=strlen(yytext);}
+{RIGHTBRACE}   {printf("(right_brace \"%s\" %u %d)\n", yytext, yylineno,symbol);symbol+=strlen(yytext);}
+{LEFTBRACE}    {printf("(left_brace \"%s\" %u %d)\n", yytext, yylineno,symbol);symbol+=strlen(yytext);}
+{COMMA}        {printf("(comma \"%s\" %u %d)\n", yytext, yylineno,symbol);symbol+=strlen(yytext);}
+{SEP}          {printf("(sep \"%s\" %u %d)\n", yytext, yylineno,symbol);symbol+=strlen(yytext);}
+{DOTS}         {printf("(dots \"%s\" %u %d)\n", yytext, yylineno,symbol);symbol+=strlen(yytext);}
 
- /* Ignore comments and whitespace. */
-[\n]       {symbol=0;}
-[ \t\r]    {symbol++;}
-[///.*\n]  {}
+
+[\n]                    {symbol=0;}
+[ \t\r]                 {symbol++;}
+
 
 
 <<EOF>>     {printf("(eof %u)\n", yylineno); return 0;}
