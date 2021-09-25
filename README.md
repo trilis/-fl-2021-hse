@@ -4,9 +4,9 @@
 
     * ![equation](https://latex.codecogs.com/gif.latex?%5C%7Buabv%20%7C%20u%20%5Cin%20%5C%7Ba%2C%20b%5C%7D*%2C%20v%20%5Cin%20%5C%7Ba%2C%20b%5C%7D*%2C%20%7Cu%7C%20%3D%20%7Cv%7C%2C%20u%20%5Cneq%20v%5ER%5C%7D)
 
-    * ![equation]()
+    * ![equation](https://latex.codecogs.com/gif.latex?%5C%7Ba%5Ekc%5Eme%5En%20%7C%20k%20%5Cge%200%2C%20n%20%5Cge%200%2C%20m%20%3D%20k%20&plus;%20n%20&plus;%201%5C%7D)
 
-    * $\{a^n | \exists p \ge n:  p~простое~и~p + 2~простое\}$
+    * ![equation](https://latex.codecogs.com/gif.latex?%5C%7Ba%5En%20%7C%20%5Cexists%20p%20%5Cge%20n%3A%20p%7E%5Ctexttt%7Bprime%7D%7E%5Ctexttt%7Band%7D%7Ep%20&plus;%202%7E%5Ctexttt%7Bprime%7D%5D%5C%7D)
 
 3. (5 баллов) Реализуйте на любом языке программирования (кроме Хаскелля) парсинг с помощью производных. Сами регулярки парсить из строки не нужно, просто объявите в коде несколько (не меньше 5) регулярок и тестите с их помощью. Программе на вход подаётся строка, на выход true/false &mdash; подходит ли эта строка под захардкоженную регулярку.
 
