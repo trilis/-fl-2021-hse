@@ -1,6 +1,6 @@
 from enum import Enum
 
-class tre():
+class tre(): #type of regexp
     empty = 0
     epsilon = 1
     symb = 2
