@@ -1,4 +1,4 @@
-from enum import Enum
+import time
 
 class tre(): #type of regexp
     empty = 0
@@ -59,16 +59,17 @@ def match(r, str):
     return nullable(derStr(str, r)).type == tre.epsilon
 
 #Regular Expressions
+r = Regexp(tre.concat, Regexp(tre.symb, '1'),
+            Regexp(tre.concat,
+                Regexp(tre.star, Regexp(tre.alt, Regexp(tre.symb, '0'), Regexp(tre.symb, '1'))),
+                Regexp(tre.symb, '0')))
+    #1(0|1)*0
 """r = Regexp(tre.concat,
     Regexp(tre.star,
         Regexp(tre.concat,
             Regexp(tre.symb, 'a'), Regexp(tre.symb, 'b'))),
     Regexp(tre.symb, 'a'))"""
     #(ab)*a
-"""r = Regexp(tre.concat, Regexp(tre.star, Regexp(tre.alt, Regexp(tre.symb, 'a'), Regexp(tre.symb, 'b'))),
-        Regexp(tre.concat, Regexp(tre.symb, 'c'),
-        Regexp(tre.star, Regexp(tre.alt, Regexp(tre.symb, 'a'), Regexp(tre.symb, 'b')))))"""
-    #(a|b)*c(a|b)*
 """r = Regexp(tre.concat, Regexp(tre.star, Regexp(tre.symb, '1')),
     Regexp(tre.concat, Regexp(tre.star, Regexp(tre.symb, '0')), Regexp(tre.star, Regexp(tre.symb, '1'))))"""
     #1*0*1*
@@ -76,13 +77,16 @@ def match(r, str):
                     Regexp(tre.concat, Regexp(tre.symb, 'b'), Regexp(tre.symb, 'b')),
                     Regexp(tre.concat, Regexp(tre.symb, 'a'), Regexp(tre.symb, 'a'))))"""
     #(bb|aa)*
-r = Regexp(tre.concat, Regexp(tre.symb, '1'),
-            Regexp(tre.concat,
-                Regexp(tre.star, Regexp(tre.alt, Regexp(tre.symb, '0'), Regexp(tre.symb, '1'))),
-                Regexp(tre.symb, '0')))
-    #1(0|1)*0
+"""r = Regexp(tre.concat, Regexp(tre.star, Regexp(tre.alt, Regexp(tre.symb, 'a'), Regexp(tre.symb, 'b'))),
+        Regexp(tre.concat, Regexp(tre.symb, 'c'),
+        Regexp(tre.star, Regexp(tre.alt, Regexp(tre.symb, 'a'), Regexp(tre.symb, 'b')))))"""
+    #(a|b)*c(a|b)*
 
 x = input()
 while(x != 'exit'):
-    print(match(r, x))
+    start = time.perf_counter()
+    res = match(r, x)
+    finish = time.perf_counter()
+    print(f"Время: {finish - start:0.6f}")
+    print(res)
     x = input()
