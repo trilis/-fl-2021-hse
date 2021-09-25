@@ -1,17 +1,71 @@
-Num of vertex 3 1 1
+Number 3 1 1
 Exclamation mark 1 2
-Type of edge 0,1000 1 3
+Number 0 1 3
+Comma at 1 4
+Number 1000 1 5
 Semicolon at 1 9
-Type of edge 1,0010 1 10
+Number 1 1 10
+Comma at 1 11
+Number 0010 1 12
 Semicolon at 1 16
-Type of edge 2,0010 1 17
+Number 2 1 17
+Comma at 1 18
+Number 0010 1 19
 Semicolon at 1 23
 At sign in line 1 24
-Edge function 0,1,0,2,4,6,8 1 25
+Number 0 1 25
+Comma at 1 26
+Number 1 1 27
+Comma at 1 28
+Number 0 1 29
+Comma at 1 30
+Number 2 1 31
+Comma at 1 32
+Number 4 1 33
+Comma at 1 34
+Number 6 1 35
+Comma at 1 36
+Number 8 1 37
 Semicolon at 1 38
-Edge function 0,2,1,3,5,7,9 1 39
+Number 0 1 39
+Comma at 1 40
+Number 2 1 41
+Comma at 1 42
+Number 1 1 43
+Comma at 1 44
+Number 3 1 45
+Comma at 1 46
+Number 5 1 47
+Comma at 1 48
+Number 7 1 49
+Comma at 1 50
+Number 9 1 51
 Semicolon at 1 52
-Edge function 1,2,1,3,5,7,9 1 53
+Number 1 1 53
+Comma at 1 54
+Number 2 1 55
+Comma at 1 56
+Number 1 1 57
+Comma at 1 58
+Number 3 1 59
+Comma at 1 60
+Number 5 1 61
+Comma at 1 62
+Number 7 1 63
+Comma at 1 64
+Number 9 1 65
 Semicolon at 1 66
-Edge function 2,1,0,2,4,6,8 1 67
+Number 2 1 67
+Comma at 1 68
+Number 1 1 69
+Comma at 1 70
+Number 0 1 71
+Comma at 1 72
+Number 2 1 73
+Comma at 1 74
+Number 4 1 75
+Comma at 1 76
+Number 6 1 77
+Comma at 1 78
+Number 8 1 79
 Semicolon at 1 80
