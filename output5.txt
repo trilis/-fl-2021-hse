@@ -1,4 +1,6 @@
-Num of vertex 1239 1 1
+Number 1239 1 1
 Exclamation mark 1 5
-Edge function 3393929,2921 1 6
+Number 3393929 1 6
+Comma at 1 13
+Number 2921 1 14
 Error at id 18
