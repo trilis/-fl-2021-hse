@@ -4,7 +4,7 @@
 
     * ![equation](https://latex.codecogs.com/gif.latex?%5C%7Buabv%20%7C%20u%20%5Cin%20%5C%7Ba%2C%20b%5C%7D*%2C%20v%20%5Cin%20%5C%7Ba%2C%20b%5C%7D*%2C%20%7Cu%7C%20%3D%20%7Cv%7C%2C%20u%20%5Cneq%20v%5ER%5C%7D)
 
-    * $\{a^kc^me^n | k \ge 0, n \ge 0, m = k + n + 1\}$ 
+    * ![equation]()
 
     * $\{a^n | \exists p \ge n:  p~простое~и~p + 2~простое\}$
 
