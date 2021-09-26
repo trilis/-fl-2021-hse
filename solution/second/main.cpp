@@ -184,6 +184,25 @@ int main()
         UPLOAD_TEST;
     }
 
+    // 11. I wanna TL 2sec exceeded
+    {
+        reg_txt = "((a|b)(a|b)(a|b)(a|b))*(ab)*";
+        auto t1 = make_alt(make_shared<Char>('a'), make_shared<Char>('b'));
+        auto t2 = make_concat(t1, t1);
+        auto t3 = make_concat(t2, t2);
+        auto t4 = make_star(t3);
+        auto t5 = make_star(make_concat(make_shared<Char>('a'), make_shared<Char>('b')));
+        auto t6 = make_concat(t4, t5);
+        ptr = t6;
+        samples = {
+            {"aaaa", true},
+            {"abaaababbababbaaaabbababbbaaabababababababababababababab", true},
+            {"abaaababbababbaaaabbababbbaaababababababababababababababс", false}
+        };
+        UPLOAD_TEST;
+    }
+    
+
 #undef UPLOAD_TEST
 
     // run tests
