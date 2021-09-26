@@ -84,6 +84,7 @@ int main()
         samples = {
             {"ab", true},
             {"abab", false},
+            {"ababababab", false},
             {"a", false},
             {"b", false},
             {"", false},
@@ -101,9 +102,79 @@ int main()
             {"ab", true},
             {"", true},
             {"abab", true},
+            {"abababab", true},
             {"a", false},
-            {"aba", false}
-        };
+            {"aba", false}};
+        UPLOAD_TEST;
+    }
+    
+    // 7. % 3 == 0 or epsilon
+    {
+        reg_txt = "(0|1(01*0)*1)*";
+        // "01*0"
+        auto t1 = make_shared<Concat>(make_shared<Char>('0'), make_shared<Concat>(make_shared<Star>(make_shared<Char>('1')), make_shared<Char>('0')));
+        // (01*0)*
+        auto t2 = make_shared<Star>(t1);
+        // 1(01*0)*1
+        auto t3 = make_shared<Concat>(make_shared<Char>('1'), make_shared<Concat>(t2, make_shared<Char>('1')));
+        // (0|1(01*0)*1)
+        auto t4 = make_shared<Alt>(make_shared<Char>('0'), t3);
+        ptr = make_shared<Star>(t4);
+        samples = {
+            {"", true},
+            {"0", true},
+            {"11", true},
+            {"110", true},
+            {"100111", true},
+            {"1110", false},
+            {"1110100", false}};
+        UPLOAD_TEST;
+    }
+
+    // 8. a lot of star
+    {
+        reg_txt = "(ab)*****";
+        auto t1 = make_shared<Concat>(make_shared<Char>('a'), make_shared<Char>('b'));
+        ptr = make_shared<Star>(make_shared<Star>(make_shared<Star>(make_shared<Star>(make_shared<Star>(t1)))));
+        samples = {
+            {"ab", true},
+            {"", true},
+            {"abab", true},
+            {"ababab", true},
+            {"abababab", true},
+            {"aba", false},
+            {"abaab", false}};
+        UPLOAD_TEST;
+    }
+    
+    // 9. R_eps
+    {
+        reg_txt = "ab  (concat with eps)";
+        auto t1 = make_shared<Concat>(make_shared<Char>('a'), make_shared<Char>('b'));
+        ptr = make_shared<Concat>(t1, make_shared<Concat>(make_shared<Epsilon>(), make_shared<Concat>(make_shared<Epsilon>(), make_shared<Epsilon>())));
+        samples = {
+            {"ab", true},
+            {"abab", false},
+            {"ababababab", false},
+            {"b", false},
+            {"", false},
+            {"aa", false},
+            {"ba", false}};
+        UPLOAD_TEST;
+    }
+
+    // 10. R | eps, where R -- can match epsilon
+    {
+        reg_txt = "(ab)*  (alt with eps)";
+        auto inside = make_shared<Concat>(make_shared<Char>('a'), make_shared<Char>('b'));
+        ptr = make_shared<Alt>(make_shared<Alt>(make_shared<Star>(inside), make_shared<Epsilon>()), make_shared<Epsilon>());
+        samples = {
+            {"ab", true},
+            {"", true},
+            {"abab", true},
+            {"ababababab", true},
+            {"a", false},
+            {"aba", false}};
         UPLOAD_TEST;
     }
 

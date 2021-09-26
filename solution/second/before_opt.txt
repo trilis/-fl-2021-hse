@@ -1,0 +1,316 @@
+
+	---- TEST SUITE #1----
+Regexp: a
+
+Sample: a
+Matched\Expected: true\true
+Matching time(ms): 0
+
+Sample: {epsilon}
+Matched\Expected: false\false
+Matching time(ms): 0
+
+Sample: aa
+Matched\Expected: false\false
+Matching time(ms): 0
+
+Sample: aaaaaaaaaaa
+Matched\Expected: false\false
+Matching time(ms): 0
+
+Sample: ab
+Matched\Expected: false\false
+Matching time(ms): 0
+
+Sample: b
+Matched\Expected: false\false
+Matching time(ms): 0
+
+Sample: ba
+Matched\Expected: false\false
+Matching time(ms): 0
+
+Sample: A
+Matched\Expected: false\false
+Matching time(ms): 0
+
+BROKEN TESTS: 0
+TOTAL TIME OF SUIT(ms): 0
+
+	---- TEST SUITE #2----
+Regexp: a|b
+
+Sample: {epsilon}
+Matched\Expected: false\false
+Matching time(ms): 0
+
+Sample: a
+Matched\Expected: true\true
+Matching time(ms): 0
+
+Sample: b
+Matched\Expected: true\true
+Matching time(ms): 0
+
+Sample: ab
+Matched\Expected: false\false
+Matching time(ms): 0
+
+Sample: ba
+Matched\Expected: false\false
+Matching time(ms): 0
+
+Sample: bb
+Matched\Expected: false\false
+Matching time(ms): 0
+
+BROKEN TESTS: 0
+TOTAL TIME OF SUIT(ms): 0
+
+	---- TEST SUITE #3----
+Regexp: {epsilon}
+
+Sample: {epsilon}
+Matched\Expected: true\true
+Matching time(ms): 0
+
+Sample: ab
+Matched\Expected: false\false
+Matching time(ms): 0
+
+Sample: ba
+Matched\Expected: false\false
+Matching time(ms): 0
+
+Sample: 12345
+Matched\Expected: false\false
+Matching time(ms): 0
+
+BROKEN TESTS: 0
+TOTAL TIME OF SUIT(ms): 0
+
+	---- TEST SUITE #4----
+Regexp: a*
+
+Sample: {epsilon}
+Matched\Expected: true\true
+Matching time(ms): 0
+
+Sample: a
+Matched\Expected: true\true
+Matching time(ms): 0
+
+Sample: aaa
+Matched\Expected: true\true
+Matching time(ms): 0
+
+Sample: aaaaaaa
+Matched\Expected: true\true
+Matching time(ms): 28
+
+Sample: abc
+Matched\Expected: false\false
+Matching time(ms): 0
+
+BROKEN TESTS: 0
+TOTAL TIME OF SUIT(ms): 28
+
+	---- TEST SUITE #5----
+Regexp: ab
+
+Sample: ab
+Matched\Expected: true\true
+Matching time(ms): 0
+
+Sample: abab
+Matched\Expected: false\false
+Matching time(ms): 0
+
+Sample: ababababab
+Matched\Expected: false\false
+Matching time(ms): 27
+
+Sample: a
+Matched\Expected: false\false
+Matching time(ms): 0
+
+Sample: b
+Matched\Expected: false\false
+Matching time(ms): 0
+
+Sample: {epsilon}
+Matched\Expected: false\false
+Matching time(ms): 0
+
+Sample: aa
+Matched\Expected: false\false
+Matching time(ms): 0
+
+Sample: ba
+Matched\Expected: false\false
+Matching time(ms): 0
+
+BROKEN TESTS: 0
+TOTAL TIME OF SUIT(ms): 27
+
+	---- TEST SUITE #6----
+Regexp: (ab)*
+
+Sample: ab
+Matched\Expected: true\true
+Matching time(ms): 0
+
+Sample: {epsilon}
+Matched\Expected: true\true
+Matching time(ms): 0
+
+Sample: abab
+Matched\Expected: true\true
+Matching time(ms): 1
+
+Sample: abababab
+Matched\Expected: true\true
+Matching time(ms): 180
+
+Sample: a
+Matched\Expected: false\false
+Matching time(ms): 0
+
+Sample: aba
+Matched\Expected: false\false
+Matching time(ms): 0
+
+BROKEN TESTS: 0
+TOTAL TIME OF SUIT(ms): 181
+
+	---- TEST SUITE #7----
+Regexp: (0|1(01*0)*1)*
+
+Sample: {epsilon}
+Matched\Expected: true\true
+Matching time(ms): 0
+
+Sample: 0
+Matched\Expected: true\true
+Matching time(ms): 0
+
+Sample: 11
+Matched\Expected: true\true
+Matching time(ms): 0
+
+Sample: 110
+Matched\Expected: true\true
+Matching time(ms): 2
+
+Sample: 100111
+Matched\Expected: true\true
+Matching time(ms): 399
+
+Sample: 1110
+Matched\Expected: false\false
+Matching time(ms): 14
+
+Sample: 1110100
+Matched\Expected: false\false
+Matching time(ms): 2285
+
+BROKEN TESTS: 0
+TOTAL TIME OF SUIT(ms): 2700
+
+	---- TEST SUITE #8----
+Regexp: (ab)*****
+
+Sample: ab
+Matched\Expected: true\true
+Matching time(ms): 0
+
+Sample: {epsilon}
+Matched\Expected: true\true
+Matching time(ms): 0
+
+Sample: abab
+Matched\Expected: true\true
+Matching time(ms): 8
+
+Sample: ababab
+Matched\Expected: true\true
+Matching time(ms): 261
+
+Sample: abababab
+Matched\Expected: true\true
+Matching time(ms): 9464
+
+Sample: aba
+Matched\Expected: false\false
+Matching time(ms): 1
+
+Sample: abaab
+Matched\Expected: false\false
+Matching time(ms): 46
+
+BROKEN TESTS: 0
+TOTAL TIME OF SUIT(ms): 9780
+
+	---- TEST SUITE #9----
+Regexp: ab  (concat with eps)
+
+Sample: ab
+Matched\Expected: true\true
+Matching time(ms): 0
+
+Sample: abab
+Matched\Expected: false\false
+Matching time(ms): 2
+
+Sample: ababababab
+Matched\Expected: false\false
+Matching time(ms): 7863
+
+Sample: b
+Matched\Expected: false\false
+Matching time(ms): 0
+
+Sample: {epsilon}
+Matched\Expected: false\false
+Matching time(ms): 0
+
+Sample: aa
+Matched\Expected: false\false
+Matching time(ms): 0
+
+Sample: ba
+Matched\Expected: false\false
+Matching time(ms): 0
+
+BROKEN TESTS: 0
+TOTAL TIME OF SUIT(ms): 7865
+
+	---- TEST SUITE #10----
+Regexp: (ab)*  (alt with eps)
+
+Sample: ab
+Matched\Expected: true\true
+Matching time(ms): 0
+
+Sample: {epsilon}
+Matched\Expected: true\true
+Matching time(ms): 0
+
+Sample: abab
+Matched\Expected: true\true
+Matching time(ms): 0
+
+Sample: ababababab
+Matched\Expected: true\true
+Matching time(ms): 4640
+
+Sample: a
+Matched\Expected: false\false
+Matching time(ms): 0
+
+Sample: aba
+Matched\Expected: false\false
+Matching time(ms): 0
+
+BROKEN TESTS: 0
+TOTAL TIME OF SUIT(ms): 4640

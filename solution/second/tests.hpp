@@ -15,7 +15,7 @@ namespace NTests
         }
         void run()
         {
-            std::cout << "\n\t---- NEW TEST SUITE ----\n";
+            std::cout << "\n\t---- TEST SUITE #" << ++total_tests << "----\n";
             std::cout << "Regexp: " << (reg_text.empty() ? std::string("{epsilon}") : reg_text) << "\n\n";
             size_t bad_tests = 0;
             for (const auto &sample : samples)
@@ -49,5 +49,7 @@ namespace NTests
         NRegexp::RegPtr reg_ptr;
         std::vector<std::pair<std::string, bool>> samples;
         std::size_t total_time = 0;
+        static std::size_t total_tests;
     };
+    size_t TestSuite::total_tests = 0;
 } // namespace NTests
