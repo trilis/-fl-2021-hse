@@ -107,7 +107,7 @@ int main()
             {"aba", false}};
         UPLOAD_TEST;
     }
-    
+
     // 7. % 3 == 0 or epsilon
     {
         reg_txt = "(0|1(01*0)*1)*";
@@ -146,7 +146,7 @@ int main()
             {"abaab", false}};
         UPLOAD_TEST;
     }
-    
+
     // 9. R_eps
     {
         reg_txt = "ab  (concat with eps)";
@@ -177,6 +177,8 @@ int main()
             {"aba", false}};
         UPLOAD_TEST;
     }
+
+#undef UPLOAD_TEST
 
     // run tests
     for (auto &test : tests)
