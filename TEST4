@@ -1,8 +1,5 @@
-#
-#
-$$DD
 (NotKeyWordButState) 0 1
-Terminal (ыыы) (2)
+Terminal ыыы
 @->0->(1)
 @->1->(2)
 (1)->1->(2)

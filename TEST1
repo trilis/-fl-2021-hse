@@ -1,6 +1,6 @@
 Sigma a1 a2 a3
 Terminal @ (q1)
 @->a3->@
-@->a1 a2->q1
-(q1)->a2 a3 a1->q1
+@->a1 a2->(q1)
+(q1)->a2 a3 a1->(q1)
 
