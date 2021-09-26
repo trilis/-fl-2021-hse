@@ -8,6 +8,61 @@
 namespace NRegexp
 {
 
+    RegPtr make_concat(RegPtr lhs, RegPtr rhs)
+    {
+        if (PatternMatch<Empty>(lhs) || PatternMatch<Empty>(rhs))
+        {
+            return make_shared<Empty>();
+        }
+        if (PatternMatch<Epsilon>(rhs))
+        {
+            return lhs;
+        }
+        if (PatternMatch<Epsilon>(lhs))
+        {
+            return rhs;
+        }
+        return make_shared<Concat>(lhs, rhs);
+    }
+
+    RegPtr make_alt(RegPtr lhs, RegPtr rhs)
+    {
+        if (PatternMatch<Empty>(lhs))
+        {
+            return rhs;
+        }
+        if (PatternMatch<Empty>(rhs))
+        {
+            return lhs;
+        }
+        if (PatternMatch<Epsilon>(lhs) && Nullable(rhs))
+        {
+            return rhs;
+        }
+        if (PatternMatch<Epsilon>(rhs) && Nullable(lhs))
+        {
+            return lhs;
+        }
+        if (lhs == rhs) // kind of non-sense
+        {
+            return lhs;
+        }
+        return make_shared<Alt>(lhs, rhs);
+    }
+
+    RegPtr make_star(RegPtr inside) {
+        if (PatternMatch<Empty>(inside)) {
+            return make_shared<Empty>();
+        }
+        if (PatternMatch<Epsilon>(inside)) {
+            return make_shared<Epsilon>();
+        }
+        if (PatternMatch<Star>(inside)) {
+            return inside;
+        }
+        return make_shared<Star>(inside);
+    }
+
     RegPtr Intersect(RegPtr lhs, RegPtr rhs)
     {
         if (PatternMatch<Empty>(lhs) || PatternMatch<Empty>(rhs))
@@ -89,17 +144,17 @@ namespace NRegexp
         if (auto matched = PatternMatch<Star>(regexp_ptr)) // Star
         {
             auto casted_ptr = matched.ptr;
-            return make_shared<Concat>(Derivative(ch, casted_ptr->inside), casted_ptr);
+            return make_concat(Derivative(ch, casted_ptr->inside), casted_ptr);
         }
         if (auto matched = PatternMatch<Alt>(regexp_ptr)) // Alt
         {
             auto casted_ptr = matched.ptr;
-            return make_shared<Alt>(Derivative(ch, casted_ptr->left), Derivative(ch, casted_ptr->right));
+            return make_alt(Derivative(ch, casted_ptr->left), Derivative(ch, casted_ptr->right));
         }
         if (auto matched = PatternMatch<Concat>(regexp_ptr)) // Concat
         {
             auto casted_ptr = matched.ptr;
-            auto left = make_shared<Concat>(Derivative(ch, casted_ptr->left), casted_ptr->right);
+            auto left = make_concat(Derivative(ch, casted_ptr->left), casted_ptr->right);
             RegPtr right = nullptr;
 
             if (Nullable(casted_ptr->left))
@@ -111,7 +166,7 @@ namespace NRegexp
                 right = make_shared<Empty>();
             }
 
-            return make_shared<Alt>(left, right);
+            return make_alt(left, right);
         }
         std::stringstream ss;
         ss << __FILE__ << ":" << __LINE__ << " Regex didn't match any pattern\n";

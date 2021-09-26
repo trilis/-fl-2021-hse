@@ -41,7 +41,7 @@ int main()
     // 2. with Alternative
     {
         reg_txt = "a|b";
-        ptr = make_shared<Alt>(make_shared<Char>('a'), make_shared<Char>('b'));
+        ptr = make_alt(make_shared<Char>('a'), make_shared<Char>('b'));
         samples = {{"", false},
                    {"a", true},
                    {"b", true},
@@ -65,7 +65,7 @@ int main()
     // 4. simple star
     {
         reg_txt = "a*";
-        ptr = make_shared<Star>(make_shared<Char>('a'));
+        ptr = make_star(make_shared<Char>('a'));
         samples = {
             {"", true},
             {"a", true},
@@ -80,7 +80,7 @@ int main()
     // 5. simple concat
     {
         reg_txt = "ab";
-        ptr = make_shared<Concat>(make_shared<Char>('a'), make_shared<Char>('b'));
+        ptr = make_concat(make_shared<Char>('a'), make_shared<Char>('b'));
         samples = {
             {"ab", true},
             {"abab", false},
@@ -96,8 +96,8 @@ int main()
     // 6. simple concat + star
     {
         reg_txt = "(ab)*";
-        auto inside = make_shared<Concat>(make_shared<Char>('a'), make_shared<Char>('b'));
-        ptr = make_shared<Star>(inside);
+        auto inside = make_concat(make_shared<Char>('a'), make_shared<Char>('b'));
+        ptr = make_star(inside);
         samples = {
             {"ab", true},
             {"", true},
@@ -113,14 +113,14 @@ int main()
     {
         reg_txt = "(0|1(01*0)*1)*";
         // "01*0"
-        auto t1 = make_shared<Concat>(make_shared<Char>('0'), make_shared<Concat>(make_shared<Star>(make_shared<Char>('1')), make_shared<Char>('0')));
+        auto t1 = make_concat(make_shared<Char>('0'), make_concat(make_star(make_shared<Char>('1')), make_shared<Char>('0')));
         // (01*0)*
-        auto t2 = make_shared<Star>(t1);
+        auto t2 = make_star(t1);
         // 1(01*0)*1
-        auto t3 = make_shared<Concat>(make_shared<Char>('1'), make_shared<Concat>(t2, make_shared<Char>('1')));
+        auto t3 = make_concat(make_shared<Char>('1'), make_concat(t2, make_shared<Char>('1')));
         // (0|1(01*0)*1)
-        auto t4 = make_shared<Alt>(make_shared<Char>('0'), t3);
-        ptr = make_shared<Star>(t4);
+        auto t4 = make_alt(make_shared<Char>('0'), t3);
+        ptr = make_star(t4);
         samples = {
             {"", true},
             {"0", true},
@@ -137,8 +137,8 @@ int main()
     // 8. a lot of star
     {
         reg_txt = "(ab)*****";
-        auto t1 = make_shared<Concat>(make_shared<Char>('a'), make_shared<Char>('b'));
-        ptr = make_shared<Star>(make_shared<Star>(make_shared<Star>(make_shared<Star>(make_shared<Star>(t1)))));
+        auto t1 = make_concat(make_shared<Char>('a'), make_shared<Char>('b'));
+        ptr = make_star(make_star(make_star(make_star(make_star(t1)))));
         samples = {
             {"ab", true},
             {"", true},
@@ -154,8 +154,8 @@ int main()
     // 9. R_eps
     {
         reg_txt = "ab  (concat with eps)";
-        auto t1 = make_shared<Concat>(make_shared<Char>('a'), make_shared<Char>('b'));
-        ptr = make_shared<Concat>(t1, make_shared<Concat>(make_shared<Epsilon>(), make_shared<Concat>(make_shared<Epsilon>(), make_shared<Epsilon>())));
+        auto t1 = make_concat(make_shared<Char>('a'), make_shared<Char>('b'));
+        ptr = make_concat(t1, make_concat(make_shared<Epsilon>(), make_concat(make_shared<Epsilon>(), make_shared<Epsilon>())));
         samples = {
             {"ab", true},
             {"abab", false},
@@ -171,8 +171,8 @@ int main()
     // 10. R | eps, where R -- can match epsilon
     {
         reg_txt = "(ab)*  (alt with eps)";
-        auto inside = make_shared<Concat>(make_shared<Char>('a'), make_shared<Char>('b'));
-        ptr = make_shared<Alt>(make_shared<Alt>(make_shared<Star>(inside), make_shared<Epsilon>()), make_shared<Epsilon>());
+        auto inside = make_concat(make_shared<Char>('a'), make_shared<Char>('b'));
+        ptr = make_alt(make_alt(make_star(inside), make_shared<Epsilon>()), make_shared<Epsilon>());
         samples = {
             {"ab", true},
             {"", true},

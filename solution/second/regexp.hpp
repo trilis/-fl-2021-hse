@@ -71,6 +71,10 @@ namespace NRegexp
         return {!!res, res};
     }
 
+    RegPtr make_concat(RegPtr lhs, RegPtr rhs);
+    RegPtr make_alt(RegPtr lhs, RegPtr rhs);
+    RegPtr make_star(RegPtr inside);
+
     RegPtr Intersect(RegPtr lhs, RegPtr rhs);
 
     RegPtr Union(RegPtr lhs, RegPtr rhs);
