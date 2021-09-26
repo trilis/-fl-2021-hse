@@ -41,7 +41,7 @@ namespace NTests
                 }
             }
             std::cout << "BROKEN TESTS: " << bad_tests << "\n";
-            std::cout << "TOTAL TIME OF SUIT(ms): " << total_time << '\n';
+            std::cout << "TOTAL TIME OF SUIT #" << total_tests << "(ms): " << total_time << '\n';
         }
 
     private:

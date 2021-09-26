@@ -37,31 +37,31 @@ namespace NRegexp
         ss << __FILE__ << ":" << __LINE__ << " Impossible to unite these regexes\n";
         throw std::runtime_error(ss.str());
     }
-    RegPtr Nullable(RegPtr reg_ptr)
+    bool Nullable(RegPtr reg_ptr) // does reg_ptr match epsilon?
     {
         if (PatternMatch<Empty>(reg_ptr))
         {
-            return make_shared<Empty>();
+            return false;
         }
         if (PatternMatch<Epsilon>(reg_ptr))
         {
-            return make_shared<Epsilon>();
+            return true;
         }
         if (PatternMatch<Char>(reg_ptr))
         {
-            return make_shared<Empty>();
+            return false;
         }
         if (auto matched = PatternMatch<Concat>(reg_ptr))
         {
-            return Intersect(Nullable(matched.ptr->left), Nullable(matched.ptr->right));
+            return Nullable(matched.ptr->left) && Nullable(matched.ptr->right);
         }
         if (auto matched = PatternMatch<Alt>(reg_ptr))
         {
-            return Union(Nullable(matched.ptr->left), Nullable(matched.ptr->right));
+            return Nullable(matched.ptr->left) || Nullable(matched.ptr->right);
         }
         if (PatternMatch<Star>(reg_ptr))
         {
-            return make_shared<Epsilon>();
+            return true;
         }
         std::stringstream ss;
         ss << __FILE__ << ":" << __LINE__ << " Regex didn't match any pattern\n";
@@ -99,8 +99,19 @@ namespace NRegexp
         if (auto matched = PatternMatch<Concat>(regexp_ptr)) // Concat
         {
             auto casted_ptr = matched.ptr;
-            return make_shared<Alt>(make_shared<Concat>(Derivative(ch, casted_ptr->left), casted_ptr->right),
-                                    make_shared<Concat>(Nullable(casted_ptr->left), Derivative(ch, casted_ptr->right)));
+            auto left = make_shared<Concat>(Derivative(ch, casted_ptr->left), casted_ptr->right);
+            RegPtr right = nullptr;
+
+            if (Nullable(casted_ptr->left))
+            {
+                right = Derivative(ch, casted_ptr->right);
+            }
+            else
+            {
+                right = make_shared<Empty>();
+            }
+
+            return make_shared<Alt>(left, right);
         }
         std::stringstream ss;
         ss << __FILE__ << ":" << __LINE__ << " Regex didn't match any pattern\n";
@@ -120,6 +131,6 @@ namespace NRegexp
 
     bool Match(RegPtr reg_ptr, std::string str)
     {
-        return PatternMatch<Epsilon>(Nullable(Derivative(str, reg_ptr)));
+        return Nullable(Derivative(str, reg_ptr));
     }
 } // namespace NRegexp

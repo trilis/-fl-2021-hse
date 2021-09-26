@@ -75,7 +75,7 @@ namespace NRegexp
 
     RegPtr Union(RegPtr lhs, RegPtr rhs);
 
-    RegPtr Nullable(RegPtr reg_ptr);
+    bool Nullable(RegPtr reg_ptr);
 
     RegPtr Derivative(char ch, RegPtr regexp_ptr);
 

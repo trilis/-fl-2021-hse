@@ -103,6 +103,7 @@ int main()
             {"", true},
             {"abab", true},
             {"abababab", true},
+            {"abababababababababababababababababababababababababababababababababababababababababababab", true},
             {"a", false},
             {"aba", false}};
         UPLOAD_TEST;
@@ -126,6 +127,8 @@ int main()
             {"11", true},
             {"110", true},
             {"100111", true},
+            {"11110011000", true},
+            {"11110011000000000000000000000000010101", true},
             {"1110", false},
             {"1110100", false}};
         UPLOAD_TEST;
@@ -142,6 +145,7 @@ int main()
             {"abab", true},
             {"ababab", true},
             {"abababab", true},
+            {"abababababab", true},
             {"aba", false},
             {"abaab", false}};
         UPLOAD_TEST;
@@ -156,6 +160,7 @@ int main()
             {"ab", true},
             {"abab", false},
             {"ababababab", false},
+            {"ababababababababababababababababababababababababababababababababababab", false},
             {"b", false},
             {"", false},
             {"aa", false},
@@ -173,6 +178,7 @@ int main()
             {"", true},
             {"abab", true},
             {"ababababab", true},
+            {"ababababababababababababababababababababababababababababababababababababababababababababab", true},
             {"a", false},
             {"aba", false}};
         UPLOAD_TEST;
