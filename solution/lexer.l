@@ -9,7 +9,7 @@ enum token {
     T_NODE = 3
 };
 
-int char_number = 1;
+unsigned int char_number = 1;
 
 %}
 
@@ -81,7 +81,7 @@ return T_ID;
 }
 
 . {
-  printf("ERROR in line %u, symbol %s\n", yylineno, yytext);
+  printf("ERROR in line %u, in symbol %u, symbol %s\n", yylineno, char_number, yytext);
   exit(1);
 }
 
