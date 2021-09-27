@@ -1,0 +1,223 @@
+"/home/andrey/Documents/2 курс/Формальные языки/HW3/RegexpMatching/cmake-build-debug/opt1"
+
+ 	 Test_Case #1
+Regexp: (1|0)
+Testing string: 1
+Expected: true
+ Got: true
+Matching Duration: 0 ms
+
+Testing string: 0
+Expected: true
+ Got: true
+Matching Duration: 0 ms
+
+Testing string: 10
+Expected: false
+ Got: false
+Matching Duration: 0 ms
+
+Testing string: 5
+Expected: false
+ Got: false
+Matching Duration: 0 ms
+
+TESTS FAILED: 0
+Total test_case time: 0
+
+ 	 Test_Case #2
+Regexp: (a*)
+Testing string: a
+Expected: true
+ Got: true
+Matching Duration: 0 ms
+
+Testing string: aaa
+Expected: true
+ Got: true
+Matching Duration: 0 ms
+
+Testing string: aaaaaaaaaaa
+Expected: true
+ Got: true
+Matching Duration: 0 ms
+
+Testing string: aaaaaaaabb
+Expected: false
+ Got: false
+Matching Duration: 0 ms
+
+TESTS FAILED: 0
+Total test_case time: 0
+
+ 	 Test_Case #3
+Regexp: {eps}
+Testing string: {eps}
+Expected: true
+ Got: true
+Matching Duration: 0 ms
+
+Testing string: a
+Expected: false
+ Got: false
+Matching Duration: 0 ms
+
+Testing string: ba
+Expected: false
+ Got: false
+Matching Duration: 0 ms
+
+TESTS FAILED: 0
+Total test_case time: 0
+
+ 	 Test_Case #4
+Regexp: (1*0*)
+Testing string: 0001
+Expected: false
+ Got: false
+Matching Duration: 0 ms
+
+Testing string: 110
+Expected: true
+ Got: true
+Matching Duration: 0 ms
+
+Testing string: 111100000
+Expected: true
+ Got: true
+Matching Duration: 0 ms
+
+Testing string: 456545
+Expected: false
+ Got: false
+Matching Duration: 0 ms
+
+TESTS FAILED: 0
+Total test_case time: 0
+
+ 	 Test_Case #5
+Regexp: (0|1(01*0)*1)*
+Testing string: 11
+Expected: true
+ Got: true
+Matching Duration: 0 ms
+
+Testing string: 10000
+Expected: false
+ Got: false
+Matching Duration: 0 ms
+
+Testing string: 1001
+Expected: true
+ Got: true
+Matching Duration: 0 ms
+
+Testing string: 100001
+Expected: true
+ Got: true
+Matching Duration: 0 ms
+
+Testing string: 111100000
+Expected: true
+ Got: true
+Matching Duration: 1 ms
+
+Testing string: {eps}
+Expected: true
+ Got: true
+Matching Duration: 0 ms
+
+Testing string: 10011001100110011001100110011001100110011001
+Expected: true
+ Got: true
+Matching Duration: 101 ms
+
+Testing string: 111
+Expected: false
+ Got: false
+Matching Duration: 0 ms
+
+TESTS FAILED: 0
+Total test_case time: 102
+
+ 	 Test_Case #6
+Regexp: (xy)*
+Testing string: {eps}
+Expected: true
+ Got: true
+Matching Duration: 0 ms
+
+Testing string: xy
+Expected: true
+ Got: true
+Matching Duration: 0 ms
+
+Testing string: xyxyxy
+Expected: true
+ Got: true
+Matching Duration: 0 ms
+
+Testing string: xyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxyxy
+Expected: true
+ Got: true
+Matching Duration: 13 ms
+
+Testing string: xyxyx
+Expected: false
+ Got: false
+Matching Duration: 0 ms
+
+Testing string: yxy
+Expected: false
+ Got: false
+Matching Duration: 0 ms
+
+TESTS FAILED: 0
+Total test_case time: 13
+
+ 	 Test_Case #7
+Regexp: ((a|b)*x(a|b)*y(a|b)*z)
+Testing string: aaaxbbbyaaaz
+Expected: true
+ Got: true
+Matching Duration: 1 ms
+
+Testing string: aaaabbbbbxabababyaaaaaz
+Expected: true
+ Got: true
+Matching Duration: 9 ms
+
+Testing string: aaabbbbaaabbbbaaabbbbaaabbbbaaabbbbaaabbbbaaabbbbaaabbbbxaaabbbbaaabbbbaaabbbbaaabbbbaaabbbbaaabbbbaaabbbbaaabbbbyaaabbbbaaabbbbaaabbbbaaabbbbaaabbbbaaabbbbaaabbbbaaabbbbz
+Expected: true
+ Got: true
+Matching Duration: 3681 ms
+
+TESTS FAILED: 0
+Total test_case time: 3691
+
+ 	 Test_Case #8
+Regexp: (ab|ba)******
+Testing string: ababababbabababa
+Expected: true
+ Got: true
+Matching Duration: 1543 ms
+
+TESTS FAILED: 0
+Total test_case time: 1543
+
+ 	 Test_Case #9
+Regexp: ({eps}{eps}ab{eps}{eps}{eps}{eps})
+Testing string: ab
+Expected: true
+ Got: true
+Matching Duration: 0 ms
+
+Testing string: abb
+Expected: false
+ Got: false
+Matching Duration: 0 ms
+
+TESTS FAILED: 0
+Total test_case time: 0
+
+Process finished with exit code 0
