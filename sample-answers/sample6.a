@@ -3,4 +3,14 @@ T_ID hello 1 6
 T_COLON : 1 11
 T_TAB "\t" 2 0
 T_ID world 2 1
-ERROR in line 2, position 7, symbol [34-4-4-43]. Regular expression doesn't seem to be correct.
+T_BRACKET [ 2 7
+T_CHAR 3 2 8
+T_CHAR 4 2 9
+T_CHAR - 2 10
+T_CHAR 4 2 11
+T_CHAR - 2 12
+T_CHAR 4 2 13
+T_CHAR - 2 14
+T_CHAR 4 2 15
+T_CHAR 3 2 16
+ERROR in line 2, position 17, symbol "!" doesn't contain in allowed alphabet

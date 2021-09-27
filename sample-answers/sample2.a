@@ -21,5 +21,9 @@ T_KEY links 10 0
 T_COLON : 10 5
 T_TAB "\t" 11 0
 T_ID b 11 1
-T_LINK [a-c]> 11 3
+T_BRACKET [ 11 3
+T_CHAR a 11 4
+T_CHAR - 11 5
+T_CHAR c 11 6
+T_BRACKET ]> 11 7
 T_ID a 11 10
