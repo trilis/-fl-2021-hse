@@ -1,0 +1,34 @@
+------------- SMALL TESTS -------------
+TEST #1 | Expression: 0(0|1)*0
+0 | Status: OK | Time:  0.000015s
+00 | Status: OK | Time:  0.000023s
+10101010101010000 | Status: OK | Time:  0.000026s
+0000000000 | Status: OK | Time:  0.000245s
+101010101000 | Status: OK | Time:  0.000018s
+TEST #2 | Expression: (111|000)*
+11010111111000111 | Status: OK | Time:  0.000044s
+000000000 | Status: OK | Time:  0.000093s
+11100011100011101 | Status: OK | Time:  0.000177s
+ | Status: OK | Time:  0.000002s
+000111000 | Status: OK | Time:  0.000096s
+TEST #3 | Expression: (11)*01(00)*
+110100 | Status: OK | Time:  0.000089s
+01 | Status: OK | Time:  0.000034s
+1111010 | Status: OK | Time:  0.000116s
+111010000 | Status: OK | Time:  0.000080s
+11111111110100000000000000 | Status: OK | Time:  0.000304s
+TEST #4 | Expression: 101010
+101010 | Status: OK | Time:  0.000044s
+10101011123 | Status: OK | Time:  0.000063s
+ | Status: OK | Time:  0.000003s
+1010 | Status: OK | Time:  0.000036s
+
+
+------------- LARGE TESTS -------------
+TEST #1 | Expression: ((1*1|00)|(111|000)*)*|(22|33*)
+11000111000111000111000111000111 | Status: OK | Time:  4.334691s
+00 | Status: OK | Time:  0.000046s
+22 | Status: OK | Time:  0.000032s
+11100011100011100011100011100011 | Status: OK | Time:  8.764154s
+
+

@@ -1,4 +1,4 @@
-from Derivatives import *
+from DerivativesOptimized import *
 
 
 small_tests = [
@@ -187,6 +187,38 @@ small_tests = [
 
 
 large_tests = [
+    {
+        'humanReadableRegExp': '((1*1|00)|(111|000)*)*|(22|33*)',
+        'regExp':
+            Alt(Star(Alt(Alt(Concat(Star(Char('1')), Char('1')), Concat(Char('0'), Char('0'))),
+            Star(Alt(Concat(Concat(Char('1'), Char('1')), Char('1')), Concat(Concat(Char('0'), Char('0')), Char('0')))))),
+            Alt(Concat(Char('2'), Char('2')), Concat(Char('3'), Star(Char('3'))))),
+        'samples': [
+            {
+                'string': '11100011100011100011100011100011'[::-1],
+                'expected': True,
+                'is_big': True,
+            },
+            {
+                'string': '00',
+                'expected': True,
+                'is_big': False,
+            },
+            {
+                'string': '22',
+                'expected': True,
+                'is_big': False,
+            },
+            {
+                'string': '11100011100011100011100011100011',
+                'expected': True,
+                'is_big': True,
+            },
+        ]
+
+    }
+
+
 ]
 
 

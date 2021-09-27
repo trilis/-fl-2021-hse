@@ -1,10 +1,10 @@
 import time
-from Derivatives import match
+from DerivativesOptimized import match
 from tests import tests_blocks
 
 
 if __name__ == '__main__':
-    with_big_tests = False
+    with_big_tests = True
     for block in tests_blocks:
         block_name = block['name']
         print(f'------------- {block_name} -------------')
