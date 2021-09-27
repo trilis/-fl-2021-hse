@@ -26,10 +26,10 @@ namespace Tests {
 
         void start() {
             std::cout << "\n \t Test_Case #" << ++test_number << "\n";
-            std::cout << "Regexp: " << ((regexp_text.empty()) ? "{}" : regexp_text) << '\n';
+            std::cout << "Regexp: " << ((regexp_text.empty()) ? "{eps}" : regexp_text) << '\n';
             int test_failed = 0;
             for (auto &test : test_cases) {
-                std::cout << "Testing string: " << (test.expression.empty() ? "{}" : test.expression) << '\n';
+                std::cout << "Testing string: " << (test.expression.empty() ? "{eps}" : test.expression) << '\n';
                 std::chrono::steady_clock::time_point start_point = std::chrono::steady_clock::now();
                 bool respond = Reg::match(regexp_ptr, test.expression);
                 auto matching_time = std::chrono::duration_cast<std::chrono::milliseconds>(

@@ -34,39 +34,26 @@ namespace Reg {
         return std::dynamic_pointer_cast<type>(r) != nullptr;
     }
 
-    std::shared_ptr<Regexp> intersect(std::shared_ptr<Regexp> a, std::shared_ptr<Regexp> b) {
-        if (verify_type<Empty>(a) || verify_type<Empty>(b)) {
-            return std::make_shared<Empty>();
-        }
-        return std::make_shared<Epsilon>();
-    };
-
-    std::shared_ptr<Regexp> unite(std::shared_ptr<Regexp> a, std::shared_ptr<Regexp> b) {
-        if (verify_type<Empty>(a) && verify_type<Empty>(b)) {
-            return std::make_shared<Empty>();
-        }
-        return std::make_shared<Epsilon>();
-    }
-
-    std::shared_ptr<Regexp> nullable(std::shared_ptr<Regexp> r) {
+    bool nullable(std::shared_ptr<Regexp> r) {
         if (verify_type<Empty>(r))
-            return std::make_shared<Empty>();
+            return false;
         if (verify_type<Epsilon>(r))
-            return std::make_shared<Epsilon>();
+            return true;
         if (verify_type<Symb>(r))
-            return std::make_shared<Empty>();
+            return false;
         if (verify_type<Star>(r))
-            return std::make_shared<Epsilon>();
+            return true;
         if (verify_type<Alt>(r)) {
             auto alt_reg = dynamic_cast<Alt *>(r.get());
-            return unite(nullable(alt_reg->arg1), nullable(alt_reg->arg2));
+            return nullable(alt_reg->arg1) || nullable(alt_reg->arg2);
         }
         if (verify_type<Concat>(r)) {
             auto concat_reg = dynamic_cast<Concat *>(r.get());
-            return intersect(nullable(concat_reg->arg1), nullable(concat_reg->arg2));
+            return nullable(concat_reg->arg1) && nullable(concat_reg->arg2);
         }
-        return nullptr;
+        return false;
     }
+
 
     std::shared_ptr<Regexp> der(char c, std::shared_ptr<Regexp> lang) {
         if (verify_type<Empty>(lang))
@@ -90,9 +77,14 @@ namespace Reg {
         }
         if (verify_type<Concat>(lang)) {
             auto concat_reg = dynamic_cast<Concat *>(lang.get());
-            return std::make_shared<Alt>(std::make_shared<Concat>(der(c, concat_reg->arg1), concat_reg->arg2),
-                                         std::make_shared<Concat>(nullable(concat_reg->arg1),
-                                                                  der(c, concat_reg->arg2)));
+            auto alt1 = std::make_shared<Concat>(der(c, concat_reg->arg1), concat_reg->arg2);
+            std::shared_ptr<Regexp> alt2 = nullptr;
+            if (nullable(concat_reg->arg1)) {
+                alt2 = der(c, concat_reg->arg2);
+            } else {
+                alt2 = std::make_shared<Empty>();
+            }
+            return std::make_shared<Alt>(alt1, alt2);
         }
         return nullptr;
     }
@@ -106,6 +98,56 @@ namespace Reg {
     }
 
     bool match(std::shared_ptr<Regexp> reg, const std::string &s) {
-        return verify_type<Epsilon>(nullable(derivative(s, reg)));
+        return nullable(derivative(s, reg));
+    }
+
+    // optimization # 2
+
+    std::shared_ptr<Regexp> concat(std::shared_ptr<Regexp> a, std::shared_ptr<Regexp> b) {
+        if (verify_type<Empty>(a) || verify_type<Empty>(b))
+            return std::make_shared<Empty>();
+        if (verify_type<Epsilon>(a))
+            return b;
+        if (verify_type<Epsilon>(b))
+            return a;
+        return std::make_shared<Concat>(a, b);
+    }
+
+    std::shared_ptr<Regexp> alt(std::shared_ptr<Regexp> a, std::shared_ptr<Regexp> b) {
+        if (verify_type<Empty>(a))
+            return b;
+        if (verify_type<Empty>(b))
+            return a;
+        if (verify_type<Epsilon>(b) && nullable(a))
+            return a;
+        if (verify_type<Epsilon>(a) && nullable(b))
+            return b;
+        if (a == b)
+            return a;
+        return std::make_shared<Alt>(a, b);
+    }
+
+    std::shared_ptr<Regexp> star(std::shared_ptr<Regexp> a) {
+        if (verify_type<Empty>(a))
+            return std::make_shared<Empty>();
+        if (verify_type<Epsilon>(a))
+            return std::make_shared<Epsilon>();
+        if (verify_type<Star>(a)) {
+            auto cast = std::dynamic_pointer_cast<Star>(a);
+            return star(cast->arg);
+        }
+        return std::make_shared<Star>(a);
+    }
+
+    std::shared_ptr<Epsilon> epsilon() {
+        return std::make_shared<Epsilon>();
+    }
+
+    std::shared_ptr<Empty> empty() {
+        return std::make_shared<Empty>();
+    }
+
+    std::shared_ptr<Symb> symb(char c) {
+        return std::make_shared<Symb>(c);
     }
 }
