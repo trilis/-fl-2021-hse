@@ -1,0 +1,141 @@
+ 	 Test_Case #1
+Regexp: (1|0)
+Testing string: 1
+Expected: true
+ Got: true
+Matching Duration: 0 ms
+
+Testing string: 0
+Expected: true
+ Got: true
+Matching Duration: 0 ms
+
+Testing string: 10
+Expected: false
+ Got: false
+Matching Duration: 0 ms
+
+Testing string: 5
+Expected: false
+ Got: false
+Matching Duration: 0 ms
+
+TESTS FAILED: 0
+Total test_case time: 0
+
+ 	 Test_Case #2
+Regexp: (a*)
+Testing string: a
+Expected: true
+ Got: true
+Matching Duration: 0 ms
+
+Testing string: aaa
+Expected: true
+ Got: true
+Matching Duration: 0 ms
+
+Testing string: aaaaaaaaaaa
+Expected: true
+ Got: true
+Matching Duration: 4876 ms
+
+Testing string: aaaaaaaabb
+Expected: false
+ Got: false
+Matching Duration: 858 ms
+
+TESTS FAILED: 0
+Total test_case time: 5734
+
+ 	 Test_Case #3
+Regexp: (1*0*)
+Testing string: 0001
+Expected: false
+ Got: false
+Matching Duration: 0 ms
+
+Testing string: 110
+Expected: true
+ Got: true
+Matching Duration: 0 ms
+
+Testing string: 111100000
+Expected: true
+ Got: true
+Matching Duration: 1027 ms
+
+Testing string: 456545
+Expected: false
+ Got: false
+Matching Duration: 8 ms
+
+TESTS FAILED: 0
+Total test_case time: 1035
+
+ 	 Test_Case #4
+Regexp: (0|1(01*0)*1)*
+Testing string: 11
+Expected: true
+ Got: true
+Matching Duration: 0 ms
+
+Testing string: 10000
+Expected: false
+ Got: false
+Matching Duration: 47 ms
+
+Testing string: 1001
+Expected: true
+ Got: true
+Matching Duration: 9 ms
+
+Testing string: 100001
+Expected: true
+ Got: true
+Matching Duration: 259 ms
+
+Testing string: {}
+Expected: true
+ Got: true
+Matching Duration: 0 ms
+
+TESTS FAILED: 0
+Total test_case time: 315
+
+ 	 Test_Case #5
+Regexp: (xy)*
+Testing string: {}
+Expected: true
+ Got: true
+Matching Duration: 0 ms
+
+Testing string: xy
+Expected: true
+ Got: true
+Matching Duration: 0 ms
+
+Testing string: xyxyxy
+Expected: true
+ Got: true
+Matching Duration: 6 ms
+
+Testing string: xyxyxyxyxy
+Expected: true
+ Got: true
+Matching Duration: 3079 ms
+
+Testing string: xyxyx
+Expected: false
+ Got: false
+Matching Duration: 1 ms
+
+Testing string: yxy
+Expected: false
+ Got: false
+Matching Duration: 0 ms
+
+TESTS FAILED: 0
+Total test_case time: 3086
+
+Process finished with exit code 0
