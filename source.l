@@ -36,9 +36,8 @@ OTHER        [^() \t\r\n]*
 
  /* Ignore comments and whitespace. */
 #[^\n]*    {}
-[\t\r]     {}
+[\t\r\n]     {pos = 1}
 [ ]        {pos+=1; }
-[\n]       { pos = 1; }
 
 
 %%
