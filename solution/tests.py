@@ -19,23 +19,28 @@ small_tests = [
         'samples': [
             {
                 'string': '0',
-                'expected': False
+                'expected': False,
+                'is_big': False,
             },
             {
                 'string': '00',
-                'expected': True
+                'expected': True,
+                'is_big': False,
             },
             {
                 'string': '10101010101010000',
-                'expected': False
+                'expected': False,
+                'is_big': True,
             },
             {
                 'string': '0000000000',
-                'expected': True
+                'expected': True,
+                'is_big': False,
             },
             {
                 'string': '101010101000',
-                'expected': False
+                'expected': False,
+                'is_big': True,
             },
         ]
     },
@@ -62,23 +67,28 @@ small_tests = [
         'samples': [
             {
                 'string': '11010111111000111',
-                'expected': False
+                'expected': False,
+                'is_big': True,
             },
             {
                 'string': '000000000',
-                'expected': True
+                'expected': True,
+                'is_big': False,
             },
             {
                 'string': '11100011100011101',
-                'expected': False
+                'expected': False,
+                'is_big': True,
             },
             {
                 'string': '',
-                'expected': True
+                'expected': True,
+                'is_big': False,
             },
             {
-                'string': '000111111111000111000',
-                'expected': True
+                'string': '000111000',
+                'expected': True,
+                'is_big': False,
             },
         ]
     },
@@ -107,19 +117,28 @@ small_tests = [
         'samples': [
             {
                 'string': '110100',
-                'expected': True
+                'expected': True,
+                'is_big': False,
             },
             {
                 'string': '01',
-                'expected': True
+                'expected': True,
+                'is_big': False,
             },
             {
                 'string': '1111010',
-                'expected': False
+                'expected': False,
+                'is_big': False,
+            },
+            {
+                'string': '111010000',
+                'expected': False,
+                'is_big': False,
             },
             {
                 'string': '11111111110100000000000000',
-                'expected': True
+                'expected': True,
+                'is_big': True,
             },
         ]
     },
@@ -144,19 +163,23 @@ small_tests = [
         'samples': [
             {
                 'string': '101010',
-                'expected': True
+                'expected': True,
+                'is_big': False,
             },
             {
                 'string': '10101011123',
-                'expected': False
+                'expected': False,
+                'is_big': False,
             },
             {
                 'string': '',
-                'expected': False
+                'expected': False,
+                'is_big': False,
             },
             {
                 'string': '1010',
-                'expected': False
+                'expected': False,
+                'is_big': False,
             },
         ]
     }

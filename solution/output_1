@@ -1,0 +1,24 @@
+------------- SMALL TESTS -------------
+TEST #1 | Expression: 0(0|1)*0
+0 | Status: OK | Time:  0.000017s
+00 | Status: OK | Time:  0.000041s
+10101010101010000 | Status: Skipped | Time:  0.000000s
+0000000000 | Status: OK | Time:  10.290590s
+101010101000 | Status: Skipped | Time:  0.000000s
+TEST #2 | Expression: (111|000)*
+11010111111000111 | Status: Skipped | Time:  0.000000s
+000000000 | Status: OK | Time:  6.396446s
+11100011100011101 | Status: Skipped | Time:  0.000000s
+ | Status: OK | Time:  0.000005s
+000111000 | Status: OK | Time:  5.309656s
+TEST #3 | Expression: (11)*01(00)*
+110100 | Status: OK | Time:  0.051118s
+01 | Status: OK | Time:  0.000098s
+1111010 | Status: OK | Time:  0.404159s
+111010000 | Status: OK | Time:  25.524381s
+11111111110100000000000000 | Status: Skipped | Time:  0.000000s
+TEST #4 | Expression: 101010
+101010 | Status: OK | Time:  0.005212s
+10101011123 | Status: OK | Time:  2.666680s
+ | Status: OK | Time:  0.000010s
+1010 | Status: OK | Time:  0.000589s
