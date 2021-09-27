@@ -19,7 +19,6 @@ int main()
     std::vector<std::pair<std::string, bool>> samples;
 
     std::vector<TestSuite> tests;
-    std::cout << "Here!\n";
 #define UPLOAD_TEST tests.push_back(TestSuite(std::move(reg_txt), ptr, std::move(samples)))
 
     // 1. simple
@@ -183,7 +182,6 @@ int main()
             {"aba", false}};
         UPLOAD_TEST;
     }
-    std::cout << "Before 11 test\n";
 
     // 11. I wanna TL 2sec exceeded
     {
