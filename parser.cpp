@@ -9,38 +9,31 @@ bool Char::operator==(const Char& other) const {
 };
 
 Star::Star(Regex *inside): inside(inside) {}
-Star::Star(std::shared_ptr<Regex> inside): inside(inside) {}
+Star::Star(const std::shared_ptr<Regex>& inside): inside(inside) {}
 
 std::shared_ptr<Regex> Star::get_inside() const {
     return inside; 
 }
 
-/////////////////////////
-Alt::Alt(Regex* left,  Regex* right): left(left), right(right) {}
-Alt::Alt(std::shared_ptr<Regex> left, std::shared_ptr<Regex> right): left(left), right(right) {}
-
-std::shared_ptr<Regex> Alt::get_left() const {
+std::shared_ptr<Regex> BinaryOperator::get_left() const {
     return left;
 }
 
-std::shared_ptr<Regex> Alt::get_right() const {
+std::shared_ptr<Regex> BinaryOperator::get_right() const {
     return right;
 }
 
-Concat::Concat(Regex* left,  Regex* right): left(left), right(right) {}
-Concat::Concat(std::shared_ptr<Regex> left, std::shared_ptr<Regex> right): left(left), right(right) {}
+BinaryOperator::BinaryOperator(Regex* left,  Regex* right): left(left), right(right) {}
+BinaryOperator::BinaryOperator(const std::shared_ptr<Regex>& left, const std::shared_ptr<Regex>& right): left(left), right(right) {}
 
-std::shared_ptr<Regex> Concat::get_left() const {
-    return left;
-}
+Alt::Alt(Regex* left,  Regex* right): BinaryOperator(left, right) {}
+Alt::Alt(const std::shared_ptr<Regex>& left, const std::shared_ptr<Regex>& right): BinaryOperator(left, right) {}
 
-std::shared_ptr<Regex> Concat::get_right() const {
-    return right;
-}
-/////////////////////////
+Concat::Concat(Regex* left,  Regex* right): BinaryOperator(left, right) {}
+Concat::Concat(const std::shared_ptr<Regex>& left, const std::shared_ptr<Regex>& right): BinaryOperator(left, right) {}
 
 
-static std::shared_ptr<Regex> intersect_regex(std::shared_ptr<Regex> left, std::shared_ptr<Regex> right) {
+static std::shared_ptr<Regex> intersect_regex(const std::shared_ptr<Regex>& left, const std::shared_ptr<Regex>& right) {
     
     if (dynamic_cast<Empty*>(left.get()) || dynamic_cast<Empty*>(right.get())) {
         return std::shared_ptr<Regex>(new Empty());
@@ -70,7 +63,7 @@ static std::shared_ptr<Regex> union_regex(std::shared_ptr<Regex> left, std::shar
     return nullptr;
 }
 
-static std::shared_ptr<Regex> nullable(std::shared_ptr<Regex> reg) {
+static std::shared_ptr<Regex> nullable(const std::shared_ptr<Regex>& reg) {
     if (dynamic_cast<Empty*>(reg.get())) {
         return std::shared_ptr<Regex>(new Empty());
     }
@@ -101,7 +94,7 @@ static std::shared_ptr<Regex> nullable(std::shared_ptr<Regex> reg) {
 }
 
 
-static std::shared_ptr<Regex> derivative(std::shared_ptr<Char> left_character, std::shared_ptr<Regex> reg) {
+static std::shared_ptr<Regex> derivative(const std::shared_ptr<Char>& left_character, const std::shared_ptr<Regex>& reg) {
     
     // a empty
     if (dynamic_cast<Empty*>(reg.get())) {
@@ -141,7 +134,7 @@ static std::shared_ptr<Regex> derivative(std::shared_ptr<Char> left_character, s
     return nullptr;
 }
 
-static std::shared_ptr<Regex> derivative_string(const char* s, std::shared_ptr<Regex> reg) {
+static std::shared_ptr<Regex> derivative_string(const char* s, const std::shared_ptr<Regex>& reg) {
     if (*s == '\0') {
         return reg;
     }
@@ -151,7 +144,7 @@ static std::shared_ptr<Regex> derivative_string(const char* s, std::shared_ptr<R
 }
 
 
-bool Regex::match(const char* s, std::shared_ptr<Regex> reg) {
+bool Regex::match(const char* s, const std::shared_ptr<Regex>& reg) {
     std::shared_ptr<Regex> answer = nullable(derivative_string(s, reg));
     return dynamic_cast<Epsilon*>(answer.get());
 }

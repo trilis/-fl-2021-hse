@@ -5,7 +5,7 @@
 
 class Regex {
 public:
-    static bool match(const char* s, std::shared_ptr<Regex> reg);
+    static bool match(const char* s, const std::shared_ptr<Regex>& reg);
     virtual ~Regex() = default;
 };
 
@@ -36,38 +36,33 @@ private:
 public:
     explicit Star(Regex* inside);
 
-    explicit Star(std::shared_ptr<Regex> inside);
+    explicit Star(const std::shared_ptr<Regex>& inside);
 
     std::shared_ptr<Regex> get_inside() const;
 };
 
-// TODO: Обернуть в один класс
-
-class Alt: public Regex {
-private:
+class BinaryOperator: public Regex {
+protected:
     std::shared_ptr<Regex> left, right;
     
 public:
-
-    explicit Alt(Regex* left,  Regex* right);
-    explicit Alt(std::shared_ptr<Regex> left, std::shared_ptr<Regex> right);
+    explicit BinaryOperator(Regex* left,  Regex* right);
+    explicit BinaryOperator(const std::shared_ptr<Regex>& left, const std::shared_ptr<Regex>& right);
 
     std::shared_ptr<Regex> get_left() const;
     std::shared_ptr<Regex> get_right() const;
-
 };
 
-class Concat: public Regex {
-private:
-    std::shared_ptr<Regex> left, right;
-
+class Alt: public BinaryOperator {
 public:
+    explicit Alt(Regex* left,  Regex* right);
+    explicit Alt(const std::shared_ptr<Regex>& left, const std::shared_ptr<Regex>& right);
+};
 
-    explicit Concat(Regex* left, Regex* right);
-    explicit Concat(std::shared_ptr<Regex> left, std::shared_ptr<Regex> right);
-
-    std::shared_ptr<Regex> get_left() const;
-    std::shared_ptr<Regex> get_right() const;
+class Concat: public BinaryOperator {
+public:
+    explicit Concat(Regex* left,  Regex* right);
+    explicit Concat(const std::shared_ptr<Regex>& left, const std::shared_ptr<Regex>& right);
 };
 
 #endif
