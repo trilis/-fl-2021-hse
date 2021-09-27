@@ -19,7 +19,7 @@ int main()
     std::vector<std::pair<std::string, bool>> samples;
 
     std::vector<TestSuite> tests;
-
+    std::cout << "Here!\n";
 #define UPLOAD_TEST tests.push_back(TestSuite(std::move(reg_txt), ptr, std::move(samples)))
 
     // 1. simple
@@ -183,6 +183,7 @@ int main()
             {"aba", false}};
         UPLOAD_TEST;
     }
+    std::cout << "Before 11 test\n";
 
     // 11. I wanna TL 2sec exceeded
     {
@@ -194,14 +195,80 @@ int main()
         auto t5 = make_star(make_concat(make_shared<Char>('a'), make_shared<Char>('b')));
         auto t6 = make_concat(t4, t5);
         ptr = t6;
+        std::string tmp = "abaaababab";
+        std::string super_string = tmp;
+        for (size_t i = 0; i < 500; ++i)
+        {
+            super_string += tmp;
+        }
         samples = {
             {"aaaa", true},
             {"abaaababbababbaaaabbababbbaaabababababababababababababab", true},
-            {"abaaababbababbaaaabbababbbaaababababababababababababababс", false}
-        };
+            {"abaaababbababbaaaabbababbbaaabababababababababababababab", true},
+            {super_string, true},
+            {"abaaababbababbaaaabbababbbaaababababababababababababababс", false}};
         UPLOAD_TEST;
     }
-    
+
+    // 12. I wanna TL 2sec exceeded
+    {
+        reg_txt = "(((a|b)(a|b)(a|b)(a|b))*(ab)*(cd|fg)*|c*)*";
+        auto t1 = make_alt(make_shared<Char>('a'), make_shared<Char>('b'));
+        auto t2 = make_concat(t1, t1);
+        auto t3 = make_concat(t2, t2);
+        auto t4 = make_star(t3);
+        auto t5 = make_star(make_concat(make_shared<Char>('a'), make_shared<Char>('b')));
+        auto t6 = make_concat(t4, t5);
+        auto t7 = make_concat(make_shared<Char>('c'), make_shared<Char>('d'));
+        auto t8 = make_concat(make_shared<Char>('f'), make_shared<Char>('g'));
+        auto t9 = make_star(make_alt(t7, t8));
+        auto t10 = make_concat(t6, t9);
+        auto t11 = make_star(make_shared<Char>('c'));
+        auto t12 = make_alt(t10, t11);
+        auto t13 = make_star(t12);
+        ptr = t13;
+        std::string tmp = "babab";
+        std::string super_string = tmp;
+        for (size_t i = 0; i < 3; ++i)
+        {
+            super_string += tmp;
+        }
+        //super_string += "cdfgfg";
+        for (int i = 0; i < 1; ++i)
+        {
+            super_string += "ccc";
+        }
+        super_string += super_string;
+        samples = {
+            {super_string, true}};
+        UPLOAD_TEST;
+    }
+
+    // 13. I wanna TL 2sec exceeded
+    {
+        reg_txt = "((10|21)*|1*)*";
+        auto t1 = make_concat(make_shared<Char>('1'), make_shared<Char>('0'));
+        auto t2 = make_concat(make_shared<Char>('2'), make_shared<Char>('1'));
+        auto t3 = make_star(make_alt(t1, t2));
+        auto t4 = make_star(make_shared<Char>('1'));
+        auto t5 = make_alt(t3, t4);
+        auto t6 = make_star(t5);
+        ptr = t6;
+        std::string tmp = "102110";
+        std::string super_string = tmp;
+        for (size_t i = 0; i < 3; ++i)
+        {
+            super_string += tmp;
+        }
+        for (int i = 0; i < 2; ++i)
+        {
+            super_string += "111";
+        }
+        // super_string += super_string;
+        samples = {
+            {super_string, true}};
+        UPLOAD_TEST;
+    }
 
 #undef UPLOAD_TEST
 
