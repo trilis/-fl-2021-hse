@@ -94,10 +94,10 @@ def match(r, str):
     return nullable(derStr(str, r))
 
 #Regular Expressions
-"""r = Regexp(tre.concat, Regexp(tre.symb, '1'),
+r = Regexp(tre.concat, Regexp(tre.symb, '1'),
             Regexp(tre.concat,
                 Regexp(tre.star, Regexp(tre.alt, Regexp(tre.symb, '0'), Regexp(tre.symb, '1'))),
-                Regexp(tre.symb, '0')))"""
+                Regexp(tre.symb, '0')))
     #1(0|1)*0
 """r = Regexp(tre.concat,
     Regexp(tre.star,
@@ -112,49 +112,10 @@ def match(r, str):
                     Regexp(tre.concat, Regexp(tre.symb, 'b'), Regexp(tre.symb, 'b')),
                     Regexp(tre.concat, Regexp(tre.symb, 'a'), Regexp(tre.symb, 'a'))))"""
     #(bb|aa)*
-r = Regexp(tre.concat, Regexp(tre.star, Regexp(tre.alt, Regexp(tre.symb, 'a'), Regexp(tre.symb, 'b'))),
+"""r = Regexp(tre.concat, Regexp(tre.star, Regexp(tre.alt, Regexp(tre.symb, 'a'), Regexp(tre.symb, 'b'))),
         Regexp(tre.concat, Regexp(tre.symb, 'c'),
-        Regexp(tre.star, Regexp(tre.alt, Regexp(tre.symb, 'a'), Regexp(tre.symb, 'b')))))
+        Regexp(tre.star, Regexp(tre.alt, Regexp(tre.symb, 'a'), Regexp(tre.symb, 'b')))))"""
     #(a|b)*c(a|b)*
-"""r = Regexp(tre.concat, Regexp(tre.star, Regexp(tre.symb, 'a')),
-    Regexp(tre.concat, Regexp(tre.star, Regexp(tre.symb, 'b')),
-        Regexp(tre.concat, Regexp(tre.star, Regexp(tre.alt, Regexp(tre.star, Regexp(tre.symb, 'c')), Regexp(tre.star, Regexp(tre.symb, 'd')))),
-            Regexp(tre.concat, Regexp(tre.star, Regexp(tre.symb, 'e')),
-                Regexp(tre.concat, Regexp(tre.star, Regexp(tre.alt, Regexp(tre.star, Regexp(tre.symb, 'f')), Regexp(tre.star, Regexp(tre.symb, 'g')))),
-                    Regexp(tre.concat, Regexp(tre.star, Regexp(tre.symb, 'h')),
-                    Regexp(tre.star, Regexp(tre.alt, Regexp(tre.star, Regexp(tre.symb, 'i')), Regexp(tre.star, Regexp(tre.symb, 'j'))))))))))"""
-"""r = Regexp(tre.concat,
-        Regexp(tre.concat,
-            Regexp(tre.concat,
-                Regexp(tre.concat,
-                    Regexp(tre.concat, Regexp(tre.symb, 'a'), Regexp(tre.symb, 'a')),
-                    Regexp(tre.concat, Regexp(tre.symb, 'a'), Regexp(tre.symb, 'a'))),
-                Regexp(tre.concat,
-                    Regexp(tre.concat, Regexp(tre.symb, 'a'), Regexp(tre.symb, 'a')),
-                    Regexp(tre.concat, Regexp(tre.symb, 'a'), Regexp(tre.symb, 'a')))),
-            Regexp(tre.concat,
-                Regexp(tre.concat,
-                    Regexp(tre.concat, Regexp(tre.symb, 'a'), Regexp(tre.symb, 'a')),
-                    Regexp(tre.concat, Regexp(tre.symb, 'a'), Regexp(tre.symb, 'a'))),
-                Regexp(tre.concat,
-                    Regexp(tre.concat, Regexp(tre.symb, 'a'), Regexp(tre.symb, 'a')),
-                    Regexp(tre.concat, Regexp(tre.symb, 'a'), Regexp(tre.symb, 'a'))))),
-        Regexp(tre.concat,
-            Regexp(tre.concat,
-                Regexp(tre.concat,
-                    Regexp(tre.concat, Regexp(tre.symb, 'a'), Regexp(tre.symb, 'a')),
-                    Regexp(tre.concat, Regexp(tre.symb, 'a'), Regexp(tre.symb, 'a'))),
-                Regexp(tre.concat,
-                    Regexp(tre.concat, Regexp(tre.symb, 'a'), Regexp(tre.symb, 'a')),
-                    Regexp(tre.concat, Regexp(tre.symb, 'a'), Regexp(tre.symb, 'a')))),
-            Regexp(tre.concat,
-                Regexp(tre.concat,
-                    Regexp(tre.concat, Regexp(tre.symb, 'a'), Regexp(tre.symb, 'a')),
-                    Regexp(tre.concat, Regexp(tre.symb, 'a'), Regexp(tre.symb, 'a'))),
-                Regexp(tre.concat,
-                    Regexp(tre.concat, Regexp(tre.symb, 'a'), Regexp(tre.symb, 'a')),
-                    Regexp(tre.concat, Regexp(tre.symb, 'a'), Regexp(tre.symb, 'a'))))))"""
-
 
 x = input()
 while(x != 'exit'):
@@ -164,3 +125,33 @@ while(x != 'exit'):
     print(f"Время: {finish - start:0.6f}")
     print(res)
     x = input()
+
+#First long test
+"""def getReg1(n, c):
+    if n == 6:
+        return Regexp(tre.star, Regexp(tre.symb, c))
+    else:
+        return Regexp(tre.concat, Regexp(tre.alt, getReg1(n + 1, 'b'),
+                                        getReg1(n + 1, 'a')), getReg1(n + 1, 'a'))
+r = getReg1(0, 'a')
+x = ''.join('ab' for i in range(6))"""
+
+#Second long test
+"""def getRegAlt(n):
+    if n == 0:
+        return Regexp(tre.concat, Regexp(tre.symb, '0'), Regexp(tre.symb, '0'))
+    else:
+        return Regexp(tre.alt, Regexp(tre.symb, str(n)), getRegAlt(n - 1))
+def getReg2(n):
+    if n == 16:
+        return Regexp(tre.concat, getRegAlt(20), getRegAlt(20))
+    else:
+        return Regexp(tre.concat, getReg2(n + 1), getReg2(n + 1))"""
+#r = getReg2(0)
+#x = ''.join('0' for i in range(100)).join('1')
+
+"""start = time.perf_counter()
+res = match(r, x)
+finish = time.perf_counter()
+print(f"Время: {finish - start:0.6f}")
+print(res)"""
