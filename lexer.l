@@ -10,7 +10,7 @@ int pos = 1;
 VERTEX       q[0-9]+
 CONDITION    s|n|t 
 EDGE         e
-SYMBOL      symb[0-9,a-z,A-Z]+
+SYMBOL      [0-9a-zA-Z]+
 
 %%
 
@@ -21,7 +21,7 @@ SYMBOL      symb[0-9,a-z,A-Z]+
 [,]                 {printf("comma %s %u %d\n",yytext, yylineno, pos);
                       pos+=yyleng; }
 
-[\t]        {}
+[\t]        {pos++;}
 [ ]        {pos++; }
 [\n]       { pos = 1; }
 
@@ -35,8 +35,6 @@ SYMBOL      symb[0-9,a-z,A-Z]+
 {SYMBOL}             {printf("symbol %s %u %d\n",yytext, yylineno, pos);
                       pos+=yyleng; }
 
-
-#[^\n]*    {}
 
 <<EOF>>     { printf("(eof %u)\n", yylineno); return 0; }
 
