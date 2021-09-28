@@ -1,16 +1,71 @@
-T_ALPHABET (0, 1) 1 0
-T_STATES (q_1, q_2, q_3) 2 7
-T_INITIAL q_1 3 23
-T_FINAL_STATES f(q_3) 4 27
-left-bracket [ 5 34
-T_TRANSITION (q_1, q_2, (0)) 5 35
-comma , 5 50
-T_TRANSITION (q_1, q_3, (1)) 5 52
-comma , 5 67
-T_TRANSITION (q_2, q_2, (0, 1)) 5 69
-comma , 5 87
-T_TRANSITION (q_3, q_3, (1)) 5 89
-comma , 5 104
-T_TRANSITION (q_3, q_2, (0)) 5 106
-right-bracket ] 5 121
+left-parenthesis ( 1 0
+T_ALPHABET 0 1 1
+comma , 1 2
+T_ALPHABET 1 1 0
+right-parenthesis ) 1 1
+left-parenthesis ( 2 0
+T_STATE q_1 2 1
+comma , 2 4
+T_STATE q_2 2 0
+comma , 2 3
+T_STATE q_3 2 0
+right-parenthesis ) 2 3
+T_STATE q_1 3 0
+T_FINAL_STATES f 4 0
+left-parenthesis ( 4 1
+T_STATE q_3 4 2
+right-parenthesis ) 4 5
+left-bracket [ 5 0
+left-parenthesis ( 5 1
+T_STATE q_1 5 2
+comma , 5 5
+T_STATE q_2 5 0
+comma , 5 3
+left-parenthesis ( 5 0
+T_ALPHABET 0 5 1
+right-parenthesis ) 5 2
+right-parenthesis ) 5 3
+comma , 5 4
+left-parenthesis ( 5 0
+T_STATE q_1 5 1
+comma , 5 4
+T_STATE q_3 5 0
+comma , 5 3
+left-parenthesis ( 5 0
+T_ALPHABET 1 5 1
+right-parenthesis ) 5 2
+right-parenthesis ) 5 3
+comma , 5 4
+left-parenthesis ( 5 0
+T_STATE q_2 5 1
+comma , 5 4
+T_STATE q_2 5 0
+comma , 5 3
+left-parenthesis ( 5 0
+T_ALPHABET 0 5 1
+comma , 5 2
+T_ALPHABET 1 5 0
+right-parenthesis ) 5 1
+right-parenthesis ) 5 2
+comma , 5 3
+left-parenthesis ( 5 0
+T_STATE q_3 5 1
+comma , 5 4
+T_STATE q_3 5 0
+comma , 5 3
+left-parenthesis ( 5 0
+T_ALPHABET 1 5 1
+right-parenthesis ) 5 2
+right-parenthesis ) 5 3
+comma , 5 4
+left-parenthesis ( 5 0
+T_STATE q_3 5 1
+comma , 5 4
+T_STATE q_2 5 0
+comma , 5 3
+left-parenthesis ( 5 0
+T_ALPHABET 0 5 1
+right-parenthesis ) 5 2
+right-parenthesis ) 5 3
+right-bracket ] 5 4
 (eof 5)

@@ -3,7 +3,7 @@
 #include <stdlib.h>
 
 enum token {
-  T_ALPHABET = 1, T_STATES = 2, T_INITIAL_STATE = 3, T_FINAL_STATES = 4, T_TRANSITION = 5
+  T_STATE = 1, T_FINAL_STATES = 2, T_ALPHABET = 3
 };
 int n;
 char c;
@@ -15,20 +15,16 @@ unsigned int yycolumnno = 0;
 %option yylineno
 %option noyywrap
 
-ALPHABET      \(\ *[^q ][A-Za-z0-9]*(\ *,\ *[^q ][A-Za-z0-9]*)*\ *\)
-STATES        \(\ *q_[A-Za-z0-9]+(\ *,\ *q_[A-Za-z0-9]+)*\ *\)
-INITIAL_STATE q_[A-Za-z0-9]+
-FINAL_STATES  f\(\ *q_[A-Za-z0-9]+(\ *,\ *q_[A-Za-z0-9]+)*\ *\)
-TRANSITION    \(\ *q_[A-Za-z0-9]+\ *,\ *q_[A-Za-z0-9]+\ *,\ *\([^q ][A-Za-z0-9]*(\ *,\ *[^q ][A-Za-z0-9]*)*\ *\)\)
+STATE         q_[A-Za-z0-9]+
+ALPHABET      [A-Za-eg-pr-z0-9][A-Za-z0-9]*
+FINAL_STATES  f
 
 %%
 
  /* Print identifiers. */
-{ALPHABET}  {printf("T_ALPHABET %s %u %u\n", yytext, yylineno, yycolumnno); COL; return T_ALPHABET; }
-{STATES}    {printf("T_STATES %s %u %u\n", yytext, yylineno, yycolumnno); COL; return T_STATES; }
-{INITIAL_STATE} {printf("T_INITIAL %s %u %u\n", yytext, yylineno, yycolumnno); COL; return T_INITIAL_STATE; }
+{STATE}    {printf("T_STATE %s %u %u\n", yytext, yylineno, yycolumnno); COL; return T_STATE; }
+{ALPHABET}    {printf("T_ALPHABET %s %u %u\n", yytext, yylineno, yycolumnno); COL; return T_ALPHABET; }
 {FINAL_STATES}    {printf("T_FINAL_STATES %s %u %u\n", yytext, yylineno, yycolumnno); COL; return T_FINAL_STATES; }
-{TRANSITION}    {printf("T_TRANSITION %s %u %u\n", yytext, yylineno, yycolumnno); COL; return T_TRANSITION; }
 
  /* Print delimiters. */
 [[]         {printf("left-bracket %s %u %u\n", yytext, yylineno, yycolumnno); COL; }
@@ -39,8 +35,8 @@ TRANSITION    \(\ *q_[A-Za-z0-9]+\ *,\ *q_[A-Za-z0-9]+\ *,\ *\([^q ][A-Za-z0-9]*
 [;]         {printf("semicolon %s %u %u\n", yytext, yylineno, yycolumnno); COL; }
 
  /* Ignore comments and whitespace. */
-#[^\n]*     {yycolumnno = 0; }
-[ \t\r\n]   {yycolumnno += strlen(yytext); }
+#[^\n]*     {yycolumnno += strlen(yytext); }
+[ \t\r\n]   {yycolumnno = 0; }
 
 <<EOF>>     {printf("(eof %u)\n", yylineno); return 0;}
 
