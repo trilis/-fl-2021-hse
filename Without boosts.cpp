@@ -31,17 +31,6 @@ std::unique_ptr<regexp> derivative1(string str, regexp r);
 std::unique_ptr<regexp> nullable(regexp r);
 
 bool match(regexp r, string str) { // Done
-    //regexp ans = *nullable(*derivative1(str, r));
-    //cout << ans.type << '\n';
-    //cout << (*(ans.r1)).type << '\n';
-    //cout << (*(*(ans.r1)).r1).type << '\n';
-    //cout << (*(*(ans.r1)).r2).type << '\n';
-    //cout << (*(ans.r2)).type << '\n';
-    //cout << (*(*(ans.r2)).r1).type << '\n';
-    //cout << (*(*(ans.r2)).r2).type << '\n';
-    //if ((*(ans.r1)).type == "Epsilon" && (*(ans.r2)).type == "Epsilon")
-    //    return 1;
-    //return 0;
     return (*nullable(*derivative1(str, r)) == Epsilon);
 }
 
