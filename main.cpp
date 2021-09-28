@@ -3,9 +3,6 @@
 #include <iostream>
 
 int main(int argc, char *argv[]) {
-  if (argc != 2) {
-    return 1;
-  }
 
   std::shared_ptr<Regex> r1(new Concat(new Char('a'), new Char('b')));
   std::shared_ptr<Regex> r2(new Star(new Char('a')));
@@ -17,7 +14,7 @@ int main(int argc, char *argv[]) {
   assert(sizeof(samples) > 0);
 
   for (int i = 0; i < sizeof(samples) / sizeof(samples[0]); ++i) {
-    if (Regex::match(argv[1], samples[i])) {
+    if (Regex::match(argc > 1 ? argv[1] : "", samples[i])) {
       std::cout << "Valid\n";
     } else {
       std::cout << "Invalid\n";
