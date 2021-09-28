@@ -32,7 +32,7 @@ class Concat:
 
 
 def match(r, s):
-    return nullable(derivative_(s, r))
+    return isinstance(nullable(derivative_(s, r)), Epsilon)
 
 
 def derivative(a, b):
@@ -42,44 +42,37 @@ def derivative(a, b):
     elif s_type == Char:
         return Epsilon()
     elif s_type == Alt:
-        if type(b.s) == Empty or (type(b.s) == Epsilon and nullable(b.t)):
-            return derivative(a, b.t)
-        elif type(b.t) == Empty or (type(b.t) == Epsilon and nullable(b.s)):
-            return derivative(a, b.s)
-        else:
-            return Alt(derivative(a, b.s), derivative(a, b.t))
+        return Alt(derivative(a, b.s), derivative(a, b.t))
     elif s_type == Star:
-        if type(b.value) == Star:
-            return derivative(a, b.value)
-        elif type(b.value) == Empty:
-            return Empty()
-        elif type(b.value) == Epsilon:
-            return Epsilon()
-        else:
-            return Concat(derivative(a, b.value), b)
+        return Concat(derivative(a, b.value), b)
     else:
-        if type(b.s) == Empty or type(b.t) == Empty:
-            return Empty()
-        elif type(b.s) == Epsilon:
-            return derivative(a, b.t)
-        elif type(b.t) == Epsilon or b.s == b.t:
-            return derivative(a, b.s)
-        elif nullable(b.s):
-            return Alt(Concat(derivative(a, b.s), b.t), derivative(a, b.t))
-        else:
-            return Concat(derivative(a, b.s), b.t)
+        return Alt(Concat(derivative(a, b.s), b.t), Concat(nullable(b.s), derivative(a, b.t)))
+
+
+def intersect(a, b):
+    if type(a) == Empty or type(b) == Empty:
+        return Empty()
+    elif type(a) == Epsilon and type(b) == Epsilon:
+        return Epsilon()
+
+
+def union(a, b):
+    if type(a) == Epsilon or type(b) == Epsilon:
+        return Epsilon()
+    elif type(a) == Empty and type(b) == Empty:
+        return Empty()
 
 
 def nullable(a):
     s_type = type(a)
     if s_type == Empty or s_type == Char:
-        return False
+        return Empty()
     elif s_type == Epsilon or s_type == Star:
-        return True
+        return Epsilon()
     elif s_type == Concat:
-        return nullable(a.s) and nullable(a.t)
+        return intersect(nullable(a.s), nullable(a.t))
     else:
-        return nullable(a.s) or nullable(a.t)
+        return union(nullable(a.s), nullable(a.t))
 
 
 def derivative_(s, r):
@@ -95,15 +88,10 @@ if __name__ == "__main__":
                         Concat(Concat(Char('1'), Char('1')), Char('1')))),
                     Alt(Alt(Concat(Char('1'), Char('3')), Concat(Char('3'), Star(Char('7')))),
                         Concat(Concat(Char('1'), Char('0')), Char('1')))), "(228|111)*|((13|37*)|101)"],
-                [Alt(Alt(Star(Alt(Concat(Char('1'), Char('0')), Char('1'))),
-                         Star(Alt(Concat(Char('1'), Char('1')), Char('0')))),
-                     Star(Concat(Concat(Char('1'), Char('0')), Char('0')))), "(((10|1)*|(11|0)*)|(100)*)"],
-                [Alt(Star(Alt(Alt(Concat(Star(Char('1')), Char('1')), Concat(Char('0'), Char('0'))),
-                              Star(Alt(Concat(Concat(Char('1'), Char('1')), Char('1')),
-                                       Concat(Concat(Char('0'), Char('0')), Char('0')))))),
-                     Alt(Concat(Char('1'), Char('1')), Concat(Char('1'), Star(Char('1'))))),
-                 "secret information"]]
-    input_list = ["100", "0000000", "10110", "010100", "111000111000111000111000111000", ]
+                [Alt(Alt(Star(Concat(Concat(Char('1'), Char('0')), Char('1'))),
+                         Star(Concat(Concat(Char('1'), Char('1')), Char('0')))),
+                     Star(Concat(Concat(Char('1'), Char('0')), Char('0')))), "(((101)*|(110)*)|(100)*)"]]
+    input_list = ["100", "0000000", "10110", "010100", ]
     for i in reg_list:
         print(i[1])
         for j in input_list:
