@@ -11,12 +11,12 @@ class Epsilon:
 
 class Char:
     def __init__(self, c):
-        self.value = c
+        self.b = c
 
 
 class Star:
     def __init__(self, r):
-        self.value = r
+        self.s = r
 
 
 class Alt:
@@ -37,7 +37,7 @@ def match(r, s):
 
 def derivative(a, b):
     s_type = type(b)
-    if s_type == Empty or s_type == Epsilon or (s_type == Char and a.value != b.value):
+    if s_type == Empty or s_type == Epsilon or (s_type == Char and a.b != b.b):
         return Empty()
     elif s_type == Char:
         return Epsilon()
@@ -49,14 +49,14 @@ def derivative(a, b):
         else:
             return Alt(derivative(a, b.s), derivative(a, b.t))
     elif s_type == Star:
-        if type(b.value) == Star:
-            return derivative(a, b.value)
-        elif type(b.value) == Empty:
+        if type(b.s) == Star:
+            return derivative(a, b.s)
+        elif type(b.s) == Empty:
             return Empty()
-        elif type(b.value) == Epsilon:
+        elif type(b.s) == Epsilon:
             return Epsilon()
         else:
-            return Concat(derivative(a, b.value), b)
+            return Concat(derivative(a, b.s), b)
     else:
         if type(b.s) == Empty or type(b.t) == Empty:
             return Empty()
@@ -103,7 +103,7 @@ if __name__ == "__main__":
                                        Concat(Concat(Char('0'), Char('0')), Char('0')))))),
                      Alt(Concat(Char('1'), Char('1')), Concat(Char('1'), Star(Char('1'))))),
                  "secret information"]]
-    input_list = ["100", "0000000", "10110", "010100", "111000111000111000111000111000", ]
+    input_list = ["100", "0000000", "10110", "010100", "111000111000111000111000111000"]
     for i in reg_list:
         print(i[1])
         for j in input_list:
