@@ -114,6 +114,7 @@ common_regex_t regex_engine::empty_set() { return std::make_shared<empty_regex>(
 
 common_regex_t regex_engine::epsilon() { return std::make_shared<epsilon_regex>(); }
 
+
 /* EMPTY REGEX, begin */
 bool empty_regex::nullable() { return false; }
 
@@ -122,6 +123,7 @@ common_regex_t empty_regex::derivative(char c) { return empty_set(); }
 regex_types empty_regex::type() const { return EMPTY; }
 /* EMPTY REGEX, end */
 
+
 /* EPSILON REGEX, begin */
 bool epsilon_regex::nullable() { return true; }
 
@@ -129,6 +131,7 @@ common_regex_t epsilon_regex::derivative(char c) { return empty_set(); }
 
 regex_types epsilon_regex::type() const { return EPSILON; }
 /* EPSILON REGEX, end */
+
 
 /* CONCAT REGEX, begin */
 concat_regex::concat_regex(common_regex_t concat1, common_regex_t concat2)
@@ -148,6 +151,7 @@ common_regex_t concat_regex::derivative(char c) {
 regex_types concat_regex::type() const { return CONCAT; }
 /* CONCAT REGEX, end */
 
+
 /* STAR REGEX, begin */
 star_regex::star_regex(common_regex_t regex) : regex(std::move(regex)) {}
 
@@ -157,6 +161,7 @@ common_regex_t star_regex::derivative(char c) { return concat(regex->derivative(
 
 regex_types star_regex::type() const { return STAR; }
 /* STAR REGEX, end */
+
 
 /* ALT REGEX, begin */
 alt_regex::alt_regex(common_regex_t alt1, common_regex_t alt2)
@@ -174,6 +179,7 @@ common_regex_t alt_regex::derivative(char c) {
 regex_types alt_regex::type() const { return ALT; }
 /* ALT REGEX, end */
 
+
 /* CHAR REGEX, begin */
 char_regex::char_regex(char c) : value(c) {}
 
@@ -187,7 +193,6 @@ common_regex_t char_regex::derivative(char c) {
 }
 
 regex_types char_regex::type() const { return CHAR; }
-
 /* CHAR REGEX, end */
 
 
