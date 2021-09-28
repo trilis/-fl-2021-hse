@@ -1,0 +1,2 @@
+#!/usr/bin/env bash
+g++ -std=c++17 -o src main.cpp -I parser_slow parser_slow/parser.* -fsanitize=address -O2 -Wuninitialized && time ./src "$1"
