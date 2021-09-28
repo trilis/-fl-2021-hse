@@ -87,3 +87,18 @@ fast version:
 
 Как можно заметить, стало значительно лучше, потому что стало отрабатывать
 на всех регулярных выражениях, как минимум.
+
+# Длинный тест
+
+Внутри [main.cpp](main.cpp) есть регулярное выражение `r_slow`, которое принимает любые строки
+из латинских букв и цикфр от 0 до 9.
+На тесте из 400 символов отрабатывает уже примерно две секунды. Объяснение тому- Concat и Star
+довольного сильно раскрываются, из-за чего регулярное выражение растет.
+
+```
+./run_fast sefysebfuyabv897908asf12dsfahuefyvb7y634grfwuevb76rgwfvbujh23vb7i623hv1y3vsdf67uyeqvfvweqf76wefge66sefysebfuyabv897908asf12dsfahuefyvb7y634grfwuevb76rgwfvbujh23vb7i623hv1y3vsdf67uyeqvfvweqf76wefge66sefysebfuyabv897908asf12dsfahuefyvb7y634grfwuevb76rgwfvbujh23vb7i623hv1y3vsdf67uyeqvfvweqf76wefge66sefysebfuyabv897908asf12dsfahuefyvb7y634grfwuevb76rgwfvbujh23vb7i623hv1y3vsdf67uyeqvfvweqf76wefge66
+
+real    0m1,916s
+user    0m1,858s
+sys     0m0,056s
+```
