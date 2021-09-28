@@ -125,7 +125,7 @@ common_regex_t operator*(common_regex_t const &lhs);
 
 common_regex_t operator|(common_regex_t const &lhs, common_regex_t const &rhs);
 
-bool are_equal(common_regex_t const &lhs, common_regex_t const &rhs);
+bool same(common_regex_t const &lhs, common_regex_t const &rhs);
 
 }
 

@@ -24,7 +24,7 @@ common_regex_t regex_engine::operator|(common_regex_t const &lhs, common_regex_t
 }
 
 // WARNING: shit code
-bool regex_engine::are_equal(common_regex_t const &lhs, common_regex_t const &rhs) {
+bool regex_engine::same(common_regex_t const &lhs, common_regex_t const &rhs) {
   if (lhs->type() != rhs->type()) return false;
 
   // Can be done faster I guess, works in O(#if * dynamic_cast)
@@ -34,21 +34,21 @@ bool regex_engine::are_equal(common_regex_t const &lhs, common_regex_t const &rh
   }
 
   if (lhs->type() == STAR) {
-    return are_equal(std::dynamic_pointer_cast<star_regex>(lhs)->regex,
-                     std::dynamic_pointer_cast<star_regex>(rhs)->regex);
+    return same(std::dynamic_pointer_cast<star_regex>(lhs)->regex,
+                std::dynamic_pointer_cast<star_regex>(rhs)->regex);
   }
 
   if (lhs->type() == ALT) {
     std::shared_ptr<alt_regex> lhs_cast = std::dynamic_pointer_cast<alt_regex>(lhs);
     std::shared_ptr<alt_regex> rhs_cast = std::dynamic_pointer_cast<alt_regex>(rhs);
-    return are_equal(lhs_cast->alt1, rhs_cast->alt1) && are_equal(lhs_cast->alt2, rhs_cast->alt2);
+    return same(lhs_cast->alt1, rhs_cast->alt1) && same(lhs_cast->alt2, rhs_cast->alt2);
 
   }
 
   if (lhs->type() == CONCAT) {
     std::shared_ptr<concat_regex> lhs_cast = std::dynamic_pointer_cast<concat_regex>(lhs);
     std::shared_ptr<concat_regex> rhs_cast = std::dynamic_pointer_cast<concat_regex>(rhs);
-    return are_equal(lhs_cast->concat1, rhs_cast->concat1) && are_equal(lhs_cast->concat2, rhs_cast->concat2);
+    return same(lhs_cast->concat1, rhs_cast->concat1) && same(lhs_cast->concat2, rhs_cast->concat2);
   }
 
   // I could have tried to do same kind of effect by defining a virtual function, that would work, but then
@@ -92,7 +92,7 @@ regex_engine::either(common_regex_t const &lhs, common_regex_t const &rhs) {
       return lhs;
     }
   }
-  if (are_equal(lhs, rhs)) {
+  if (same(lhs, rhs)) {
     return lhs;
   }
   return std::make_shared<alt_regex>(lhs, rhs);
@@ -193,6 +193,7 @@ common_regex_t char_regex::derivative(char c) {
 }
 
 regex_types char_regex::type() const { return CHAR; }
+
 /* CHAR REGEX, end */
 
 
@@ -229,12 +230,14 @@ void test() {
   assert(match("aaaaaaaaaaaaaaaaabbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", many(either(symb('a'), symb('b')))));
   // Equivalent to first assert
   assert(match("aabbba", symb('a') + *(symb('a') | symb('b'))));
-  assert(are_equal(symb('a'), symb('a')));
-  assert(!are_equal(symb('a'), symb('b')));
-  assert(are_equal(symb('a') | symb('c'), symb('a') | symb('c')));
-  assert(!are_equal(symb('a') | symb('c'), symb('a') | symb('b')));
-  assert(!are_equal(symb('a') | symb('c'), *(symb('a') | symb('b'))));
-  assert(!are_equal(*(symb('a') | symb('c')), *(symb('a') | symb('b'))));
+  assert(same(symb('a'), symb('a')));
+  assert(!same(symb('a'), symb('b')));
+  assert(same(symb('a') | symb('c'), symb('a') | symb('c')));
+  assert(!same(symb('a') | symb('c'), symb('a') | symb('b')));
+  assert(!same(symb('a') | symb('c'), *(symb('a') | symb('b'))));
+  assert(!same(*(symb('a') | symb('c')), *(symb('a') | symb('b'))));
+  // stays the same even for different syntax of Regular Expression definition
+  assert(same(concat(symb('a'), symb('b')), symb('a') + symb('b')));
 }
 
 int main() {
