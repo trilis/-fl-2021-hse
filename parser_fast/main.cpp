@@ -2,7 +2,7 @@
 #include <cassert>
 #include <iostream>
 
-int main(int argc, char* argv[]) {
+int main(int argc, char *argv[]) {
   if (argc != 2) {
     return 1;
   }
@@ -17,7 +17,7 @@ int main(int argc, char* argv[]) {
   assert(sizeof(samples) > 0);
 
   for (int i = 0; i < sizeof(samples) / sizeof(samples[0]); ++i) {
-    if (Regex::match("ab", samples[i])) {
+    if (Regex::match(argv[1], samples[i])) {
       std::cout << "Valid\n";
     } else {
       std::cout << "Invalid\n";

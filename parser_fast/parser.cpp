@@ -1,7 +1,7 @@
 #include "parser.h"
+#include <cassert>
 #include <cstring>
 #include <memory>
-#include<cassert>
 
 Char::Char(char value) : value(value) {}
 
@@ -62,6 +62,45 @@ static bool nullable(const std::shared_ptr<Regex> &reg) {
   return false;
 }
 
+static bool is_equal(const std::shared_ptr<Regex> &left,
+                     const std::shared_ptr<Regex> &right) {
+  if (dynamic_cast<Epsilon *>(left.get()) &&
+      dynamic_cast<Epsilon *>(right.get())) {
+    return true;
+  }
+
+  if (dynamic_cast<Empty *>(left.get()) && dynamic_cast<Empty *>(right.get())) {
+    return true;
+  }
+
+  if (dynamic_cast<Char *>(left.get()) && dynamic_cast<Char *>(right.get())) {
+    return *dynamic_cast<Char *>(left.get()) ==
+           *dynamic_cast<Char *>(right.get());
+  }
+
+  if (dynamic_cast<Star *>(left.get()) && dynamic_cast<Star *>(right.get())) {
+    return is_equal(dynamic_cast<Star *>(left.get())->get_inside(),
+                    dynamic_cast<Star *>(right.get())->get_inside());
+  }
+
+  if (dynamic_cast<Concat *>(left.get()) &&
+      dynamic_cast<Concat *>(right.get())) {
+    return is_equal(dynamic_cast<Concat *>(left.get())->get_left(),
+                    dynamic_cast<Concat *>(right.get())->get_left()) &&
+           is_equal(dynamic_cast<Concat *>(left.get())->get_right(),
+                    dynamic_cast<Concat *>(right.get())->get_right());
+  }
+
+  if (dynamic_cast<Alt *>(left.get()) && dynamic_cast<Alt *>(right.get())) {
+    return is_equal(dynamic_cast<Alt *>(left.get())->get_left(),
+                    dynamic_cast<Alt *>(right.get())->get_left()) &&
+           is_equal(dynamic_cast<Alt *>(left.get())->get_right(),
+                    dynamic_cast<Alt *>(right.get())->get_right());
+  }
+
+  return false;
+}
+
 static std::shared_ptr<Regex> optimize(const std::shared_ptr<Regex> &reg) {
   if (Concat * concat; concat = dynamic_cast<Concat *>(reg.get())) {
     if (dynamic_cast<Empty *>(concat->get_left().get())) {
@@ -73,11 +112,11 @@ static std::shared_ptr<Regex> optimize(const std::shared_ptr<Regex> &reg) {
     }
 
     if (dynamic_cast<Epsilon *>(concat->get_left().get())) {
-        return concat->get_right();
-    } 
+      return concat->get_right();
+    }
 
     if (dynamic_cast<Epsilon *>(concat->get_right().get())) {
-        return concat->get_left();
+      return concat->get_left();
     }
   }
 
@@ -99,13 +138,15 @@ static std::shared_ptr<Regex> optimize(const std::shared_ptr<Regex> &reg) {
         nullable(alt->get_right())) {
       return alt->get_right();
     }
+
+    if (is_equal(alt->get_left(), alt->get_right())) {
+      return alt->get_left();
+    }
   }
-    
-    // MORE
 
   if (Star * star; star = dynamic_cast<Star *>(reg.get())) {
     if (dynamic_cast<Empty *>(star->get_inside().get()) ||
-    dynamic_cast<Epsilon *>(star->get_inside().get())) {
+        dynamic_cast<Epsilon *>(star->get_inside().get())) {
       return star->get_inside();
     }
 
@@ -116,7 +157,6 @@ static std::shared_ptr<Regex> optimize(const std::shared_ptr<Regex> &reg) {
 
   return reg;
 }
-
 
 static std::shared_ptr<Regex>
 derivative(const std::shared_ptr<Char> &left_character,
@@ -144,28 +184,27 @@ derivative(const std::shared_ptr<Char> &left_character,
 
   // a (alt s t)
   if (Alt * alt; alt = dynamic_cast<Alt *>(reg.get())) {
-    return optimize(std::shared_ptr<Regex>(new Alt(
-        optimize(derivative(left_character, alt->get_left())),
-        optimize(derivative(left_character, alt->get_right())))));
+    return optimize(std::shared_ptr<Regex>(
+        new Alt(optimize(derivative(left_character, alt->get_left())),
+                optimize(derivative(left_character, alt->get_right())))));
   }
 
   // a (star)
   if (Star * star; star = dynamic_cast<Star *>(reg.get())) {
-    return optimize(std::shared_ptr<Regex>(new Concat(
-        derivative(left_character, star->get_inside()),
-        reg)));
+    return optimize(std::shared_ptr<Regex>(
+        new Concat(derivative(left_character, star->get_inside()), reg)));
   }
 
   // a (concat s t)
   if (Concat * concat; concat = dynamic_cast<Concat *>(reg.get())) {
     return optimize(std::shared_ptr<Regex>(new Alt(
-        optimize(std::shared_ptr<Regex>(new Concat(
-            derivative(left_character, concat->get_left()),
-            concat->get_right()))),
+        optimize(std::shared_ptr<Regex>(
+            new Concat(derivative(left_character, concat->get_left()),
+                       concat->get_right()))),
         optimize(std::shared_ptr<Regex>(new Concat(
             nullable(concat->get_left()) ? std::shared_ptr<Regex>(new Epsilon())
                                          : std::shared_ptr<Regex>(new Empty()),
-                derivative(left_character, concat->get_right())))))));
+            derivative(left_character, concat->get_right())))))));
   }
   // throw
   return nullptr;
