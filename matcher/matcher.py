@@ -4,6 +4,7 @@ class Type:
 	star = 2
 	orr = 3
 	concatenation = 4
+	char = 5
 
 class Matcher:
 	def copyassign(self, expr):
@@ -16,8 +17,15 @@ class Matcher:
 	def __init__(self, type = None, expr1 = None, expr2 = None):
 		if type == None:
 			raise 'No type passed'
+
+		self.type = type
+		if type == Type.char:
+			if type(expr1) == str:
+				self.char = expr1
+			else:
+				raise('No char passed')
+			return
 		if expr1 != None and expr2 != None:
-			self.type = type
 			if type == Type.orr:
 				if expr1.type == Type.empty:
 					self.copyassign(expr2)
