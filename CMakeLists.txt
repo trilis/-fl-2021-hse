@@ -3,4 +3,4 @@ project(HW)
 
 set(CMAKE_CXX_STANDARD 17)
 
-add_executable(HW main.cpp parser.cpp parser.h)
+add_executable(HW main.cpp parser_with_opt.cpp parser_with_opt.h)
