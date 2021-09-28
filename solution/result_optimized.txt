@@ -1,0 +1,209 @@
+Name: simple char
+Test: a
+
+Case: a
+Expected: True
+Match: True
+Time: 0.028639 ms
+
+Case: aa
+Expected: False
+Match: False
+Time: 0.003652 ms
+
+Case: aabb
+Expected: False
+Match: False
+Time: 0.003593 ms
+
+Case: bbbabbaaaa
+Expected: False
+Match: False
+Time: 0.024562 ms
+
+
+Passed: 4/4
+-----------------------------------------------
+
+Name: simple concat
+Test: abc
+
+Case: abc
+Expected: True
+Match: True
+Time: 0.008121 ms
+
+Case: aab
+Expected: False
+Match: False
+Time: 0.006108 ms
+
+Case: abcc
+Expected: False
+Match: False
+Time: 0.006072 ms
+
+Case: a
+Expected: False
+Match: False
+Time: 0.003428 ms
+
+Case: cbs
+Expected: False
+Match: False
+Time: 0.004619 ms
+
+
+Passed: 5/5
+-----------------------------------------------
+
+Name: simple star
+Test: a*
+
+Case: a
+Expected: True
+Match: True
+Time: 0.003243 ms
+
+Case: aaaaa
+Expected: True
+Match: True
+Time: 0.008149 ms
+
+Case: aaba
+Expected: False
+Match: False
+Time: 0.005961 ms
+
+Case: baaa
+Expected: False
+Match: False
+Time: 0.003955 ms
+
+
+Passed: 4/4
+-----------------------------------------------
+
+Name: simple alt
+Test: (ab|ba)
+
+Case: ab
+Expected: True
+Match: True
+Time: 0.004478 ms
+
+Case: ba
+Expected: True
+Match: True
+Time: 0.004297 ms
+
+Case: aaaa
+Expected: False
+Match: False
+Time: 0.005348 ms
+
+Case: baa
+Expected: False
+Match: False
+Time: 0.004665 ms
+
+
+Passed: 4/4
+-----------------------------------------------
+
+Name: many stars
+Test: a*********
+
+Case: a
+Expected: True
+Match: True
+Time: 0.009636 ms
+
+Case: aaaaaa
+Expected: True
+Match: True
+Time: 16.2404 ms
+
+Case: baaaa
+Expected: False
+Match: False
+Time: 0.014398 ms
+
+Case: aaaaaaac
+Expected: False
+Match: False
+Time: 40.0759 ms
+
+
+Passed: 4/4
+-----------------------------------------------
+
+Name: binary numbers multiple of 3
+Test: (1(01*0)*1|0)*
+
+Case: 11
+Expected: True
+Match: True
+Time: 0.035199 ms
+
+Case: 10101000
+Expected: True
+Match: True
+Time: 0.050573 ms
+
+Case: 10001
+Expected: False
+Match: False
+Time: 0.045119 ms
+
+Case: 1101
+Expected: False
+Match: False
+Time: 0.017422 ms
+
+
+Passed: 4/4
+-----------------------------------------------
+
+Name: long complex regexpr
+Test: (meow|a*)*a(b|c)d*(xy)**
+
+Case: meowmeowacddxy
+Expected: True
+Match: True
+Time: 0.112136 ms
+
+Case: aaaabdxyxy
+Expected: True
+Match: True
+Time: 0.183831 ms
+
+Case: meowabd
+Expected: True
+Match: True
+Time: 0.064526 ms
+
+Case: meow
+Expected: False
+Match: False
+Time: 0.035202 ms
+
+Case: xyxyxy
+Expected: False
+Match: False
+Time: 0.012121 ms
+
+Case: aabcdxy
+Expected: False
+Match: False
+Time: 0.054344 ms
+
+Case: meowacdxyxyxyg
+Expected: False
+Match: False
+Time: 0.106798 ms
+
+
+Passed: 7/7
+-----------------------------------------------
+

@@ -1,0 +1,27 @@
+Name: many stars
+Test: a*********
+
+Case: a
+Expected: True
+Match: True
+Time: 0.053179 ms
+
+Case: aaaaaaaaaaaaa
+Expected: True
+Match: True
+Time: 1000.48 ms
+
+Case: baaaa
+Expected: False
+Match: False
+Time: 0.014032 ms
+
+Case: aaaaaaaaaaaaaac
+Expected: False
+Match: False
+Time: 2142.01 ms
+
+
+Passed: 4/4
+-----------------------------------------------
+

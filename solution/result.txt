@@ -1,0 +1,167 @@
+Name: simple char
+Test: a
+
+Case: a
+Expected: True
+Match: True
+Time: 0.005795 ms
+
+Case: aa
+Expected: False
+Match: False
+Time: 0.003559 ms
+
+Case: aabb
+Expected: False
+Match: False
+Time: 0.004002 ms
+
+Case: bbbabbaaaa
+Expected: False
+Match: False
+Time: 0.006507 ms
+
+
+Passed: 4/4
+-----------------------------------------------
+
+Name: simple concat
+Test: abc
+
+Case: abc
+Expected: True
+Match: True
+Time: 0.120061 ms
+
+Case: aab
+Expected: False
+Match: False
+Time: 0.077751 ms
+
+Case: abcc
+Expected: False
+Match: False
+Time: 0.167909 ms
+
+Case: a
+Expected: False
+Match: False
+Time: 0.012355 ms
+
+Case: cbs
+Expected: False
+Match: False
+Time: 0.077817 ms
+
+
+Passed: 5/5
+-----------------------------------------------
+
+Name: simple star
+Test: a*
+
+Case: a
+Expected: True
+Match: True
+Time: 0.004624 ms
+
+Case: aaaaa
+Expected: True
+Match: True
+Time: 0.365439 ms
+
+Case: aaba
+Expected: False
+Match: False
+Time: 0.086672 ms
+
+Case: baaa
+Expected: False
+Match: False
+Time: 0.085163 ms
+
+
+Passed: 4/4
+-----------------------------------------------
+
+Name: simple alt
+Test: (ab|ba)
+
+Case: ab
+Expected: True
+Match: True
+Time: 0.033334 ms
+
+Case: ba
+Expected: True
+Match: True
+Time: 0.032899 ms
+
+Case: aaaa
+Expected: False
+Match: False
+Time: 0.147322 ms
+
+Case: baa
+Expected: False
+Match: False
+Time: 0.071583 ms
+
+
+Passed: 4/4
+-----------------------------------------------
+
+Name: many stars
+Test: a*********
+
+Case: a
+Expected: True
+Match: True
+Time: 0.030791 ms
+
+Case: aaaaaa
+Expected: True
+Match: True
+Time: 266.324 ms
+
+Case: baaaa
+Expected: False
+Match: False
+Time: 39.4589 ms
+
+Case: aaaaaaac
+Expected: False
+Match: False
+Time: 12756 ms
+
+
+Passed: 4/4
+-----------------------------------------------
+
+Name: binary numbers multiple of 3
+Test: (1(01*0)*1|0)*
+
+Case: 11
+Expected: True
+Match: True
+Time: 0.19383 ms
+
+Case: 10101000
+Expected: True
+Match: True
+Time: 3294.78 ms
+
+Case: 10001
+Expected: False
+Match: False
+Time: 19.228 ms
+
+Case: 1101
+Expected: False
+Match: False
+Time: 5.1544 ms
+
+
+Passed: 4/4
+-----------------------------------------------
+
