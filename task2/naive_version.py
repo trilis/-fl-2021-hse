@@ -87,6 +87,27 @@ def match(word: str, regex: str) -> bool:
 
 if __name__ == '__main__':
     r1 = Concat((Star(Concat(Char('a'), Char('b')))), Char('a'))
+    r2 = Star(Alt(Char('a'), Char('b')))
+    r3 = Concat(Star(Alt(Char('a'), Char('b'))), Char('b'))
+    r4 = Epsilon()
+    r5 = Alt(Epsilon(), Star(Char('a')))
+    
+    assert match('aba', r1)
+    assert not match('baba', r1)
+    
+    assert match('aabaa', r2)
+    assert not match('caaba', r2)
+    
+    assert match('aaaaab', r3)
+    assert not match('babbba', r3)
+    
+    assert match('', r4)
+    assert not match('abacaf', r4)
+    
+    assert match('', r5)
+    assert match('aaaa', r5)
+    assert not match('aabaa', r5)
+
     for i in range(5):
         start = time.time()
         word = "ab"*i + "a"
