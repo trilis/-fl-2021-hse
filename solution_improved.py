@@ -143,7 +143,7 @@ def derivativeChar(c, reg):
         if (nullable(reg.r.fReg)):
             return Regexp(alt, Regexp(concat, derivativeChar(c, reg.r.fReg),reg.r.sReg),  derivativeChar(c, reg.r.sReg))
         else:
-            return Regexp(concat, derivativeChar(c, reg.r.fReg),reg.r.sReg)
+            return Regexp(alt, Regexp(concat, derivativeChar(c, reg.r.fReg),reg.r.sReg), Regexp(empyty))
 
 def derivativeString(s, r):
     if (s == ''):
