@@ -282,7 +282,7 @@ void test() {
   assert(!match(
           "aaaaaaaaaaaaaaaaabbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbaaaabbbbbaaababababababababababaabababababbbbbaaaaaaaaaaaaaaaaaaaaaaaaaaabd",
           *((symb('a') + *symb('a')) + (symb('b') + *symb('b')))));
-  // строка длины 171
+  // length 171
   assert(match(
           "aaabbbbaaabbbbaaabbbbaaabbbbaaabbbbaaabbbbaaabbbbaaabbbbxaaabbbbaaabbbbaaabbbbaaabbbbaaabbbbaaabbbbaaabbbbaaabbbbyaaabbbbaaabbbbaaabbbbaaabbbbaaabbbbaaabbbbaaabbbbaaabbbbz",
           (*(symb('a') | symb('b')) + symb('x') + *(symb('a') | symb('b')) + symb('y') + *(symb('a') | symb('b')) +
