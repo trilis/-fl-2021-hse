@@ -11,12 +11,12 @@ class Epsilon:
 
 class Char:
     def __init__(self, c):
-        self.value = c
+        self.b = c
 
 
 class Star:
     def __init__(self, r):
-        self.value = r
+        self.s = r
 
 
 class Alt:
@@ -37,14 +37,14 @@ def match(r, s):
 
 def derivative(a, b):
     s_type = type(b)
-    if s_type == Empty or s_type == Epsilon or (s_type == Char and a.value != b.value):
+    if s_type == Empty or s_type == Epsilon or (s_type == Char and a.b != b.b):
         return Empty()
     elif s_type == Char:
         return Epsilon()
     elif s_type == Alt:
         return Alt(derivative(a, b.s), derivative(a, b.t))
     elif s_type == Star:
-        return Concat(derivative(a, b.value), b)
+        return Concat(derivative(a, b.s), b)
     else:
         return Alt(Concat(derivative(a, b.s), b.t), Concat(nullable(b.s), derivative(a, b.t)))
 
@@ -91,7 +91,7 @@ if __name__ == "__main__":
                 [Alt(Alt(Star(Concat(Concat(Char('1'), Char('0')), Char('1'))),
                          Star(Concat(Concat(Char('1'), Char('1')), Char('0')))),
                      Star(Concat(Concat(Char('1'), Char('0')), Char('0')))), "(((101)*|(110)*)|(100)*)"]]
-    input_list = ["100", "0000000", "10110", "010100", ]
+    input_list = ["100", "0000000", "10110", "010100"]
     for i in reg_list:
         print(i[1])
         for j in input_list:
