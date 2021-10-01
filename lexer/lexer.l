@@ -9,23 +9,19 @@ int letters_counter = 0;
 %option yylineno
 %option noyywrap
 
-
-ALPH         [a-zA-Z0-9]
-TERMINAL_V   [(t|u)]
-DASH         [-]
-ARROW        [->]
-RIGHTBRACE   [}]
-LEFTBRACE    [{]
-COMMA        [,]
-ELLIPSIS     [...]
-COLON        [:]
+ALPH         [a-zA-Z0-9]*
+DASH         \-
+ARROW        \-\>
+RIGHTBRACE   \}
+LEFTBRACE    \{
+COMMA        \,
+ELLIPSIS     \.\.\.
+COLON        \:
 
 %%
 
 {ALPH}         {printf("alphabet \"%s\" %u %d\n", yytext, yylineno, letters_counter);
                 letters_counter += yyleng; }
-{TERMINAL_V}   {printf("terminal \"%s\" %u %d\n", yytext, yylineno, letters_counter);
-                letters_counter += yyleng; };
 {DASH}         {printf("dash \"%s\" %u %d\n", yytext, yylineno, letters_counter);
                 letters_counter += yyleng; };
 {ARROW}        {printf("arrow \"%s\" %u %d\n", yytext, yylineno, letters_counter);
