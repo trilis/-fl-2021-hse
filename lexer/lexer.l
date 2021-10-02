@@ -5,8 +5,8 @@
 
 int num_chars = 0, open_cnt = 0, close_cnt = 0;
 
-void recalc_num_chars(char * s) {
-    num_chars += strlen(s);
+void recalc_num_chars() {
+    num_chars += yyleng;
 }
 
 %}
@@ -42,7 +42,7 @@ NUM 0|([1-9][0-9]*)
 [{] {
     ++open_cnt;
     printf("OPEN_BRACKET { %d %d\n", yylineno, num_chars);
-    ++num_chars;
+    recalc_num_chars();
 }
 
 [}] {
@@ -53,46 +53,45 @@ NUM 0|([1-9][0-9]*)
 
 {ARROW_START} {
     printf("TRANSITION_DESCRIPTION_START %s %d %d\n", yytext, yylineno, num_chars);
-    num_chars += 2;
+    recalc_num_chars();
 }
 
 {ARROW_END} {
     printf("TRANSITION_DESCRIPTION_END %s %d %d\n", yytext, yylineno, num_chars);
-    num_chars += 3;
+    recalc_num_chars();
 }
 
 {KW} {
     printf("KW %s %d %d\n", yytext, yylineno, num_chars);
-    // could use yyleng instead
-    recalc_num_chars(yytext);
+    recalc_num_chars();
 }
 
 {NUM} {
     printf("NUMBER %s %d %d\n", yytext, yylineno, num_chars);
-    recalc_num_chars(yytext);
+    recalc_num_chars();
 }
 
 [,] {
     printf("COMMA ',' %d %d\n", yylineno, num_chars);
-    ++num_chars;
+    recalc_num_chars();
 }
 
 \n num_chars = 0;
 
 {SYMBOL} {
     printf("SYMBOL %s %d %d\n", yytext, yylineno, num_chars);
-	recalc_num_chars(yytext);
+	recalc_num_chars();
 }
 
 {WORD} {
     printf("WORD %s %d %d\n", yytext, yylineno, num_chars);
-	recalc_num_chars(yytext);
+	recalc_num_chars();
 }
 
-[ \t\r\n]   { ++num_chars; }
+[ \t\r\n]   { recalc_num_chars();; }
 
-[^ \t\r\n]+ {
-    printf("Error: unknown token %s in line %d in symbol %d\n", yytext, yylineno, num_chars);
+[.] {
+    printf("Error: unknown token in line %d in symbol %d\n", yylineno, num_chars);
     return 1;
 }
 
