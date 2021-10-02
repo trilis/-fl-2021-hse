@@ -4,12 +4,10 @@
 #include <string.h>
 
 enum token {
-  T_ID = 1, T_WORD = 2, T_OP = 3, 
-  T_KW = 4, T_SYMB = 5
+  T_VER = 1, T_WORD = 2, T_OP = 3, T_KW = 4
 };
 int str_n, symb_n, pointer;
-char c;
-char buf[10];
+int flag;
 %}
 
 %option yylineno
@@ -17,10 +15,8 @@ char buf[10];
 
 
 KW     (points|start|terminal)
-ID     [A-Za-z_][A-Za-z_0-9]*
-WORD   [A-Za-z0-9]
-OP     (->|[,:"])
-SYMB   ;
+ID     [A-Za-z_0-9]+
+OP     (->|[,:";])
 
 %%
 
@@ -35,28 +31,15 @@ SYMB   ;
               symb_n = pointer;
               pointer += strlen(yytext); 
               str_n = yylineno; 
-              return T_ID;
-            }
-{WORD}      {
-              symb_n = pointer;
-              c = yytext[0];
-              ++pointer;
-              str_n = yylineno; 
-              return T_WORD; 
+              if (flag) { return T_WORD; }
+              else { return T_VER; }
             }
 {OP}        {
+              if (yytext[0] == '"'){ flag ^= 1; }
               symb_n = pointer;
-              strncpy(buf, yytext, 2);
               pointer += strlen(yytext);
               str_n = yylineno;
               return T_OP;
-              }
-{SYMB}      {
-              symb_n = pointer;
-              c = yytext[0]; 
-              ++pointer;
-              str_n = yylineno; 
-              return T_SYMB;
             }
 
  /* Ignore comments and whitespace. */
@@ -75,24 +58,21 @@ SYMB   ;
 
 int main(int argc, char* argv[]) {
   pointer = 1;
+  flag = 0;
   while (1) {
     enum token t = yylex();
     if (t == 0) {
       break;
     }
-    if (t == T_WORD) {
-      printf("T_WORD %c %u %u\n", c, str_n, symb_n);
-    } else if (t == T_ID) {
-      printf("T_ID %s %u %u\n", yytext, str_n, symb_n);
+    if (t == T_VER) {
+      printf("T_VER %s %u %u\n", yytext, str_n, symb_n);
+    } else if (t == T_WORD) {
+      printf("T_WORD %s %u %u\n", yytext, str_n, symb_n);
     } else if (t == T_OP) {
       printf("T_OP %s %u %u\n", yytext, str_n, symb_n);
     } else if (t == T_KW){
       printf("T_KW %s %u %u\n", yytext, str_n, symb_n);
-    } else if (t == T_SYMB){
-      printf("T_OP %c %u %u\n", c, str_n, symb_n);
-    } else if (t == T_WORD){
-      printf("T_WORD %c %u %u\n", c, str_n, symb_n);
-    }
+    }  
   };
   return EXIT_SUCCESS ;
 }
