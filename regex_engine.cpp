@@ -7,6 +7,8 @@
 #include <iostream>
 #include <cassert>
 #include <utility>
+#include <vector>
+#include <functional>
 #include "regex_engine.h"
 
 using namespace regex_engine;
@@ -15,8 +17,8 @@ common_regex_t regex_engine::operator+(common_regex_t const &lhs, common_regex_t
   return concat(lhs, rhs);
 }
 
-common_regex_t regex_engine::operator*(common_regex_t const &lhs) {
-  return many(lhs);
+common_regex_t regex_engine::operator*(common_regex_t const &regex) {
+  return many(regex);
 }
 
 common_regex_t regex_engine::operator|(common_regex_t const &lhs, common_regex_t const &rhs) {
@@ -108,11 +110,25 @@ common_regex_t regex_engine::many(common_regex_t const &regex) {
   return std::make_shared<star_regex>(regex);
 }
 
-common_regex_t regex_engine::symb(char c) { return std::make_shared<char_regex>(c); }
+common_regex_t regex_engine::symb(char c) {
+  static auto allocated_char_regex = std::vector<common_regex_t>(256);
 
-common_regex_t regex_engine::empty_set() { return std::make_shared<empty_regex>(); }
+  if (!allocated_char_regex[c]) {
+    allocated_char_regex[c] = std::make_shared<char_regex>(c);
+  }
 
-common_regex_t regex_engine::epsilon() { return std::make_shared<epsilon_regex>(); }
+  return allocated_char_regex[c];
+}
+
+common_regex_t regex_engine::empty_set() {
+  static auto shared_empty_set = std::make_shared<empty_regex>();
+  return shared_empty_set;
+}
+
+common_regex_t regex_engine::epsilon() {
+  static auto shared_epsilon = std::make_shared<epsilon_regex>();
+  return shared_epsilon;
+}
 
 
 /* EMPTY REGEX, begin */
@@ -254,6 +270,7 @@ struct timer {
 
 #endif
 
+
 void test() {
 #ifdef BENCHMARK
   tin
@@ -295,6 +312,32 @@ void test() {
 
   )
   );
+
+  assert(!match(
+          "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaajshvckbbllsbdvlbjkljbaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaajshvckbbllsbdvlbjkljbaaaaaaaaaaaaaaaaaa",
+          many(either(concat(symb('a'), many(symb('x'))),
+                      either(concat(concat(symb('a'), many(symb('x'))), many(symb('x'))),
+                             either(concat(concat(symb('a'), many(symb('x'))), many(symb('x'))), either(symb('d'),
+                                                                                                        either(concat(
+                                                                                                                       symb('a'),
+                                                                                                                       many(symb(
+                                                                                                                               'x'))),
+                                                                                                               either(symb(
+                                                                                                                              'd'),
+                                                                                                                      symb('d'))))))))));
+
+
+  // len is 70k
+  const int N = 7e4;
+  std::string long_test_2;
+  long_test_2.reserve(N);
+  for (int i = 0; i < N; ++i) {
+    long_test_2.push_back(rand() % 26 + 'a');
+  }
+  std::function<std::shared_ptr<abstract_regex>(char)> create_large_regexp = [&](char c) {
+    return c == 'z' ? symb(c) : either(symb(c), create_large_regexp(c + 1));
+  };
+  match(long_test_2, [&]() { return many(create_large_regexp('a')); }());
 #ifdef BENCHMARK
   tpr
 #endif

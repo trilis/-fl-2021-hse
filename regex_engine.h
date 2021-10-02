@@ -24,6 +24,8 @@ struct abstract_regex {
 
   virtual regex_types type() const = 0;
 
+  virtual ~abstract_regex() = default;
+
 };
 
 using common_regex_t = std::shared_ptr<abstract_regex>;
@@ -121,7 +123,7 @@ std::shared_ptr<abstract_regex> epsilon();
 
 common_regex_t operator+(common_regex_t const &lhs, common_regex_t const &rhs);
 
-common_regex_t operator*(common_regex_t const &lhs);
+common_regex_t operator*(common_regex_t const &regex);
 
 common_regex_t operator|(common_regex_t const &lhs, common_regex_t const &rhs);
 
