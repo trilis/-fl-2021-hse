@@ -26,11 +26,13 @@ intersect :: Regexp -> Regexp -> Regexp
 intersect Empty _ = Empty 
 intersect _ Empty = Empty 
 intersect Epsilon Epsilon = Epsilon
+intersect _ _ = error "Sorry, intersect is unimplemented for these Regexp types"
 
 union :: Regexp -> Regexp -> Regexp
 union Epsilon _ = Epsilon 
 union _ Epsilon = Epsilon  
 union Empty Empty = Empty
+union _ _ = error "Sorry, intersect is unimplemented for these Regexp types"
 
 nullable :: Regexp -> Regexp
 nullable Empty = Empty
