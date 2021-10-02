@@ -26,9 +26,11 @@ KW (start|terminal|transitions|states)
 
 WORD [a-zA-Z][a-zA-Z0-9]*
 
-ARROW_START --
+SYMBOL [a-zA-Z\*]
 
-ARROW_END -->
+ARROW_START --[{]
+
+ARROW_END [}]-->
 
 ARROW --[{]([a-zA-Z0-9\*],)*[a-zA-Z0-9,\*][}]-->
 
@@ -39,30 +41,12 @@ NUM 0|([1-9][0-9]*)
  /* Print delimiters. */
 [{] {
     ++open_cnt;
-    //if (open_cnt - close_cnt > 2) {
-    //    printf("ERROR: unmatched opening bracket in line %d in symbol %d\n", yylineno, num_chars);
-    //    return 1;
-    //}
-    //if (bracket_state != EXPECT_OPEN) {
-    //    printf("ERROR: unexpected opening bracket in line %d in symbol %d\n", yylineno, num_chars);
-    //    return 1;
-    //}
     printf("OPEN_BRACKET { %d %d\n", yylineno, num_chars);
     ++num_chars;
-    //bracket_state = EXPECT_CLOSE;
 }
 
 [}] {
-    // TODO: make this piece of code do transitions between different automata lex states (DEPRECATED)
     ++close_cnt;
-    //if (close_cnt > open_cnt) {
-    //    printf("ERROR: unmatched closing bracket in line %d in symbol %d\n", yylineno, num_chars);
-    //    return 1;
-    //}
-    //if (bracket_state != EXPECT_CLOSE) {
-    //    printf("ERROR: unmatched closing bracket in line %d in symbol %d\n", yylineno, num_chars);
-    //    return 1;
-    //}
     printf("CLOSE_BRACKET } %d %d\n", yylineno, num_chars);
     ++num_chars;
 }
@@ -75,11 +59,6 @@ NUM 0|([1-9][0-9]*)
 {ARROW_END} {
     printf("TRANSITION_DESCRIPTION_END %s %d %d\n", yytext, yylineno, num_chars);
     num_chars += 3;
-}
-
-{ARROW} {
-    printf("TRANSITION_DESCRIPTION %s %d %d\n", yytext, yylineno, num_chars);
-    recalc_num_chars(yytext);
 }
 
 {KW} {
@@ -100,13 +79,16 @@ NUM 0|([1-9][0-9]*)
 
 \n num_chars = 0;
 
-{WORD} {
-    printf("ID %s %d %d\n", yytext, yylineno, num_chars);
+{SYMBOL} {
+    printf("SYMBOL %s %d %d\n", yytext, yylineno, num_chars);
 	recalc_num_chars(yytext);
 }
 
- /* Ignore comments and whitespace. */
-#[^\n]*     {}
+{WORD} {
+    printf("WORD %s %d %d\n", yytext, yylineno, num_chars);
+	recalc_num_chars(yytext);
+}
+
 [ \t\r\n]   { ++num_chars; }
 
 [^ \t\r\n]+ {
