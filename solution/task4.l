@@ -108,6 +108,11 @@ if (yylineno >= FUNC_START_LINE) {
     }
 }
 
+. {
+    printf("ERROR in line %u, char %u: unexpected symbol %s\n", yylineno, char_number, yytext);
+        exit(1);
+} 
+
 %%
 
 int main(int argc, char* argv[]) {
