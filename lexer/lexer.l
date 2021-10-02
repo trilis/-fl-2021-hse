@@ -26,7 +26,9 @@ KW (start|terminal|transitions|states)
 
 WORD [a-zA-Z][a-zA-Z0-9]*
 
-SYMBOL [a-zA-Z\*]
+SYMBOL \'[A-Za-z_0-9]+\'
+
+STAR \*
 
 ARROW_START --[{]
 
@@ -38,7 +40,6 @@ NUM 0|([1-9][0-9]*)
 
 %%
 
- /* Print delimiters. */
 [{] {
     ++open_cnt;
     printf("OPEN_BRACKET { %d %d\n", yylineno, num_chars);
@@ -68,6 +69,11 @@ NUM 0|([1-9][0-9]*)
 
 {NUM} {
     printf("NUMBER %s %d %d\n", yytext, yylineno, num_chars);
+    recalc_num_chars();
+}
+
+{STAR} {
+    printf("STAR_TOKEN %s %d %d\n", yytext, yylineno, num_chars);
     recalc_num_chars();
 }
 
