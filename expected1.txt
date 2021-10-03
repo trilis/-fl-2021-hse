@@ -1,8 +1,64 @@
-left-parenthesis in line 1, pos: 1
-start vertex "s[1]" line: 1 pos: 2
-edge "->[23]" line: 1 pos: 6
-default vertex "d[3]" line: 1 pos: 12
-right-parenthesis in line: 1, pos: 16
-left-parenthesis in line 2, pos: 1
-ERROR in line 2, position 2, symbol d
-
+alphabet symbol "23" in line: 1 pos: 1
+comma in line: 1, pos: 3
+alphabet symbol "12" in line: 1 pos: 5
+comma in line: 1, pos: 7
+alphabet symbol "14" in line: 1 pos: 9
+comma in line: 1, pos: 11
+alphabet symbol "1" in line: 1 pos: 13
+open parenthesis line: 2 pos: 1
+start vertex "start" line: 2 pos: 2
+open square bracket line: 2 pos: 7
+arg of begin of edge "1" line: 2 pos: 8
+close square bracket line : 2 pos: 9
+edge "->" line: 2 pos: 10
+open square bracket line: 2 pos: 12
+arrow arg "23" line: 2 pos: 13
+close square bracket line : 2 pos: 15
+default vertex "def" line: 2 pos: 16
+open square bracket line: 2 pos: 19
+arg of end of edge "3" line: 2 pos: 20
+close square bracket line : 2 pos: 21
+close parenthesis line: 2 pos: 22
+open parenthesis line: 3 pos: 1
+default vertex "def" line: 3 pos: 2
+open square bracket line: 3 pos: 5
+arg of begin of edge "aefhbae" line: 3 pos: 6
+close square bracket line : 3 pos: 13
+edge "->" line: 3 pos: 14
+open square bracket line: 3 pos: 16
+arrow arg "12" line: 3 pos: 17
+close square bracket line : 3 pos: 19
+default vertex "def" line: 3 pos: 20
+open square bracket line: 3 pos: 23
+arg of end of edge "4" line: 3 pos: 24
+close square bracket line : 3 pos: 25
+close parenthesis line: 3 pos: 26
+open parenthesis line: 4 pos: 1
+terminal vertex "term" line: 4 pos: 2
+open square bracket line: 4 pos: 6
+arg of begin of edge "5" line: 4 pos: 7
+close square bracket line : 4 pos: 8
+edge "->" line: 4 pos: 9
+open square bracket line: 4 pos: 11
+arrow arg "14" line: 4 pos: 12
+close square bracket line : 4 pos: 14
+default vertex "def" line: 4 pos: 15
+open square bracket line: 4 pos: 18
+arg of end of edge "4" line: 4 pos: 19
+close square bracket line : 4 pos: 20
+close parenthesis line: 4 pos: 21
+open parenthesis line: 5 pos: 1
+start vertex "start" line: 5 pos: 2
+open square bracket line: 5 pos: 7
+arg of begin of edge "1" line: 5 pos: 8
+close square bracket line : 5 pos: 9
+edge "->" line: 5 pos: 10
+open square bracket line: 5 pos: 12
+arrow arg "1" line: 5 pos: 13
+close square bracket line : 5 pos: 14
+start vertex "start" line: 5 pos: 15
+open square bracket line: 5 pos: 20
+arg of end of edge "1" line: 5 pos: 21
+close square bracket line : 5 pos: 22
+close parenthesis line: 5 pos: 23
+(eof in line: 6, position: 1)

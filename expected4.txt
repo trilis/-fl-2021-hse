@@ -1,30 +1,25 @@
-left-parenthesis in line 1, pos: 1
-start and terminal vertex "st[0]" line: 1 pos: 2
-edge "->[0]" line: 1 pos: 7
-start and terminal vertex "st[0]" line: 1 pos: 12
-right-parenthesis in line: 1, pos: 17
-left-parenthesis in line 2, pos: 1
-start and terminal vertex "st[0]" line: 2 pos: 2
-edge "->[1]" line: 2 pos: 7
-default vertex "d[1]" line: 2 pos: 12
-right-parenthesis in line: 2, pos: 16
-left-parenthesis in line 3, pos: 1
-default vertex "d[1]" line: 3 pos: 2
-edge "->[1]" line: 3 pos: 6
-start and terminal vertex "st[0]" line: 3 pos: 11
-right-parenthesis in line: 3, pos: 16
-left-parenthesis in line 4, pos: 1
-default vertex "d[1]" line: 4 pos: 2
-edge "->[0]" line: 4 pos: 6
-default vertex "d[2]" line: 4 pos: 11
-right-parenthesis in line: 4, pos: 15
-left-parenthesis in line 5, pos: 1
-default vertex "d[2]" line: 5 pos: 2
-edge "->[0]" line: 5 pos: 6
-default vertex "d[1]" line: 5 pos: 11
-right-parenthesis in line: 5, pos: 15
-left-parenthesis in line 6, pos: 1
-default vertex "d[2]" line: 6 pos: 2
-edge "->[1]" line: 6 pos: 6
-default vertex "d[2]" line: 6 pos: 11
-right-parenthesis in line: 6, pos: 15
+alphabet symbol "21" in line: 1 pos: 1
+comma in line: 1, pos: 3
+alphabet symbol "vfaef" in line: 1 pos: 5
+comma in line: 1, pos: 10
+alphabet symbol "awdaw" in line: 1 pos: 12
+comma in line: 1, pos: 17
+alphabet symbol "pl" in line: 1 pos: 19
+close square bracket line : 2 pos: 1
+open square bracket line: 3 pos: 1
+close square bracket line : 3 pos: 2
+close square bracket line : 4 pos: 1
+close square bracket line : 4 pos: 2
+start vertex "start" line: 5 pos: 1
+start and terminal vertex "start_term" line: 6 pos: 1
+default vertex "def" line: 6 pos: 12
+start vertex "start" line: 7 pos: 1
+open square bracket line: 7 pos: 6
+arg of begin of edge "10" line: 7 pos: 7
+close square bracket line : 7 pos: 9
+edge "->" line: 7 pos: 10
+open square bracket line: 7 pos: 12
+arrow arg "srgsrgsrkpm123" line: 7 pos: 13
+close square bracket line : 7 pos: 27
+start vertex "start" line: 8 pos: 1
+ERROR in line 8, position 7, symbol "dslrgnsdrag"
