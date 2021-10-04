@@ -1,0 +1,200 @@
+%{
+#include <iostream>
+#include <string>
+#include <unordered_map>
+#include <string>
+#include <cstdlib>
+#include <functional>
+
+int yylex(); 
+int yyerror(const char *p) { std::cerr << "Error: " << p << std::endl; return 0;}
+
+  template<typename F, typename S>
+  struct HashPair {
+    std::size_t operator()(const std::pair<F, S> & p) const{
+      std::size_t first_hash = std::hash<F>{}(p.first);
+      std::size_t second_hash = std::hash<S>{}(p.second);
+      return first_hash ^ (second_hash << 1);
+    }
+  };
+
+
+class TAutomata {
+
+public:
+  using TStateType = std::size_t;
+  using TSizeType = std::size_t;
+  using TTransitionsType = std::unordered_map<std::pair<TStateType, std::string>, TStateType, HashPair<TStateType, std::string>>;
+  
+public:
+  bool SetStateQuantity(TSizeType size_) {
+    if (size_ == 0) {
+      errorDescription = "StateQuantity cannot be 0!";
+      ok = false;
+      return ok;
+    }
+    stateQuantity = size_;
+    terminals.resize(stateQuantity, false);
+    return ok;
+  }
+
+  bool SetInitState(TStateType init_) {
+    if (!IsValidState(init_)) {
+      errorDescription = "InitState must be a valid state!";
+      ok = false;
+      return ok;
+    }
+    init = init_;
+    return ok;
+  }
+  bool AddTerminal(TStateType state_) {
+    if (!IsValidState(state_)) {
+      errorDescription = "TerminalState must be a valid state!";
+      ok = false;
+      return ok;
+    }
+    terminals.push_back(state_);
+  }
+
+  bool AddSymbol(const char * symb) {
+    if (symb == nullptr) {
+      errorDescription = "[internal error]: Symbol is a nullptr!";
+      ok = false;
+      return ok;
+    }
+    std::string str_symb(symb);
+    alphabet.push_back(std::move(str_symb));
+    return ok;
+  }
+
+
+  bool AddTransition(TStateType from, const char * symb, TStateType to) {
+    if (symb == nullptr) {
+      errorDescription = "[internal error]: Symbol is a nullptr!";
+      ok = false;
+      return ok;
+    }
+    if (!IsValidState(from) || !IsValidState(to)) {
+      errorDescription = "State in transitions is not valid!";
+      ok = false;
+      return ok;
+    }
+    if (1 + transitions.size() > transitionQuantity) {
+      errorDescription = "Too many transition!";
+      ok = false;
+      return ok;
+    }
+
+    std::string str_symb(symb);
+    std::pair<TStateType, std::string> p;
+    if (transitions.find(p) != transitions.end()) {
+      errorDescription = "Transition from " + std::to_string(from) + " with symbol " + str_symb + " already exists!";
+      ok = false;
+      return ok;
+    }
+    transitions[p] = to;
+    return ok;
+  }
+
+
+private:
+bool IsValidState(TStateType state) {
+  return state >= 0 && state < stateQuantity;
+}
+
+private:
+  TSizeType stateQuantity {};
+  TSizeType transitionQuantity {};
+  TStateType init {};
+  TTransitionsType transitions {};
+  std::vector<bool> terminals {};
+  std::vector<std::string> alphabet {};
+  bool ok {true};
+  std::string errorDescription {};
+};
+
+%}
+
+/*
+enum Token {
+    T_UNAVAIL,
+    T_INVALID_TOKEN,
+    T_STATE_QUANTITY,
+    T_LINK_QUANTITY,
+    T_ALPHABET_INIT_CHAR,
+    T_ALPHABET_CHAR,
+    T_STATE,
+    T_COMMA_SEPARATOR,
+    // T_EOF
+};
+*/
+
+%union {
+  int num_val;
+  char * str_val;
+};
+
+
+%token <str_val> T_INVALID_TOKEN
+%token <num_val> T_STATE_QUANTITY
+%token <num_val> T_LINK_QUANTITY
+%token <str_val> T_ALPHABET_INIT_CHAR
+%token <str_val> T_ALPHABET_CHAR
+%token <num_val> T_STATE
+%token <str_val> T_COMMA_SEPARATOR
+%token <num_val> T_EOF
+
+// %type  <str_val> alphabet
+%%
+
+
+start: T_STATE_QUANTITY starts_alphabet {std::cout << "state quantity = " << $1 << std::endl; }
+
+
+starts_alphabet: T_ALPHABET_INIT_CHAR T_COMMA_SEPARATOR starts_alphabet  {std::cout << "ABC: " << $1 << std::endl;}
+| T_ALPHABET_INIT_CHAR starts_num_links {std::cout << "ABC: " << $1 << std::endl;}
+
+starts_num_links: T_LINK_QUANTITY starts_links {std::cout << "link quantity = " << $1 << '\n';}
+
+starts_links:
+T_STATE T_COMMA_SEPARATOR T_STATE T_COMMA_SEPARATOR T_ALPHABET_CHAR starts_num_links {std::cout << $1 << " --> " << $3 << " with " << $5 << std::endl;}
+| T_STATE T_COMMA_SEPARATOR T_STATE T_COMMA_SEPARATOR T_ALPHABET_CHAR starts_init {std::cout << $1 << " --> " << $3 << " with " << $5 << std::endl;}
+
+starts_init: T_STATE starts_terminal { std::cout << "Init: " << $1 << std::endl;}
+
+starts_terminal: T_STATE T_COMMA_SEPARATOR starts_terminal {std::cout << "Terminal: " << $1 << std::endl;}
+| T_STATE {std::cerr << "Terminal: " << $1 << " + EOF" << std::endl;}
+
+
+// start: T_INVALID_TOKEN  { std::cout << "T_INVALID_TOKEN" << std::endl; }
+// | T_STATE_QUANTITY { std::cout << "T_STATE_QUANTITY" << std::endl; }
+// | T_LINK_QUANTITY { std::cout << "T_LINK_QUANTITY" << std::endl; }
+// | T_ALPHABET_INIT_CHAR { std::cout << "T_ALPHABET_INIT_CHAR" << std::endl; }
+// | T_ALPHABET_CHAR { std::cout << "T_ALPHABET_CHAR" << std::endl; }
+// | T_STATE { std::cout << "T_STATE" << std::endl; }
+// | T_COMMA_SEPARATOR     { std::cout << "T_COMMA_SEPARATOR" << std::endl; }
+
+
+
+// alphabet: T_ALPHABET_INIT_CHAR {std::cout << "ALPHABET: " << $1 << '\n';}
+//  | T_COMMA_SEPARATOR T_ALPHABET_INIT_CHAR {std::cout << "ALPHABET: " << $1 << '\n'; $$ = $1;}
+
+// exp: exp OPA term     { $$ = ($2 == '+' ? $1 + $3 : $1 - $3); }
+// | term                { $$ = $1; }
+
+// term: term OPM factor { $$ = ($2 == '*' ? $1 * $3 : $1 / $3); }
+// | sfactor             { $$ = $1; }
+
+// sfactor: OPA factor   { $$ = ($1 == '+' ? $2 : -$2); }
+// | factor              { $$ = $1; }
+
+// factor: NUM           { $$ = $1; }
+// | LP exp RP           { $$ = $2; }
+
+%%
+
+int main()
+{
+  yyparse();
+  return 0;
+}
