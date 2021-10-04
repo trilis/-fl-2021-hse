@@ -136,4 +136,4 @@ def main():
 if __name__ == "__main__":
     main()
 
-# ab a abbaababbac aahhhhhhhhhhhhhhhasasasdasdasdasdasdasdf
+# Злой тест для последнего пункта: aahhhhhhhhhhhhhhhasasasdasdasdasdasdasdf, на последней регулярке даже с оптимизацией работает точно больше двух минут. Более точное время замерю потом.
