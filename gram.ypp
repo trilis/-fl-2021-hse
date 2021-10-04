@@ -3,40 +3,130 @@
 #include <string>
 #include <map>
 #include <cstdlib>
+#include <cassert>
+#include <set>
+
 using namespace std;
 
-int yylex(); 
-int yyerror(const char *p) { cerr << "Error!" << endl; }
+int yylex();
+
+int yyerror(const char *p) {
+    cerr << "Error!" << endl;
+    return 1;
+}
+
+set<string> states, terminals;
+set<char> alphabet;
+set<pair<pair<string, string>, char> > transitions;
+string start;
 %}
 
 %union {
-  int val; 
+  char* word;
   char sym;
 };
-%token <val> NUM
-%token <sym> OPA OPM LP RP STOP
-%type  <val> exp term sfactor factor
+
+%token <word> STATES START TERMINALS ALPHABET TRANSITIONS STATE
+%token <sym> SEPARATOR SYMBOL
+
+%%
+start: init_states init_start init_terminals init_alphabet init_transitions {}
+
+init_states: STATES SEPARATOR state_sequence                                {}
+
+state_sequence: state_sequence STATE                                        { states.insert(string($2)); }
+| STATE                                                                     { states.insert(string($1)); }
+
+init_start: START SEPARATOR STATE                                           { start = $3; }
+
+init_terminals: TERMINALS SEPARATOR terminals_sequence                      {}
+
+terminals_sequence: terminals_sequence STATE                                { terminals.insert(string($2)); }
+| STATE                                                                     { terminals.insert(string($1)); }
+
+init_alphabet: ALPHABET SEPARATOR symbol_sequence                           {}
+
+symbol_sequence: symbol_sequence SYMBOL                                     { alphabet.insert($2); }
+| SYMBOL                                                                    { alphabet.insert($1); }
+
+init_transitions: TRANSITIONS SEPARATOR transition_sequence                 {}
+
+transition_sequence: transition_sequence transition                         {}
+| transition                                                                {}
+
+transition: STATE SEPARATOR STATE SEPARATOR SYMBOL                          { transitions.insert({{$1, $3}, $5}); }
 
 %%
 
-start: exp            { cout << $1 << endl; }
+struct Node{
+    std::map<char, Node*> transitions;
+    bool is_terminal = false;
 
-exp: exp OPA term     { $$ = ($2 == '+' ? $1 + $3 : $1 - $3); }
-| term                { $$ = $1; }
+    Node* go(char c){
+        return transitions[c];
+    }
+};
 
-term: term OPM factor { $$ = ($2 == '*' ? $1 * $3 : $1 / $3); }
-| sfactor             { $$ = $1; }
+map<string, Node*> nodes;
 
-sfactor: OPA factor   { $$ = ($1 == '+' ? $2 : -$2); }
-| factor              { $$ = $1; }
+bool is_complete(){
+    bool ok = true;
+    for(const string &state : states){
+        for(char c: alphabet){
+            if (!nodes[state]->transitions.count(c)){
+                ok = false;
+                break;
+            }
+        }
+        if (!ok) break;
+    }
+    return ok;
+}
 
-factor: NUM           { $$ = $1; }
-| LP exp RP           { $$ = $2; }
+void build_automata(){
+    for(const string &state : states){
+        nodes[state] = new Node();
+    }
+    for(const string &state : terminals){
+        nodes[state]->is_terminal = true;
+    }
+    for(const auto &s: transitions){
+        assert(states.count(s.first.first));
+        assert(states.count(s.first.second));
+        assert(alphabet.count(s.second));
 
-%%
+        nodes[s.first.first]->transitions[s.second] = nodes[s.first.second];
+    }
 
-int main()
+    assert(is_complete());
+}
+
+bool process(const string &s){
+    Node* v = nodes[start];
+    for(char c : s){
+        v = v->go(c);
+    }
+    return v->is_terminal;
+}
+
+int main(int argc, char* argv[])
 {
+  freopen(argv[1], "r", stdin);
   yyparse();
+  fclose(stdin);
+
+  build_automata();
+
+  freopen(argv[2], "r", stdin);
+  string s;
+  cin >> s;
+  fclose(stdin);
+
+  if (process(s)){
+    cout << "YES" << endl;
+  }else{
+    cout << "NO" << endl;
+  }
+
   return 0;
 }
