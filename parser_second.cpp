@@ -233,23 +233,25 @@ int main() {
   test(Star_(Alt_(Char_('a'), (Char_('b')))), "ababababababa", 1);
   test(Alt_(Alt_(Concat_(Char_('a'), Char_('a')), Star_(Char_('b'))), Concat_(Char_('b'), Star_(Char_('a')))), "aabaa", 0);
   test(Alt_(Alt_(Concat_(Char_('a'), Char_('a')), Star_(Char_('b'))), Concat_(Char_('b'), Star_(Char_('a')))), "baaa", 1);
-  
+  test(Star_(Star_(Star_(Star_(Star_(Star_(Star_(Star_(Star_(Star_(Star_(Star_(Star_(Star_(Star_(Star_(Star_(Char_('a')))))))))))))))))), "aaaaaaaaaa", 1);
   return 0;
 }
 
 //    string --- a
-//    time   --- 0.000031000 s
+//    time   --- 0.000018000 s
 //    string --- aaaaaa
-//    time   --- 0.000008000 s
-//    string --- abbbbbbb
 //    time   --- 0.000007000 s
+//    string --- abbbbbbb
+//    time   --- 0.000009000 s
 //    string --- abbbbbbbaaa
-//    time   --- 0.000008000 s
+//    time   --- 0.000007000 s
 //    string --- ba
-//    time   --- 0.000003000 s
+//    time   --- 0.000002000 s
 //    string --- ababababababa
 //    time   --- 0.000021000 s
 //    string --- aabaa
-//    time   --- 0.000013000 s
+//    time   --- 0.000007000 s
 //    string --- baaa
 //    time   --- 0.000010000 s
+//    string --- aaaaaaaaaa
+//    time   --- 8.144945000 s
