@@ -100,3 +100,11 @@ if [ -n "$(cmp tests/f.out tests/f.correct)" ]; then
 else
   echo "OK"
 fi
+
+echo "Testing g.kek (no such symbol)..."
+./parse tests/g.kek tests/g.in 2> tests/g.out
+if [ -n "$(cmp tests/g.out tests/g.correct)" ]; then
+  echo "FAILED"
+else
+  echo "OK"
+fi

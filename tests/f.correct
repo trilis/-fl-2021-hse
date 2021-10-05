@@ -1,1 +1,1 @@
-parse: gram.ypp:103: void build_automata(): Assertion `nodes.count(start)' failed.
+parse: gram.ypp:104: void build_automata(): Assertion `nodes.count(start)' failed.

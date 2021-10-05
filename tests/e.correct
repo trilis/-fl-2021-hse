@@ -1,1 +1,1 @@
-parse: gram.ypp:102: void build_automata(): Assertion `is_complete()' failed.
+parse: gram.ypp:103: void build_automata(): Assertion `is_complete()' failed.

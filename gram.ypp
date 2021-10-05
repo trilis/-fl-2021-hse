@@ -88,6 +88,7 @@ void build_automata(){
         nodes[state] = new Node();
     }
     for(const string &state : terminals){
+        assert(nodes.count(state));
         nodes[state]->is_terminal = true;
     }
     for(const auto &s: transitions){

@@ -1,1 +1,1 @@
-parse: gram.ypp:97: void build_automata(): Assertion `!nodes[s.first.first]->transitions.count(s.second)' failed.
+parse: gram.ypp:98: void build_automata(): Assertion `!nodes[s.first.first]->transitions.count(s.second)' failed.
