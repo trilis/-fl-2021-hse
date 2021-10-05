@@ -1,0 +1,108 @@
+%{
+#include <iostream>
+#include <string>
+#include <map>
+#include <cstdlib>
+#include <vector>
+#include "my.h"
+using namespace std;
+
+int yylex(); 
+int yyerror(const char *p) { cerr << "Error!" << endl; return -1;}
+
+%}
+
+%union {
+  int val; 
+  char sym;
+  vector<char> *symbs;
+  Station *st;
+  vector<Station> *sts;
+  Edges *eges;
+  vector<Edges> *noname;
+};
+
+%token chr
+%token alpha
+%token Q
+%token num
+%token type_stat
+%token comma
+%token space
+%token E
+%token ls
+%token rs
+
+%type<symbs> alphabet
+%type<val> chr
+%type<val> any_chr
+%type<val> id_station
+%type<val> num
+%type<st> station
+%type<val> type_stat
+%type<symbs> nums
+%type<symbs> data
+%type<eges> edge
+%type<noname> edges
+%type<sts> stations
+
+%%
+
+EVALUATE: alphabet stations edges {resave(*$1, *$2, *$3);}; 
+
+any_chr: chr {$$ = $1;};
+| E {$$ = 'e';};
+| Q {$$ = 'q';};
+| type_stat {$$ = $1;};
+| num {$$ = $1;};
+| ls {$$ = '{';};
+| rs {$$ = '}';};
+| comma {$$ = ',';};
+| space {$$ = ' ';};
+
+alphabet: any_chr  {auto tmp = new vector<char>; tmp->push_back($1); $$ = tmp;};
+| alphabet space any_chr {$1->push_back($3); $$ = $1;};
+
+id_station: Q num space {$$ = $2;};
+
+stations: station {auto tmp = new vector<Station>; tmp->push_back(std::move(*$1)); $$ = tmp;};
+| stations station {$1->push_back(std::move(*$2)); $$ = $1;};
+station: id_station type_stat {$$ = new Station($1, char($2));};
+
+edges: edge {auto tmp = new vector<Edges>; tmp->push_back(std::move(*$1)); $$ = tmp;}; 
+| edges edge {$1->push_back(std::move(*$2));};
+
+edge: E space id_station id_station nums {$$ = new Edges($3, $4, *$5);};
+
+nums: ls data rs {$$ = $2;};
+data: any_chr {auto tmp = new vector<char>; tmp->push_back(char($1)); $$ = tmp;}; 
+| data comma space any_chr {$1->push_back(char($4)); $$ = $1;};
+
+%%
+
+int main(int argc, char* argv[]) {
+  if(argc != 3) {
+	cout << "expected 2 files\n";
+	return -1;
+  }
+
+  yyin = fopen(argv[1], "r");
+  if(!yyin) {
+	cout << "Bad filename\n";
+	return -1;
+  }
+
+  yyparse();
+
+  freopen(argv[2], "r", stdin);
+  string s;
+  getline(cin, s);
+
+  if(check(s)) {
+	cout << "Passed\n";
+  } else {
+	cout << "Not passed\n";
+  }
+
+  return 0;
+}

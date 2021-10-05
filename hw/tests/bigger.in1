@@ -1,0 +1,17 @@
+a b c d e f g
+q0 s
+q1 t
+q2 n
+q3 t
+q4 n
+e q0 q1 {a, b, c, d}
+e q0 q2 {e, f, g}
+e q1 q2 {a, c, e, g}
+e q1 q4 {b, d, f}
+e q2 q0 {g, f, e}
+e q2 q0 {a}
+e q2 q1 {b, c, d}
+e q3 q4 {a, b, c, g, f, e, d}
+e q4 q3 {c, d, e}
+e q4 q2 {a, b}
+e q4 q1 {f, g}
