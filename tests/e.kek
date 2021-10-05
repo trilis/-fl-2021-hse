@@ -1,0 +1,5 @@
+states: empty only0 only1 both
+start: empty
+terminals: both
+alphabet: '0' '1'
+transitions: empty;only0;'0' empty;only1;'1' only0;only0;'0' only1;both;'0' only0;both;'1' both;both;'0' both;both;'1'

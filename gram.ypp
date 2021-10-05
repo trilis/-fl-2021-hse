@@ -94,6 +94,7 @@ void build_automata(){
         assert(states.count(s.first.first));
         assert(states.count(s.first.second));
         assert(alphabet.count(s.second));
+        assert(!nodes[s.first.first]->transitions.count(s.second));
 
         nodes[s.first.first]->transitions[s.second] = nodes[s.first.second];
     }

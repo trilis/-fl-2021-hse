@@ -76,3 +76,19 @@ if [ -n "$(cmp tests/c.out tests/c4.correct)" ]; then
 else
   echo "OK"
 fi
+
+echo "Testing d.kek (non deterministic)..."
+./parse tests/d.kek tests/d.in 2> tests/d.out
+if [ -n "$(cmp tests/d.out tests/d.correct)" ]; then
+  echo "FAILED"
+else
+  echo "OK"
+fi
+
+echo "Testing e.kek (incomplete)..."
+./parse tests/e.kek tests/e.in 2> tests/e.out
+if [ -n "$(cmp tests/e.out tests/e.correct)" ]; then
+  echo "FAILED"
+else
+  echo "OK"
+fi
