@@ -92,3 +92,11 @@ if [ -n "$(cmp tests/e.out tests/e.correct)" ]; then
 else
   echo "OK"
 fi
+
+echo "Testing f.kek (no start state)..."
+./parse tests/f.kek tests/f.in 2> tests/f.out
+if [ -n "$(cmp tests/f.out tests/f.correct)" ]; then
+  echo "FAILED"
+else
+  echo "OK"
+fi
