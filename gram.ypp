@@ -11,7 +11,7 @@ using namespace std;
 int yylex();
 
 int yyerror(const char *p) {
-    cerr << "Error!" << endl;
+    cerr << "Error! Unexpected token " << p << endl;
     return 1;
 }
 
