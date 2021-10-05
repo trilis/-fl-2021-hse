@@ -259,18 +259,18 @@ int main() {
 }
 
 //    string --- a
-//    time   --- 0.000017000 s
+//    time   --- 0.000019000 s
 //    string --- aaaaaa
-//    time   --- 0.000006000 s
+//    time   --- 0.001021000 s
 //    string --- abbbbbbb
-//    time   --- 0.000006000 s
+//    time   --- 0.018573000 s
 //    string --- abbbbbbbaaa
-//    time   --- 0.000007000 s
+//    time   --- 2.233213000 s
 //    string --- ba
-//    time   --- 0.000002000 s
+//    time   --- 0.000014000 s
 //    string --- ababababababa
-//    time   --- 0.000017000 s
+//    time   --- 117.117126000 s
 //    string --- aabaa
-//    time   --- 0.000006000 s
+//    time   --- 0.001044000 s
 //    string --- baaa
-//    time   --- 0.000009000 s
+//    time   --- 0.000317000 s
