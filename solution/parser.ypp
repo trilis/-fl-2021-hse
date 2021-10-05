@@ -5,6 +5,7 @@
 #include <string>
 #include <cstdlib>
 #include <functional>
+#include <cassert>
 
 int yylex(); 
 int yyerror(const char *p) { std::cerr << "Error: " << p << std::endl; return 0;}
@@ -38,6 +39,11 @@ public:
     return ok;
   }
 
+  bool SetTransitionsQuantity(TSizeType size_) {
+    transitionQuantity = size_;
+    return ok;
+  }
+
   bool SetInitState(TStateType init_) {
     if (!IsValidState(init_)) {
       errorDescription = "InitState must be a valid state!";
@@ -68,7 +74,7 @@ public:
   }
 
 
-  bool AddTransition(TStateType from, const char * symb, TStateType to) {
+  bool AddTransition(TStateType from, TStateType to, const char * symb) {
     if (symb == nullptr) {
       errorDescription = "[internal error]: Symbol is a nullptr!";
       ok = false;
@@ -86,7 +92,7 @@ public:
     }
 
     std::string str_symb(symb);
-    std::pair<TStateType, std::string> p;
+    std::pair<TStateType, std::string> p = {from, str_symb};
     if (transitions.find(p) != transitions.end()) {
       errorDescription = "Transition from " + std::to_string(from) + " with symbol " + str_symb + " already exists!";
       ok = false;
@@ -96,12 +102,51 @@ public:
     return ok;
   }
 
+  const std::string& ErrorDescription () const {
+    return errorDescription;
+  }
+  TSizeType Size() const {
+    return stateQuantity;
+  }
+  bool Valid() const {
+    return ok;
+  }
+
+  void PrintInfo(std::ostream &os) {
+    os << "State quntity: " << stateQuantity << '\n';
+    os << "Init state: " << init << '\n';
+    os << "Transitions function:\n";
+    
+    for (const auto& [key, val] : transitions) {
+      os << "\t" << key.first << " + \"" << key.second << "\" --> " << val << '\n';
+    }
+  }
+
+  bool Match(std::string str) {
+    assert(ok > 0);
+    const TStateType drain = stateQuantity;
+    size_t curIdx = 0;
+    TStateType curState = init;
+    while (curIdx != str.size()) {
+      char curChar = str[curIdx++];
+      if (auto iter = transitions.find({curState, std::to_string(curChar)}); iter != transitions.end()) {
+        curState = iter->second;
+      } 
+      else {
+        curState = drain;
+        break;
+      } 
+    }
+    if (curState == drain) {
+      return false;
+    }
+    return terminals[curState];
+  }
 
 private:
 bool IsValidState(TStateType state) {
   return state >= 0 && state < stateQuantity;
 }
-
 private:
   TSizeType stateQuantity {};
   TSizeType transitionQuantity {};
@@ -113,7 +158,13 @@ private:
   std::string errorDescription {};
 };
 
+TAutomata & automat() {
+  static TAutomata response;
+  return response;
+}
 %}
+
+
 
 /*
 enum Token {
@@ -145,56 +196,102 @@ enum Token {
 %token <num_val> T_EOF
 
 // %type  <str_val> alphabet
+
+%type <str_val> E_INVALID_TOKEN
+%type <num_val> E_STATE_QUANTITY
+%type <num_val> E_LINK_QUANTITY
+%type <str_val> E_ALPHABET_INIT_CHAR
+%type <str_val> E_ALPHABET_CHAR
+%type <num_val> E_STATE
+%type <str_val> E_COMMA_SEPARATOR
+
 %%
 
 
-start: T_STATE_QUANTITY starts_alphabet {std::cout << "state quantity = " << $1 << std::endl; }
+
+start: E_STATE_QUANTITY starts_alphabet {
+  std::cout << "state quantity = " << $1 << std::endl;
+  std::cout << "Ok: " << automat().SetStateQuantity($1) << std::endl;
+}
+| E_INVALID_TOKEN
 
 
-starts_alphabet: T_ALPHABET_INIT_CHAR T_COMMA_SEPARATOR starts_alphabet  {std::cout << "ABC: " << $1 << std::endl;}
-| T_ALPHABET_INIT_CHAR starts_num_links {std::cout << "ABC: " << $1 << std::endl;}
+starts_alphabet: E_ALPHABET_INIT_CHAR E_COMMA_SEPARATOR starts_alphabet  {
+  std::cout << "ABC: " << $1 << std::endl;
+  std::cout << "Ok: " << automat().AddSymbol($1) << std::endl;
 
-starts_num_links: T_LINK_QUANTITY starts_links {std::cout << "link quantity = " << $1 << '\n';}
+  delete[] $1;
+}
+| E_ALPHABET_INIT_CHAR starts_num_links {
+  std::cout << "ABC: " << $1 << std::endl;
+  std::cout << "Ok: " << automat().AddSymbol($1) << std::endl;
+
+  delete[] $1;
+}
+| E_INVALID_TOKEN
+
+starts_num_links: E_LINK_QUANTITY starts_links {
+  std::cout << "link quantity = " << $1 << '\n';
+  std::cout << "OK: " << automat().SetTransitionsQuantity($1) << std::endl;
+}
+| E_INVALID_TOKEN
 
 starts_links:
-T_STATE T_COMMA_SEPARATOR T_STATE T_COMMA_SEPARATOR T_ALPHABET_CHAR starts_num_links {std::cout << $1 << " --> " << $3 << " with " << $5 << std::endl;}
-| T_STATE T_COMMA_SEPARATOR T_STATE T_COMMA_SEPARATOR T_ALPHABET_CHAR starts_init {std::cout << $1 << " --> " << $3 << " with " << $5 << std::endl;}
+E_STATE E_COMMA_SEPARATOR E_STATE E_COMMA_SEPARATOR E_ALPHABET_CHAR starts_links {
+  std::cout << $1 << " --> " << $3 << " with " << $5 << std::endl;
+  std::cout << "Ok: " << automat().AddTransition($1, $3, $5) << std::endl;
+  std::cout << "Error: " << automat().ErrorDescription() << std::endl;
+  std::cout << "Automata size: " << automat().Size() << std::endl;
 
-starts_init: T_STATE starts_terminal { std::cout << "Init: " << $1 << std::endl;}
+  delete[] $5;
+}
+| E_STATE E_COMMA_SEPARATOR E_STATE E_COMMA_SEPARATOR E_ALPHABET_CHAR starts_init {
+  std::cout << $1 << " --> " << $3 << " with " << $5 << std::endl;
+  std::cout << "Ok: " << automat().AddTransition($1, $3, $5) << std::endl;
+  std::cout << "Error: " << automat().ErrorDescription() << std::endl;
+  std::cout << "Automata size: " << automat().Size() << std::endl;
+  delete[] $5;
+}
+| E_INVALID_TOKEN 
 
-starts_terminal: T_STATE T_COMMA_SEPARATOR starts_terminal {std::cout << "Terminal: " << $1 << std::endl;}
-| T_STATE {std::cerr << "Terminal: " << $1 << " + EOF" << std::endl;}
+starts_init: E_STATE starts_terminal { std::cout << "Init: " << $1 << std::endl;}
+| E_INVALID_TOKEN
 
+starts_terminal: E_STATE E_COMMA_SEPARATOR starts_terminal {std::cout << "Terminal: " << $1 << std::endl;}
+| E_STATE {std::cerr << "Terminal: " << $1 << " + EOF" << std::endl;}
+| E_INVALID_TOKEN
 
-// start: T_INVALID_TOKEN  { std::cout << "T_INVALID_TOKEN" << std::endl; }
-// | T_STATE_QUANTITY { std::cout << "T_STATE_QUANTITY" << std::endl; }
-// | T_LINK_QUANTITY { std::cout << "T_LINK_QUANTITY" << std::endl; }
-// | T_ALPHABET_INIT_CHAR { std::cout << "T_ALPHABET_INIT_CHAR" << std::endl; }
-// | T_ALPHABET_CHAR { std::cout << "T_ALPHABET_CHAR" << std::endl; }
-// | T_STATE { std::cout << "T_STATE" << std::endl; }
-// | T_COMMA_SEPARATOR     { std::cout << "T_COMMA_SEPARATOR" << std::endl; }
-
-
-
-// alphabet: T_ALPHABET_INIT_CHAR {std::cout << "ALPHABET: " << $1 << '\n';}
-//  | T_COMMA_SEPARATOR T_ALPHABET_INIT_CHAR {std::cout << "ALPHABET: " << $1 << '\n'; $$ = $1;}
-
-// exp: exp OPA term     { $$ = ($2 == '+' ? $1 + $3 : $1 - $3); }
-// | term                { $$ = $1; }
-
-// term: term OPM factor { $$ = ($2 == '*' ? $1 * $3 : $1 / $3); }
-// | sfactor             { $$ = $1; }
-
-// sfactor: OPA factor   { $$ = ($1 == '+' ? $2 : -$2); }
-// | factor              { $$ = $1; }
-
-// factor: NUM           { $$ = $1; }
-// | LP exp RP           { $$ = $2; }
+E_INVALID_TOKEN: T_INVALID_TOKEN {throw std::runtime_error("Ivalid token!\n");}
+E_STATE_QUANTITY: T_STATE_QUANTITY {\
+  $$ = $1; 
+  automat().SetStateQuantity($$);
+}
+E_LINK_QUANTITY: T_LINK_QUANTITY {
+  $$ = $1;
+  automat().SetTransitionsQuantity($$);
+}
+E_ALPHABET_INIT_CHAR: T_ALPHABET_INIT_CHAR {$$ = $1;}
+E_ALPHABET_CHAR: T_ALPHABET_CHAR {$$ = $1;}
+E_STATE: T_STATE {$$ = $1;}
+E_COMMA_SEPARATOR: T_COMMA_SEPARATOR {$$ = $1;}
 
 %%
 
 int main()
 {
-  yyparse();
+  try {
+    yyparse();
+  }
+  catch (std::exception & e) {
+    std::cout << e.what() << std::endl;
+    return 0;
+  }
+  if (!automat().Valid()) {
+    std::cout << automat().ErrorDescription() << std::endl;
+  }
+
+
+  std::cout << "Parsing is done!\n";
+  automat().PrintInfo(std::cout);
   return 0;
 }
