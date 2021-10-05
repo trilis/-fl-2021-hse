@@ -1,7 +1,0 @@
-a b c d
-q0 t
-q1 n
-q2 s
-e q0 q1 {a, b, c, d}
-e q1 q0 {a, b, c, d}
-e q2 q0 {a, b, c, d}

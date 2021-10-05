@@ -5,5 +5,12 @@ flex lex.l
 g++ lex.yy.c my.cpp
 rm gram.tab.hpp
 rm lex.yy.c
-./a.out test str
+for ii in $(cat tests/list)
+do
+	echo $ii
+	i="tests/"$ii
+	./a.out $i".in1" $i".in2" > $i".out"
+	diff $i".expect" $i".out" && echo "test complete"
+	rm $i".out"
+done
 rm a.out
