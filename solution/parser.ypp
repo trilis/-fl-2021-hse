@@ -7,6 +7,7 @@
 #include <cstdlib>
 #include <functional>
 #include <cassert>
+#include <fstream>
 
 template<typename F, typename S>
 struct HashPair {
@@ -192,7 +193,7 @@ TAutomata & automat() {
 }
 
 int yylex(); 
-int yyerror(const char *p) { throw std::runtime_error("Syntax error! Cannot match with any grammar!");}
+int yyerror(const char *p) { throw std::runtime_error("Syntax error!");}
 
 %}
 
@@ -313,19 +314,25 @@ E_COMMA_SEPARATOR: T_COMMA_SEPARATOR {$$ = $1;}
 
 %%
 
-int main()
+int main(int argc, char ** argv)
 {
   try {
     yyparse();
   }
   catch (std::exception & e) {
-    std::cout << e.what() << std::endl;
+    std::cout << "Error during the parsing: " << e.what() << std::endl;
     return 1;
   }
   if (!automat().EndInit()) {
-    std::cout << automat().ErrorDescription() << std::endl;
+    std::cout << "Error during the parsing: " << automat().ErrorDescription() << std::endl;
     return 1;
   }
+
+  std::ifstream in{argv[1], std::ifstream::in};
+  std::string str;
+  in >> str;
+  std::cerr << "matching string = " << str << std::endl;
+  std::cerr << "result = " << std::boolalpha << automat().Match(str) << std::endl;
 
   return 0;
 }
