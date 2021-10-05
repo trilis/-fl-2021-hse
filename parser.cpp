@@ -258,24 +258,19 @@ int main() {
   return 0;
 }
 
-
-
 //    string --- a
 //    time   --- 0.000017000 s
 //    string --- aaaaaa
-//    time   --- 0.000981000 s
+//    time   --- 0.000006000 s
 //    string --- abbbbbbb
-//    time   --- 0.016686000 s
+//    time   --- 0.000006000 s
 //    string --- abbbbbbbaaa
-//    time   --- 2.229536000 s
+//    time   --- 0.000007000 s
 //    string --- ba
-//    time   --- 0.000013000 s
-//    string --- sigbk
-//    time   --- 0.000949000 s
+//    time   --- 0.000002000 s
 //    string --- ababababababa
-//    time   --- 108.901965000 s
+//    time   --- 0.000017000 s
 //    string --- aabaa
-//    time   --- 0.001015000 s
+//    time   --- 0.000006000 s
 //    string --- baaa
-//    time   --- 0.000308000 s
-
+//    time   --- 0.000009000 s
