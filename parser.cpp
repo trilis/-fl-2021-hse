@@ -140,7 +140,7 @@ std::shared_ptr<Regexpr> sec_der(const char &c, const std::shared_ptr<Regexpr> &
   }
   if (regexpr->type == type::star) {
     Star *star = dynamic_cast<Star *>(regexpr.get());
-    return std::make_shared<Concat>(sec_der(c, star->elem), std::make_shared<Star>(*star));
+    return std::make_shared<Concat>(sec_der(c, star->elem), std::make_shared<Star>(star->elem));
   }
   if (regexpr->type == type::concat) {
     auto *concat = dynamic_cast<Concat *>(regexpr.get());
@@ -166,7 +166,7 @@ void test(const std::shared_ptr<Regexpr> &regexpr, const std::string &str, bool 
   std::cout << "string --- " << str << '\n';
   auto start = std::chrono::system_clock::now();
   if (check(regexpr, str) != b) {
-    std::cerr << "IT IS NOT, LOSER, for the string " << str << '\n';
+    std::cerr << "IT IS NOT, LOSER, string eq: " << str << '\n';
   }
   auto end = std::chrono::system_clock::now();
   std::chrono::duration<double> diff = end - start;
@@ -250,7 +250,6 @@ int main() {
   test(Alt_(Char_('a'), Star_(Char_('b'))), "abbbbbbb", 0);
   test(Alt_(Char_('a'), Star_(Char_('b'))), "abbbbbbbaaa", 0);
   test(Star_(Char_('a')), "ba", 0);
-  test(Concat_(Star_(Concat_(Char_('a'), Char_('b'))), Char_('a')), "sigbk", 0);
   test(Star_(Alt_(Char_('a'), (Char_('b')))), "ababababababa", 1);
   test(Alt_(Alt_(Concat_(Char_('a'), Char_('a')), Star_(Char_('b'))), Concat_(Char_('b'),Star_(Char_('a')))), "aabaa", 0);
   test(Alt_(Alt_(Concat_(Char_('a'), Char_('a')), Star_(Char_('b'))), Concat_(Char_('b'),Star_(Char_('a')))), "baaa", 1);
