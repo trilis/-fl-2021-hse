@@ -110,6 +110,7 @@ ALPHA ([^,\n]+)
             response = T_ALPHABET_CHAR;
         }
         else {
+            // std::cerr << "INVALID TOKEN\n";
             response = T_INVALID_TOKEN;
         }
     }
@@ -118,6 +119,7 @@ ALPHA ([^,\n]+)
         // std::cerr << "ALPHABET INIT\n";
     }
     else {
+        // std::cerr << "INVALID TOKEN\n";
         response = T_INVALID_TOKEN;
     }
     char * tmp = new char[strlen(buffer) + 1];
