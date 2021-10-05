@@ -1,0 +1,2 @@
+matching string = 1000
+result = true

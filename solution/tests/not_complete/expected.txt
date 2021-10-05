@@ -1,0 +1,3 @@
+[WARNING] Automat is not complete!
+matching string = 0
+result = false

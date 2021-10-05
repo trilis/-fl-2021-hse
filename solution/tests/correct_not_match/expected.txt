@@ -1,0 +1,2 @@
+matching string = 1001
+result = false

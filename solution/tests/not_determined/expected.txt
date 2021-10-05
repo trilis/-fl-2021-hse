@@ -1,0 +1,1 @@
+Error during the parsing: Transition from 0 with symbol 0 already exists!

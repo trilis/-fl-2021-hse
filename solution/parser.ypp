@@ -69,6 +69,12 @@ public:
       return ok;
     }
     std::string str_symb(symb);
+    if (alphabet.find(str_symb) != alphabet.end()) {
+      errorDescription = "Symbols in alphabet are not unique!";
+      ok = false;
+      return ok;
+    }
+
     alphabet.insert(std::move(str_symb));
     return ok;
   }
@@ -172,7 +178,7 @@ bool IsValidState(TStateType state) {
 }
 
 void Warn(const std::string& str) {
-  std::cerr << "[WARNING] " << str << '\n';
+  std::cout << "[WARNING] " << str << '\n';
 }
 
 private:
@@ -331,8 +337,8 @@ int main(int argc, char ** argv)
   std::ifstream in{argv[1], std::ifstream::in};
   std::string str;
   in >> str;
-  std::cerr << "matching string = " << str << std::endl;
-  std::cerr << "result = " << std::boolalpha << automat().Match(str) << std::endl;
+  std::cout << "matching string = " << str << std::endl;
+  std::cout << "result = " << std::boolalpha << automat().Match(str) << std::endl;
 
   return 0;
 }
