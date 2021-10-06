@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <string>
 #include "gramMyLang.tab.hpp"
 
 int flag = 0, pointer = 1;
@@ -52,7 +53,7 @@ OP     (->|[,:";])
 [ \t\r]     {++pointer;}
 [\n]        {pointer = 1;}
 
-<<EOF>>     {printf("(eof %u)\n", yylineno); return 0;}
+<<EOF>>     {return 0;}
 
 . {
   printf("ERROR in line %u, number symbol %u, symbol %s\n", yylineno, pointer, yytext);

@@ -2,11 +2,32 @@
 #include <iostream>
 #include <string>
 #include <map>
+#include <vector>
+#include <cstring>
+#include <set>
 #include <cstdlib>
+#include <fstream>
 using namespace std;
 
 int yylex(); 
 int yyerror(const char *p) { cerr << "Error!" << endl; exit(1);}
+
+struct DFA{
+  vector <vector <pair <string, int>>> g;
+  map<string, int> num_ver;
+  set<int> terms;
+  int start;
+} dfa;
+vector<string> cont_vers;
+vector<string> cont_words;
+
+string get_str(char* s){
+  string str = s;
+  str.erase(str.find_last_not_of(' ') + 1, str.size());
+  str.erase(0, str.find_first_not_of(' '));
+  return move(str);
+}
+
 %}
 
 %union{
@@ -19,50 +40,121 @@ int yyerror(const char *p) { cerr << "Error!" << endl; exit(1);}
 %token <ver>  VER
 %token <word> WORD
 %token <op>   COMMA SEMICOLON COLON ARROW QUOTE
-%type  <tag>  discr str ver_l word_l //edge
+%type  <tag>  discr str ver_l word_l
 
 %%
 
-start: discr                   { }
+start: discr{ }
 
-discr: discr str SEMICOLON     { }
-| str SEMICOLON                { }
+discr: discr str SEMICOLON{ }
+| str SEMICOLON{ }
 
-str: KW ver_l                               { 
-                                              cout << "keyword: " << $1 << "\n";
-                                              cout << "kw: " << yylval.kw << "\n";
-                                              cout << "ver: " << yylval.ver << "\n";
-                                              cout << "word: " << yylval.word << "\n";
-                                              cout << "op: " << yylval.op << "\n";
-                                            }
-| ver_l ARROW ver_l COLON QUOTE word_l QUOTE    { 
-                                              cout << "start" << "\n";
-                                              //cout << $1 << "\n";
-                                              cout << $2 << "\n";
-                                              //cout << $3 << "\n";
-                                              //cout << $4 << "\n";
-                                              cout << $5 << "\n";
-                                              cout << "end" << "\n";
-                                            }
-
-/*edge: VER ARROW VER {
-  cout << "edge:\n";
-  cout << $1 << "\n";
+str: KW ver_l{ 
+  //cout << "keyword: " << $1 << "\n";
+  //cout << "kw: " << yylval.kw << "\n";
+  //cout << "ver: " << yylval.ver << "\n";
+  //cout << "word: " << yylval.word << "\n";
+  //cout << "op: " << yylval.op << "\n";
+  if (strncmp($1, "terminal", 8) == 0){
+    for (const string& s : cont_vers){
+      dfa.terms.insert(dfa.num_ver[s]);
+    }
+  }else if (strncmp($1, "start", 5) == 0){
+    dfa.start = dfa.num_ver[cont_vers[0]];
+  }else{
+    for (const string& s : cont_vers){
+      dfa.num_ver[s] = dfa.g.size();
+      dfa.g.push_back(vector <pair <string, int>>());
+    }
+  }
+  cont_vers.clear();
+}
+| ver_l ARROW ver_l COLON QUOTE word_l QUOTE { 
+  /*cout << "start" << "\n";
+  //cout << $1 << "\n";
   cout << $2 << "\n";
-  cout << $3 << "\n";
-  cout << "end edge\n";
-} */
+  //cout << $3 << "\n";
+  //cout << $4 << "\n";
+  cout << $5 << "\n";
+  cout << "end" << "\n";*/
+  int a = dfa.num_ver[cont_vers[0]];
+  int b = dfa.num_ver[cont_vers[1]];
+  for (const string& s : cont_words){
+    dfa.g[a].push_back({s, b});
+  }
+  cont_vers.clear();
+  cont_words.clear();
+}
 
-ver_l: ver_l COMMA VER         { cout << "ver_l: " << $3 << "\n"; }
-| VER                          { cout << "ver: " << $1 << "\n"; }
+ver_l: ver_l COMMA VER { 
+  //cout << "ver_l: " << $3 << "\n";
+  cont_vers.push_back(get_str($3));
+}
+| VER { 
+  //cout << "ver: " << $1 << "\n"; 
+  cont_vers.push_back(get_str($1));
+}
 
-word_l: word_l COMMA WORD      { cout << "word_l: " << $3 << "\n"; }
-| WORD                         { cout << "word: " << $1 << "\n"; }
+word_l: word_l COMMA WORD { 
+  //cout << "word_l: " << $3 << "\n";
+  cont_words.push_back(get_str($3));
+}
+| WORD { 
+  //cout << "word: " << $1 << "\n";
+  cont_words.push_back(get_str($1));
+}
 
 %%
 
-int main()
+int main(int argc, char* argv[])
 {
+  /*cout << "g:\n";
+  for (int i = 0; i < dfa.g.size(); ++i){
+    cout << "i = " << i << ":\n";
+    for (int j = 0; j < dfa.g[i].size(); ++j){
+      cout << "   { " << dfa.g[i][j].first << ", " << dfa.g[i][j].second << " }\n";
+    }
+  }
+  cout << "num_ver:\n";
+  for (const auto& s : dfa.num_ver){
+    cout << "   { " << s.first << ", " << s.second << " }\n";
+  }
+  cout << "terms:\n";
+  for (const auto& x : dfa.terms){
+    cout << x << " ";
+  }cout << "\n";
+  cout << "start = " << dfa.start << "\n";*/
+  if (argc < 2) { 
+    cerr << "Usage: " << argv[0] << " <file>\n";
+    return 1;
+  }
   yyparse();
+  ifstream in(argv[1]);
+  if (!in.is_open()){
+    cerr << "Unable to open " << argv[1] << " for reading\n";
+    return 1;
+  }
+  int v = dfa.start;
+  string str;
+  getline(in, str);
+  for (char word : str){
+    bool go = false;
+    for (const auto& edge : dfa.g[v]){
+        if (word == edge.first[0]){
+          v = edge.second;
+          go = true;
+          break;
+        }
+    }
+    if (!go){
+      cout << "The string doesn't belong to the automaton\n";
+      return 0;
+    }
+  }
+  if (dfa.terms.find(v) != dfa.terms.end()){
+    cout << "The string belong to the automaton\n";
+  }else{
+    cout << "The string doesn't belong to the automaton\n";
+  }
   return 0;
 }
