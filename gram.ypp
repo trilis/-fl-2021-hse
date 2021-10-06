@@ -2,41 +2,180 @@
 #include <iostream>
 #include <string>
 #include <map>
+#include <set>
 #include <cstdlib>
-using namespace std;
+#include <unordered_map>
+#include <exception>
+#include <fstream>
+enum {
+    START = 1,
+    DEFAULT = 2,
+    TERMINAL = 3,
+    START_AND_TERMINAL = 4,
+};
+struct automat{
+    int number_of_start = 0;
+    std::set <char> alphabet;
+    std::set <int> vertexes;
+    std::unordered_map <int, std::unordered_map<char, int>> edges;
+    std::unordered_map <int, int> vertex_types;
+    int count_of_edges = 0;
+    bool match(const std::string &s){
+        int current_state = number_of_start;
+        int current_index = 0;
+        while (current_index != s.size()){
+            current_state = edges[current_state][s[current_index]];
+            current_index++;
+        }
+        if (vertex_types[current_state] == TERMINAL || vertex_types[current_state] == START_AND_TERMINAL)
+        {
+            return true;
+        }
+        return false;
+    }
+};
+automat & automat_(){
+    static automat automatt;
+    return automatt;
+}
 
 int yylex(); 
-int yyerror(const char *p) { cerr << "Error!" << endl; }
+void yyerror(const char *p) { std::cerr << "Error! " << p << std::endl; }
 %}
 
 %union {
+  char * word;
   int val; 
   char sym;
 };
 %token <val> NUM
-%token <sym> OPA OPM LP RP STOP
-%type  <val> exp term sfactor factor
+%token <sym> LP
+%token <sym> RP
+%token <sym> SQ_BR_OP 
+%token <sym> SQ_BR_CL
+%token <sym> SYM 
+%token <sym> COMMA
+%token <word> VERTEX_TYPE
+%token <word> EDGE 
+%token <sym> NEW_LINE
+%%
+
+start: alphabet_symbols edges {}
+
+alphabet_symbols: SYM COMMA alphabet_symbols {
+    if (automat_().alphabet.find($1) == automat_().alphabet.end()){
+        automat_().alphabet.insert($1);
+    } else {
+        throw std::runtime_error("Alphabet symbols are not unique!\n");
+    }
+}
+| SYM {
+    if (automat_().alphabet.find($1) == automat_().alphabet.end()){
+        automat_().alphabet.insert($1);
+    } else {
+        throw std::runtime_error("Alphabet symbols are not unique!\n");
+    }
+}
+
+edges: LP VERTEX_TYPE SQ_BR_OP NUM SQ_BR_CL EDGE SQ_BR_OP SYM SQ_BR_CL VERTEX_TYPE SQ_BR_OP NUM SQ_BR_CL RP edges {
+    std::cout << $2 << " " << $4 << "\n";
+    if (std::string($2) == "start" || std::string($2) == "start_term"){
+        if (automat_().number_of_start != $4 && automat_().number_of_start != 0){
+            throw std::runtime_error("Start vertex is not single!");
+        }
+        if (std::string($2) == "start"){
+            automat_().vertex_types[$4] = START;
+        }
+        if (std::string($2) == "start_term"){
+            automat_().vertex_types[$4] = START_AND_TERMINAL;
+        }
+        automat_().number_of_start = $4;
+    }
+    if (std::string($2) == "def"){
+        if (automat_().vertex_types[$4] == START || automat_().vertex_types[$4] == TERMINAL || automat_().vertex_types[$4] == START_AND_TERMINAL){
+            throw std::runtime_error("One vertex has different types!\n");
+        }
+        automat_().vertex_types[$4] = DEFAULT;
+    }
+    if (std::string($2) == "term"){
+        if (automat_().vertex_types[$4] == START || automat_().vertex_types[$4] == DEFAULT){
+            throw std::runtime_error("One vertex has different types!\n");
+        }
+        automat_().vertex_types[$4] = TERMINAL;
+    }
+    if (automat_().edges[$4][$8] != 0){
+        throw std::runtime_error("Automat is not deterministic!\n");
+    }
+    if (automat_().alphabet.find($8) == automat_().alphabet.end())
+    {
+        throw std::runtime_error("Symbol is not in an alphabet");
+    }
+    automat_().vertexes.insert($4);
+    automat_().vertexes.insert($12);
+    automat_().edges[$4][$8] = $12;
+    automat_().count_of_edges++;
+}
+| LP VERTEX_TYPE SQ_BR_OP NUM SQ_BR_CL EDGE SQ_BR_OP SYM SQ_BR_CL VERTEX_TYPE SQ_BR_OP NUM SQ_BR_CL RP {
+    std::cout << $2 << " " << $4 << "\n";
+    if (std::string($2) == "start"){
+        if (automat_().number_of_start != $4){
+            throw std::runtime_error("Start vertex is not single!");
+        }
+        automat_().vertex_types[$4] = START;
+        automat_().number_of_start = $4;
+    }
+    if (std::string($2) == "def"){
+        if (automat_().vertex_types[$4] == START || automat_().vertex_types[$4] == TERMINAL || automat_().vertex_types[$4] == START_AND_TERMINAL){
+            throw std::runtime_error("One vertex has different types!\n");
+        }
+        automat_().vertex_types[$4] = DEFAULT;
+    }
+    if (std::string($2) == "term"){
+        if (automat_().vertex_types[$4] == START || automat_().vertex_types[$4] == DEFAULT || automat_().vertex_types[$4] == START_AND_TERMINAL){
+            throw std::runtime_error("One vertex has different types!\n");
+        }
+        automat_().vertex_types[$4] = TERMINAL;
+    }
+    if (automat_().edges[$4][$8] != 0){
+        throw std::runtime_error("Automat is not deterministic!\n");
+    }
+    automat_().edges[$4][$8] = $12;
+    automat_().count_of_edges++;
+} 
+
 
 %%
 
-start: exp            { cout << $1 << endl; }
-
-exp: exp OPA term     { $$ = ($2 == '+' ? $1 + $3 : $1 - $3); }
-| term                { $$ = $1; }
-
-term: term OPM factor { $$ = ($2 == '*' ? $1 * $3 : $1 / $3); }
-| sfactor             { $$ = $1; }
-
-sfactor: OPA factor   { $$ = ($1 == '+' ? $2 : -$2); }
-| factor              { $$ = $1; }
-
-factor: NUM           { $$ = $1; }
-| LP exp RP           { $$ = $2; }
-
-%%
-
-int main()
+int main(int argc, char ** argv)
 {
-  yyparse();
-  return 0;
+    freopen(argv[1], "r", stdin);
+    try{
+        yyparse();
+    } catch(std::exception & e)
+    {
+        std::cout << "PARSE ERROR: " << e.what() << "\n";
+        fclose(stdin);
+        return 1;
+    }
+    std::ifstream fin(argv[2]);
+    std::string matched_string;
+    fin >> matched_string;
+    if (automat_().alphabet.size() * automat_().vertexes.size() != automat_().count_of_edges)
+    {
+        std::cout << automat_().alphabet.size() << " ";
+        std::cout << automat_().vertex_types.size() << " ";
+        std::cout << automat_().count_of_edges << " ";
+        std::cout << "Automat is not complete!\n";
+        return 1;
+    }
+    for (auto v : automat_().vertexes)
+    {   
+        std::cout << v <<" " << automat_().vertex_types[v] << "\n";
+    }
+    if (automat_().match(matched_string)){
+        std::cout << "YES\n";
+    } else {
+        std::cout << "NO\n";
+    }
+    return 0;
 }
