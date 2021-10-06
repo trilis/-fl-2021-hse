@@ -3,6 +3,7 @@
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
+#include <vector>
 #include <string>
 #include <cstdlib>
 #include <functional>
@@ -238,7 +239,6 @@ start: E_STATE_QUANTITY starts_alphabet {
     throw std::runtime_error(automat().ErrorDescription());
   }
 }
-// | E_INVALID_TOKEN
 
 
 starts_alphabet: E_ALPHABET_INIT_CHAR E_COMMA_SEPARATOR starts_alphabet  {
@@ -257,11 +257,9 @@ starts_alphabet: E_ALPHABET_INIT_CHAR E_COMMA_SEPARATOR starts_alphabet  {
     throw std::runtime_error(automat().ErrorDescription());
   }
 }
-// | E_INVALID_TOKEN
 
 starts_num_links: E_LINK_QUANTITY starts_links {
 }
-// | E_INVALID_TOKEN
 
 starts_links:
 E_STATE E_COMMA_SEPARATOR E_STATE E_COMMA_SEPARATOR E_ALPHABET_CHAR starts_links {
@@ -280,7 +278,6 @@ E_STATE E_COMMA_SEPARATOR E_STATE E_COMMA_SEPARATOR E_ALPHABET_CHAR starts_links
     throw std::runtime_error(automat().ErrorDescription());
   }
 }
-// | E_INVALID_TOKEN 
 
 starts_init: E_STATE starts_terminal {
   bool response = automat().SetInitState($1);
@@ -288,7 +285,6 @@ starts_init: E_STATE starts_terminal {
     throw std::runtime_error(automat().ErrorDescription());
   }
 }
-// | E_INVALID_TOKEN
 
 starts_terminal: E_STATE E_COMMA_SEPARATOR starts_terminal {
   bool response = automat().AddTerminal($1);
