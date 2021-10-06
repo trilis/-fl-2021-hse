@@ -17,6 +17,32 @@ struct DFA{
   map<string, int> num_ver;
   set<int> terms;
   int start;
+
+  bool is_correct(){
+    if (start == -1){cout << "Error! Unable to find start vertex"; return false;}
+    return true;
+  }
+
+  bool check_str(const string& str){
+    int v = start;
+    bool go;
+    for (char word : str){
+      go = false;
+      //cout << "word = " << word << "\n";
+      //cout << "v = " << v << "\n";
+      for (const auto& edge : g[v]){
+        //cout << "    " << edge.first << " " << edge.second << "\n";
+        if (word == edge.first[0]){
+          v = edge.second;
+          go = true;
+          break;
+        }
+      }
+      if (!go){ /*cout << "???\n";*/ return false; }
+    }
+    if (terms.find(v) != terms.end()){ return true; }
+    else{ return false; }
+  }
 } dfa;
 vector<string> cont_vers;
 vector<string> cont_words;
@@ -108,53 +134,32 @@ word_l: word_l COMMA WORD {
 
 int main(int argc, char* argv[])
 {
+  yyparse();
   /*cout << "g:\n";
   for (int i = 0; i < dfa.g.size(); ++i){
-    cout << "i = " << i << ":\n";
+    cout << " i = " << i << "\n";
     for (int j = 0; j < dfa.g[i].size(); ++j){
-      cout << "   { " << dfa.g[i][j].first << ", " << dfa.g[i][j].second << " }\n";
+      cout << "    " << dfa.g[i][j].first << " " << dfa.g[i][j].second << "\n";
     }
-  }
-  cout << "num_ver:\n";
-  for (const auto& s : dfa.num_ver){
-    cout << "   { " << s.first << ", " << s.second << " }\n";
-  }
-  cout << "terms:\n";
-  for (const auto& x : dfa.terms){
-    cout << x << " ";
-  }cout << "\n";
-  cout << "start = " << dfa.start << "\n";*/
+  }*/
+  if (!dfa.is_correct()){ return 1; }
   if (argc < 2) { 
-    cerr << "Usage: " << argv[0] << " <file>\n";
+    cerr << "Error! Usage: " << argv[0] << " <file> < <automata>\n";
     return 1;
   }
-  yyparse();
   ifstream in(argv[1]);
   if (!in.is_open()){
-    cerr << "Unable to open " << argv[1] << " for reading\n";
+    cerr << "Error! Unable to open " << argv[1] << " for reading\n";
     return 1;
   }
-  int v = dfa.start;
   string str;
-  getline(in, str);
-  for (char word : str){
-    bool go = false;
-    for (const auto& edge : dfa.g[v]){
-        if (word == edge.first[0]){
-          v = edge.second;
-          go = true;
-          break;
-        }
-    }
-    if (!go){
+  while (getline(in, str)){
+    if (dfa.check_str(str)){
+      cout << "The string belong to the automaton\n";
+    }else{
       cout << "The string doesn't belong to the automaton\n";
-      return 0;
     }
   }
-  if (dfa.terms.find(v) != dfa.terms.end()){
-    cout << "The string belong to the automaton\n";
-  }else{
-    cout << "The string doesn't belong to the automaton\n";
-  }
+  in.close();
   return 0;
 }
