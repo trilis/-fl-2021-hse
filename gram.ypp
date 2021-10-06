@@ -57,7 +57,6 @@ void yyerror(const char *p) { std::cerr << "Error! " << p << std::endl; }
 %token <sym> COMMA
 %token <word> VERTEX_TYPE
 %token <word> EDGE 
-%token <sym> NEW_LINE
 %%
 
 start: alphabet_symbols edges {}

@@ -15,21 +15,40 @@ int vertex = 0;
     std::cout << yytext << "\n";
     char *  buf = new char[strlen(yytext) + 1];
     strcpy(buf, yytext);
+    vertex= 1;
     yylval.word = buf;
     position += strlen(buf);
     return VERTEX_TYPE;
 }
-[0-9]+   {
+[^->\[\]\(\),\n ] {
     std::cout << yytext << "\n";
-    yylval.val = std::atoi(yytext);
-    position += strlen(yytext);
-    return NUM;
-}
-[^\)\(\[\],\n->]   {
-    std::cout << yytext << "\n";
-    yylval.sym = yytext[0];
-    position++;
-    return SYM;
+    if (arrow && !vertex && square_br_opened || yylineno == 1){
+         if (strlen(yytext) > 1) {
+             printf("ERROR! Got string instead of char in line: %u pos: %d\n", yylineno, position);
+             exit(1);
+         }
+        position += strlen(yytext);
+        yylval.sym = yytext[0];
+        return SYM;
+    }
+    else if (!arrow && vertex && square_br_opened && yylineno != 1){
+        yylval.val = std::atoi(yytext); 
+        position += strlen(yytext);
+        vertex = 0;
+        return NUM;
+    }
+    else if (arrow && vertex && square_br_opened && yylineno != 1){
+        yylval.val = std::atoi(yytext);
+        position += strlen(yytext);
+        vertex = 0;
+        arrow = 0;
+        return NUM;
+    }
+    else {
+        printf("ERROR in line %u, position %d, symbol \"%s\"\n", yylineno, position, yytext);
+        printf("vertex %d square_br_opened %d arrow %d\n", vertex, square_br_opened, arrow);
+        exit(1);
+    }
 }
 \(      {
     std::cout << yytext << "\n";
