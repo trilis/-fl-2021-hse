@@ -45,13 +45,21 @@ struct DFA{
   }
 } dfa;
 vector<string> cont_vers;
-vector<string> cont_words;
+set<string> cont_words;
 
-string get_str(char* s){
+string get_correct_str(char* s){
   string str = s;
   str.erase(str.find_last_not_of(' ') + 1, str.size());
   str.erase(0, str.find_first_not_of(' '));
   return move(str);
+}
+
+void add_word(string s){
+  if (cont_words.find(s) != cont_words.end()){
+    cerr << "Error! Attempt to make edge with two similar words: " << s << "\n";
+    exit(1);
+  }
+  cont_words.insert(move(s));
 }
 
 %}
@@ -114,21 +122,17 @@ str: KW ver_l{
 
 ver_l: ver_l COMMA VER { 
   //cout << "ver_l: " << $3 << "\n";
-  cont_vers.push_back(get_str($3));
+  cont_vers.push_back(get_correct_str($3));
 }
 | VER { 
   //cout << "ver: " << $1 << "\n"; 
-  cont_vers.push_back(get_str($1));
+  cont_vers.push_back(get_correct_str($1));
 }
 
-word_l: word_l COMMA WORD { 
-  //cout << "word_l: " << $3 << "\n";
-  cont_words.push_back(get_str($3));
-}
-| WORD { 
-  //cout << "word: " << $1 << "\n";
-  cont_words.push_back(get_str($1));
-}
+
+word_l: word_l COMMA WORD { add_word(get_correct_str($3)); }
+| WORD { add_word(get_correct_str($1));  }
+
 
 %%
 
