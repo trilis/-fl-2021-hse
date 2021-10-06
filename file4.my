@@ -1,0 +1,18 @@
+points rem0, rem1, rem2, mod15;
+start rem0;
+rem0 -> rem0 : "3, 6, 9";
+rem0 -> rem1 : "1, 4, 7";
+rem0 -> rem2 : "2, 5, 8";
+rem0 -> mod15 : "0";
+rem1 -> rem0 : "2, 8";
+rem1 -> rem1 : "0, 3, 6, 9";
+rem1 -> rem2 : "1, 4, 7";
+rem1 -> mod15 : "5";
+rem2 -> rem0 : "1, 4, 7";
+rem2 -> rem1 : "2, 5, 8"
+rem2 -> rem2 : "0, 3, 6, 9";
+mod15 -> rem0 : "3, 6, 9";
+mod15 -> rem1 : "1, 4, 7";
+mod15 -> rem2 : "2, 5, 8";
+mod15 -> mod15 : "0";
+terminal mod15;

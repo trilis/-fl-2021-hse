@@ -1,0 +1,68 @@
+%{
+#include <iostream>
+#include <string>
+#include <map>
+#include <cstdlib>
+using namespace std;
+
+int yylex(); 
+int yyerror(const char *p) { cerr << "Error!" << endl; exit(1);}
+%}
+
+%union{
+  char* kw;
+  char* ver;
+  char* word;
+  char* op;
+};
+%token <kw>   KW
+%token <ver>  VER
+%token <word> WORD
+%token <op>   COMMA SEMICOLON COLON ARROW QUOTE
+%type  <tag>  discr str ver_l word_l //edge
+
+%%
+
+start: discr                   { }
+
+discr: discr str SEMICOLON     { }
+| str SEMICOLON                { }
+
+str: KW ver_l                               { 
+                                              cout << "keyword: " << $1 << "\n";
+                                              cout << "kw: " << yylval.kw << "\n";
+                                              cout << "ver: " << yylval.ver << "\n";
+                                              cout << "word: " << yylval.word << "\n";
+                                              cout << "op: " << yylval.op << "\n";
+                                            }
+| ver_l ARROW ver_l COLON QUOTE word_l QUOTE    { 
+                                              cout << "start" << "\n";
+                                              //cout << $1 << "\n";
+                                              cout << $2 << "\n";
+                                              //cout << $3 << "\n";
+                                              //cout << $4 << "\n";
+                                              cout << $5 << "\n";
+                                              cout << "end" << "\n";
+                                            }
+
+/*edge: VER ARROW VER {
+  cout << "edge:\n";
+  cout << $1 << "\n";
+  cout << $2 << "\n";
+  cout << $3 << "\n";
+  cout << "end edge\n";
+} */
+
+ver_l: ver_l COMMA VER         { cout << "ver_l: " << $3 << "\n"; }
+| VER                          { cout << "ver: " << $1 << "\n"; }
+
+word_l: word_l COMMA WORD      { cout << "word_l: " << $3 << "\n"; }
+| WORD                         { cout << "word: " << $1 << "\n"; }
+
+%%
+
+int main()
+{
+  yyparse();
+  return 0;
+}
