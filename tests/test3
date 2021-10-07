@@ -1,0 +1,4 @@
+Q : 0 1 
+A : na nb nb nb nb nb nb  
+( q0 , T , na , q1 , I ) ( q1 , I , na , q1 , I ) 
+( q1 , I , nb , q0 , T ) ( q0 , T , nb , q0 , T )  

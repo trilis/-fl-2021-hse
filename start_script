@@ -1,0 +1,3 @@
+bison -d automata.ypp
+flex source.l
+g++ -std=c++17  automata.tab.cpp lex.yy.c graph.cpp
