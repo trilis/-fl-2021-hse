@@ -1,0 +1,7 @@
+a, b, c, a
+(start[1]->[a]term[2])
+(start[1]->[b]term[2])
+(start[1]->[c]term[2])
+(term[2]->[a]start[1])
+(term[2]->[b]start[1])
+(term[2]->[c]start[1])

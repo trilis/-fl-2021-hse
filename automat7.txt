@@ -1,0 +1,7 @@
+a, b
+(start[1]->[b]def[2])
+(start[1]->[b]term[3])
+(term[3]->[b]def[2])
+(term[3]->[a]def[2])
+(def[2]->[b]term[3])
+(def[2]->[a]start[1])
