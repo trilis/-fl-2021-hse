@@ -1,0 +1,1 @@
+ERROR! Symbol is not in an alphabet

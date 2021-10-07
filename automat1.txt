@@ -1,0 +1,6 @@
+a, b
+(start[1]->[a]term[2])
+(start[1]->[b]start[1])
+(term[2]->[a]term[2])
+(term[2]->[b]start[1])
+

@@ -1,0 +1,1 @@
+ERROR! Automat is not complete!

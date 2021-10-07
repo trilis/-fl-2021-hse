@@ -1,0 +1,5 @@
+0, 1
+(start[1]->[0]term[2])
+(start[1]->[1]start[1])
+(term[2]->[3]term[2])
+(term[2]->[1]start[1])
