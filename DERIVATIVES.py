@@ -1,3 +1,6 @@
+import time
+
+
 class Empty:
     pass
 
@@ -92,8 +95,10 @@ def match(r, s):
 def test(exp, count):
     for i in range(count):
         x = input()
+        start_time = time.time()
         res = match(exp, x)
-        print(i + 1, '.', x, ':', res)
+        duration = time.time() - start_time
+        print(i + 1, ') ', format(duration, '.6f'), 's|', x, ': ', res, sep='')
 
 
 test_exp1 = Concat(Star(Concat(Char('a'), Char('b'))), Char('a'))

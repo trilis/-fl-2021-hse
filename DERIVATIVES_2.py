@@ -1,4 +1,4 @@
-# Сейчас из оптимизация здесь только nullable
+import time
 
 
 class Empty:
@@ -82,10 +82,32 @@ def derivative(a: Char, r):
     if type(r) == Char:
         return Empty()
     if type(r) == Alt:
+        if type(r.arg1) == Empty:
+            return derivative(a, r.arg2)
+        if type(r.arg2) == Empty:
+            return derivative(a, r.arg1)
+        if type(r.arg1) == Epsilon and nullable(r.arg2):
+            return derivative(a, r.arg2)
+        if type(r.arg2) == Epsilon and nullable(r.arg1):
+            return derivative(a, r.arg1)
+        if r.arg1 == r.arg2:
+            return derivative(a, r.arg1)
         return Alt(derivative(a, r.arg1), derivative(a, r.arg2))
     if type(r) == Star:
+        if type(r.arg) == Empty:
+            return Empty()
+        if type(r.arg) == Epsilon:
+            return Epsilon()
+        if type(r.arg) == Star:
+            return derivative(a, r.arg)
         return Concat(derivative(a, r.arg), Star(r.arg))
     if type(r) == Concat:
+        if type(r.arg1) == Empty or type(r.arg2) == Empty:
+            return Empty()
+        if type(r.arg1) == Epsilon:
+            return derivative(a, r.arg2)
+        if type(r.arg2) == Epsilon:
+            return derivative(a, r.arg1)
         if nullable(r.arg1):
             return Alt(Concat(derivative(a, r.arg1), r.arg2), derivative(a, r.arg2))
         else:
@@ -99,8 +121,10 @@ def match(r, s):
 def test(exp, count):
     for i in range(count):
         x = input()
+        start_time = time.time()
         res = match(exp, x)
-        print(i + 1, '.', x, ':', res)
+        duration = time.time() - start_time
+        print(i + 1, ') ', format(duration, '.6f'), 's|', x, ': ', res, sep='')
 
 
 test_exp1 = Concat(Star(Concat(Char('a'), Char('b'))), Char('a'))
@@ -125,4 +149,3 @@ test(test_exp4, 5)
 print('\ntest5. (a | b | c | d)*\n')
 test_exp5 = Star(Alt(Alt(Char('a'), Char('b')), Alt(Char('c'), Char('d'))))
 test(test_exp5, 5)
-
