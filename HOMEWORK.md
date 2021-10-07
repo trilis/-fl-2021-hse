@@ -1,15 +1,16 @@
 ### _1. Проверьте следующие языки на регулярность, за каждое 1 балл. Либо докажите их нерегулярность, либо постройте для них автомат или регулярку._
 
 
-* Язык не регулярен, докажем через отрицание леммы о накачке: возьмем слово <img src="https://i.upmath.me/svg/a%5Enabb%5En" alt="a^nabb^n" />. Выберем <img src="https://i.upmath.me/svg/k%20%3D%200" alt="k = 0" />, тогда <img src="https://i.upmath.me/svg/a" alt="a" /> из центра сдвинется левее и <img src="https://i.upmath.me/svg/%7Cu%7C%20%5Cnot%3D%20%7Cv%7C" alt="|u| \not= |v|" />
+* Язык не регулярен, докажем через отрицание леммы о накачке: возьмем слово <img src="https://i.upmath.me/svg/a%5Enabb%5En" alt="a^nabb^n" />. <img src="https://i.upmath.me/svg/u%20%3D%20a%5En%2C%20v%20%3D%20b%5En%2C%20%7Cu%7C%20%3D%20%7Cb%7C%20%3D%20n" alt="u = a^n, v = b^n, |u| = |b| = n" />. Выберем <img src="https://i.upmath.me/svg/%20k%20%3D%200" alt=" k = 0" />. Тогда <img src="https://i.upmath.me/svg/%7Cu_%7Bnew%7D%7C%20%3C%20n%20%3D%7Cv%7C" alt="|u_{new}| &lt; n =|v|" />, следовательно слово не принадлежит языку
 
-* Язык не регулярен: берем слово <img src="https://i.upmath.me/svg/a%5En%20c%5Em%20e%5Er" alt="a^n c^m e^r" />. Возьмем <img src="https://i.upmath.me/svg/k%20%3D%200" alt="k = 0" />, тогда степень при <img src="https://i.upmath.me/svg/a" alt="a" /> будет меньше исходной и <img src="https://i.upmath.me/svg/m" alt="m" /> больше не равно <img src="https://i.upmath.me/svg/n%2Br%2B1" alt="n+r+1" />
+* Язык не регулярен: берем слово <img src="https://i.upmath.me/svg/a%5En%20c%5Em%20e%5En%2C%20m%20%3D%20n%20%2B%20n%20%2B%201" alt="a^n c^m e^n, m = n + n + 1" />. Возьмем <img src="https://i.upmath.me/svg/k%20%3D%200" alt="k = 0" />, тогда степень при <img src="https://i.upmath.me/svg/a" alt="a" /> будет меньше исходной и <img src="https://i.upmath.me/svg/m%20%3C%20n%20%2B%20n%20%2B%201" alt="m &lt; n + n + 1" />. Тогда степень <img src="https://i.upmath.me/svg/n%20%2B%20n%20%2B%201" alt="n + n + 1" /> при <img src="https://i.upmath.me/svg/c" alt="c" /> не будет совпадать со значением <img src="https://i.upmath.me/svg/m" alt="m" />, следовательно, слово не принадлежит языку.
 
 * Мы не знаем, бесконечно ли количество чисел-близнецов. Рассмотрим два случая:
     - Их конечное число, и наибольшее из левых близнецов это <img src="https://i.upmath.me/svg/k" alt="k" />. Тогда все слова языка имеют длину меньше <img src="https://i.upmath.me/svg/k" alt="k" />, их можно задать регулярным выражением <img src="https://i.upmath.me/svg/a%5C%7B0%2C%20k%5C%7D" alt="a\{0, k\}" />
     - Их бесконечно, отлично, тогда нам подходят вообще любые слова состоящие только из <img src="https://i.upmath.me/svg/a" alt="a" />. Это задается регулярным выражением <img src="https://i.upmath.me/svg/a*" alt="a*" />
 
 ### _2. Парсинг с помощью производных_
+
 
 Пока применила только одну оптимизацию с nullable, а уже на первой регулярке в третьем тесте в all_tests старая реализация умирает, а оптимизированная моментально выдает ответ
 
