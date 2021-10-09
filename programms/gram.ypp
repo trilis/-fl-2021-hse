@@ -1,0 +1,58 @@
+%{
+#include <iostream>
+#include <string>
+#include <map>
+#include <vector>
+#include <cstring>
+#include <set>
+#include <cstdlib>
+#include <fstream>
+#include <string>
+
+using namespace std;
+
+int yylex(); 
+int yyerror(const char *p) { cerr << "Error! " << p << endl; exit(1);}
+
+
+%}
+
+%union{
+    int number;
+    string str;
+    char symbol;
+    bool boolean;
+};
+
+
+%token <str> T_KEYWORD
+%token <str> T_INITIALIZATION_VARIABLE
+%token <str> T_VARIABLE
+%token <str> T_STRUCT_NAME
+%token <str> T_STRUCT_FIELD
+%token <boolean> T_BOOLEAN
+%token <symbol> T_OPEN_CURLY_BRACKET  
+%token <str> T_STRING
+%token <symbol> T_CLOSE_CURLY_BRACKET
+%token <symbol> T_OPEN_ROUND_BRACKET
+%token <symbol> T_CLOSE_ROUND_BRACKET
+%token <symbol> T_COLON
+%token <symbol> T_EMPTY_LINE
+%token <str> T_SPACES
+%token <symbol> T_COMM
+%token <symbol> T_DOT
+
+%%
+
+
+
+
+%%
+
+int main(int argc, char* argv[])
+{
+  yyparse();
+
+
+  return 0;
+}
