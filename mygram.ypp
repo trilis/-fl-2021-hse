@@ -1,0 +1,160 @@
+%{
+#include <iostream>
+#include <string>
+#include <map>
+#include <cstdlib>
+#include <fstream>
+#include <map>
+#include <vector>
+using namespace std;
+
+int yylex(); 
+int yyerror(const char *p) { cerr << "Error!" << endl; }
+
+enum Status{
+  OK = 0,
+  FAIL = 101
+};
+
+struct Edge{
+  string to;
+  char alph;
+  Edge(string s,char h):to(s),alph(h){}
+}; 
+map<char,int> alphabet;
+
+  struct Vertex{
+  string name;
+  bool terminal=0;
+  map<char,string> edges;
+  map<char,int> a;
+  Vertex(string s,vector<Edge> t,int& ii, int& i,vector<int>& next,vector<Edge> temp_e):name(s){
+    map<char,int> c;
+    reverse(temp_e.begin(),temp_e.end());
+    if(i==next.size()-1){
+    int j=next[i];
+    while(j < temp_e.size()){
+      edges[temp_e[j].alph] = temp_e[j].to;
+      if(c[temp_e[j].alph] == 1){
+  throw std::runtime_error("Not unique transition!");
+      }
+      a[temp_e[j].alph]=1;
+      c[temp_e[j].alph]=1;
+      j++;
+    }
+    } else {
+    int j=next[i];
+    while(j<next[i+1]){
+      edges[temp_e[j].alph]=temp_e[j].to;
+      if(c[temp_e[j].alph]==1){
+  throw std::runtime_error("Not unique transition!");
+      }
+      a[temp_e[j].alph]=1;
+      c[temp_e[j].alph]=1;
+      j++;
+    }
+    i++;
+    }
+    if(alphabet.empty()){
+alphabet=a;
+    } else {
+       if(alphabet!=a){
+         throw std::runtime_error("Automat is not finite-state.");
+       }
+    }
+  };
+};
+
+struct Graph{
+vector<Vertex> vertexes;
+vector<Edge> temp_e;
+map<string,int> go_to;
+int size=0,i=0,ii=0;
+vector<int> next;
+
+bool add_v(string s,string term){
+  Vertex v(s,temp_e,ii,i,next,temp_e);
+  if(term == "tru"){
+     v.terminal=1;
+  } 
+  vertexes.push_back(v);
+  auto it = go_to.find(s);
+  if (it != go_to.end()){
+     throw std::runtime_error("Not unique vertex. "+s+" already exist!");
+  }
+  go_to[s]=vertexes.size()-1;
+  
+}
+
+bool add_e(char h, string s,int x=-1){
+  Edge e(s,h);
+  temp_e.push_back(e);
+  if(x==1){
+    next.push_back(temp_e.size()-1);
+  }
+}
+
+bool check(string& s, int num=0,int v=0){
+   if(num == s.size()-1){
+    return vertexes[go_to[vertexes[v].edges[s[num]]]].terminal;
+   }
+   return check(s,num+1,go_to[vertexes[v].edges[s[num]]]);
+}
+} g;
+
+%}
+
+%union {
+  char sym;
+  char* str;
+};
+
+%token <sym> RB LB SEP COMMA ALPH STOP EOL
+%token <str> STATE DOTS TERMINAL
+
+%%
+
+vertex: LB STATE SEP TERMINAL edge RB vertex {g.add_v(string($2),string($4));}
+|       LB STATE SEP TERMINAL edge RB        {g.add_v(string($2),string($4));}
+
+
+edge: LB ALPH COMMA STATE RB edge  { g.add_e($2,string($4));}
+|     LB ALPH COMMA STATE RB       { g.add_e($2,string($4),1);}
+
+%%
+
+
+int main(int argc, char *argv[])
+{ 
+  if(argc != 3){
+  cout << "Wrong number of files!" <<endl;
+  return -1;
+}
+
+  freopen(argv[1], "r", stdin);
+  try{
+       yyparse();
+
+       }catch(std::runtime_error &s){
+         cout << s.what() << endl;
+         return 0;
+       }
+
+  fclose(stdin);
+
+string file(argv[2]);
+ifstream f(file);
+  string s;
+  while(f >> s){
+    try{
+    cout << g.check(s,0,g.vertexes.size()-1) << ", ";
+    } catch(std::runtime_error &s){
+      cout << s.what() << endl;
+      return 0;
+    }
+  }
+cout<<endl;
+  
+
+  return 0;
+}

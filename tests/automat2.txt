@@ -1,0 +1,4 @@
+{"" | fls {a,"a"}{b,"b"}}
+{"a" | fls {a,"a"}{b,"ab"}}
+{"b" | fls {a,"a"}{b,""}}
+{"ab" | tru {b,"ab"}{a,"ab"}}
