@@ -1,0 +1,341 @@
+%{
+#include <string>
+#include <iostream>
+#include <vector>
+#include <cstdlib>
+#include <algorithm>
+#include <unordered_map>
+#include <fstream>
+#include <exception>
+using namespace std;
+int yylex(); 
+int yyerror(const char *p) { cerr << "Error!" << endl; }
+
+
+template<typename F, typename S>
+struct HashPair {
+  std::size_t operator()(const std::pair<F, S> & p) const{
+    std::size_t first_hash = std::hash<F>{}(p.first);
+    std::size_t second_hash = std::hash<S>{}(p.second);
+    return first_hash ^ (second_hash << 1);
+  }
+};
+
+struct argStorage {
+    static std::size_t arity;
+    static std::vector<std::string> args;
+    static std::size_t srcState;
+    void addArg(const char * symb) {
+        args.push_back(std::string{symb});
+        arity++;
+    }
+    void clearArgs() {
+        args.clear();
+    }
+    void clearSrc() {
+        srcState = 0;
+    }
+    void setSrc(std::size_t state) {
+        srcState = state;
+    }
+};
+
+std::size_t argStorage::arity = 0;
+std::size_t argStorage::srcState = 0;
+std::vector<std::string> argStorage::args{};
+
+argStorage &arguments() {
+    static argStorage s;
+    return s;
+}
+
+class Automata {
+    std::size_t stateQuantity = 0;
+    std::size_t startState = 0;
+    std::size_t transitionQuantity = 0;
+    std::size_t alphabetSize = 0;
+    std::vector<bool> Terminal{};
+    std::vector<std::string> Alphabet{};
+    std::unordered_map<std::pair<std::size_t, std::string>, std::size_t, HashPair<std::size_t, std::string>> Transitions;
+    std::string err;
+
+    // validators
+    bool validState(std::size_t s) {
+        return s >= 0 && s < stateQuantity;
+    }
+    public:
+
+    bool validAutomata() {
+        if (transitionQuantity != stateQuantity * alphabetSize) {
+            err = "Automata is not complete";
+            return false;
+        }
+        return true;
+    }
+
+    // initialization functions
+    bool setStateQuantity(std::size_t n) {
+        if (n == 0) {
+            err = "empty automata";
+            return false;
+        }
+        stateQuantity = n;
+        Terminal.resize(n);
+        return true;
+    }
+    bool setStartState(std::size_t start) {
+        if (!validState(start)) {
+            err = "start state is not valid";
+            return false;
+        }
+        startState = start;
+        return true;
+    }
+    bool addAlphaSymb(const char * symb) {
+        if (std::find(Alphabet.begin(), Alphabet.end(), std::string{symb}) != Alphabet.end()) {
+            err = "symbol is not unique";
+            return false;
+        }
+        alphabetSize++;
+        Alphabet.push_back(symb);
+        return true;
+    }
+    bool addTerminal(std::size_t state_num) {
+        if (!validState(state_num)) {
+            err = "terminal state is not valid";
+            return false;
+        }
+        if (Terminal[state_num]) {
+            err = "state is already terminal";
+            return false;
+        }
+        Terminal[state_num] = true;
+        return true;
+    }
+    bool addTransition(std::size_t from, std::size_t to, const std::vector<std::string> &args) {
+        if (!validState(from)) {
+            err = "source state is not valid";
+            return false;
+        } 
+        if (!validState(to)) {
+            err = "result state is not valid";
+            return false;
+        }
+        for (auto &symb : args) { 
+            if (std::find(Alphabet.begin(), Alphabet.end(), symb) == Alphabet.end()) {
+                err = "transition symbol is not in the alphabet";
+                return false;
+            }
+            auto it = Transitions.find({from, symb});
+            if (it != Transitions.end()) {
+                if (it->second == to) {
+                    err = "Transition is already exists";
+                    return false;
+                }
+                else {
+                    err = "Automata is not determinstic";
+                    return false;
+                }
+            }
+            transitionQuantity++;
+            Transitions[std::pair<std::size_t, std::string>{from, symb}] = to;
+        }
+        return true;
+    }
+
+    // Matching function
+    bool Match(std::string word) {
+        std::size_t curState = startState;
+        std::size_t sink = stateQuantity;
+        
+        int curPos = 0;
+        char curChar; 
+        while (curPos != word.size()) {
+            curChar = word[curPos];
+            auto s = std::string{curChar};
+            std::cerr << "Parsing symbol: " << s << '\n';
+            if (auto it = Transitions.find({curState, std::string{curChar}}); it != Transitions.end()) {
+                curState = it->second;
+                std::cerr << "Transitted -> " << it->second << '\n';
+                curPos++;
+            }
+            else {
+                curState = sink;
+                std::cerr << "...sinked" << '\n';
+                break;
+            }
+        }
+        if (curState == sink) {
+            return false;
+        }
+        return Terminal[curState];
+    }
+
+    // getters
+    std::size_t getStateQuantity() {
+        return stateQuantity;
+    }
+
+    void print() {
+        std::cout << "Alphabet: \n";
+        for (auto c : Alphabet) {
+            std::cout << c << ' ';
+        } 
+        std::cout << "\n states number: " << stateQuantity << '\n';
+        std::cout << "start node: " << startState << '\n';
+        std::cout << "terminal nodes: \n";
+        for (int i = 0; i < stateQuantity; i++) {
+            if (Terminal[i])
+                std::cout << i << ' ';
+        } 
+        std::cout << '\n';
+        std::cout << "transitions: \n";
+        for (auto t : Transitions) {
+            std::cout << "src: " << t.first.first << " to: " << t.second << " via char: " << t.first.second << '\n';
+        }
+    }
+
+    std::string error() {
+        return err;
+    }
+};
+
+Automata & automata() {
+    static Automata a;
+    return a;
+}
+
+%}
+
+%union {
+    int num;
+    const char* str;
+};
+
+%token <str> T_SYMB
+%token <num> T_STATE_NUMB
+%token <num> T_START_NODE
+%token <num> T_TERM_NODE
+%token <num> T_SRC_NODE
+%token <num> T_RSLT_NODE
+%token <str> T_ARG
+%token <str> T_COMMA
+%token <str> T_COLON
+%token <str> T_OPEN_BRACE
+%token <str> T_CLOSE_BRACE
+%token <str> T_ARROW
+%token <num> T_EOF
+
+%%
+start: alphabet {
+    
+} 
+
+alphabet: newSymb T_COMMA alphabet {
+    
+} | newSymb stateNumb startState terminals {
+    
+}
+
+terminals: addTerm T_COMMA terminals {
+    
+}
+| addTerm transitions {
+
+}
+transitions: srcBlock funcBlock transitions {
+    
+}
+| srcBlock funcBlock {
+
+} 
+arguments: T_ARG T_COMMA arguments {
+    arguments().addArg($1);
+}
+| T_ARG {
+    arguments().addArg($1);
+}
+
+srcBlock: T_SRC_NODE T_COLON {
+    arguments().setSrc($1);
+}
+
+funcBlock: func T_COMMA funcBlock {
+    
+}
+| func {
+
+}
+func: T_OPEN_BRACE arguments T_CLOSE_BRACE T_ARROW T_RSLT_NODE {
+    std::cerr << "!!! args: ";
+    for (auto &arg : arguments().args) {
+        std::cerr << arg << ' ';
+    }
+    std::cerr << '\n';
+    bool res = automata().addTransition(arguments().srcState, $5, arguments().args);
+    if (!res) {
+        throw(std::runtime_error(automata().error()));
+    }
+        std::cerr << "Set transition: " << "from: " << arguments().srcState << " to: " << $5 << " via ";
+        for (auto &symb : arguments().args) {
+            std::cerr << symb << ' ';
+        }
+        std::cerr << '\n';
+        arguments().clearArgs();
+}
+
+newSymb: T_SYMB {
+    std::cout << "Read symbol: " << $1 << '\n';
+    bool res = automata().addAlphaSymb($1);
+    if (!res) {
+        throw(std::runtime_error(automata().error()));
+    }
+}
+
+stateNumb: T_STATE_NUMB {
+    bool res = automata().setStateQuantity($1);
+    if (!res) {
+        throw(std::runtime_error(automata().error()));
+    }
+}
+
+startState: T_START_NODE {
+    bool res = automata().setStartState($1);
+    if (!res) {
+        throw(std::runtime_error(automata().error()));
+    }
+}
+
+addTerm: T_TERM_NODE {
+    bool res = automata().addTerminal($1);
+    if (!res) {
+        throw(std::runtime_error(automata().error()));
+    }
+}
+
+
+
+%%
+
+int main(int argc, char **argv) {
+    freopen(argv[1], "r", stdin);
+    std::ifstream input{argv[2], std::ifstream::in};
+    std::string str;
+    input >> str;
+    try {
+        yyparse();
+    }
+    catch(std::exception &e) {
+        std::cout << "Failed to parse: " << e.what() << '\n';
+        return 1;
+    }
+    if(!automata().validAutomata()) {
+        std::cout << "Failed to parse: " << automata().error() << '\n';
+        return 1;
+    }
+    automata().print();
+    
+    std::cout << "Matching " << str << " ...\n";
+    std::cout << "result = " << std::boolalpha << automata().Match(str) << '\n';
+    return 0;
+}
