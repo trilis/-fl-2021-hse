@@ -1,0 +1,3 @@
+points q_1, q_2;
+start q_1;
+terminal q_1;
