@@ -135,7 +135,7 @@ if (yylineno >= FUNC_START_LINE) {
 }
 }
 
-<<EOF>>     {printf("(eof %u)\n", yylineno); return 0;}
+<<EOF>>     {/*printf("(eof %u)\n", yylineno);*/ return 0;}
 
 {SYMB}      {
     if (yylineno == 1) {

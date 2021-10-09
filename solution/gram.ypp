@@ -153,15 +153,12 @@ class Automata {
         while (curPos != word.size()) {
             curChar = word[curPos];
             auto s = std::string{curChar};
-            std::cerr << "Parsing symbol: " << s << '\n';
             if (auto it = Transitions.find({curState, std::string{curChar}}); it != Transitions.end()) {
                 curState = it->second;
-                std::cerr << "Transitted -> " << it->second << '\n';
                 curPos++;
             }
             else {
                 curState = sink;
-                std::cerr << "...sinked" << '\n';
                 break;
             }
         }
@@ -267,25 +264,14 @@ funcBlock: func T_COMMA funcBlock {
 
 }
 func: T_OPEN_BRACE arguments T_CLOSE_BRACE T_ARROW T_RSLT_NODE {
-    std::cerr << "!!! args: ";
-    for (auto &arg : arguments().args) {
-        std::cerr << arg << ' ';
-    }
-    std::cerr << '\n';
     bool res = automata().addTransition(arguments().srcState, $5, arguments().args);
     if (!res) {
         throw(std::runtime_error(automata().error()));
     }
-        std::cerr << "Set transition: " << "from: " << arguments().srcState << " to: " << $5 << " via ";
-        for (auto &symb : arguments().args) {
-            std::cerr << symb << ' ';
-        }
-        std::cerr << '\n';
         arguments().clearArgs();
 }
 
 newSymb: T_SYMB {
-    std::cout << "Read symbol: " << $1 << '\n';
     bool res = automata().addAlphaSymb($1);
     if (!res) {
         throw(std::runtime_error(automata().error()));
@@ -333,7 +319,6 @@ int main(int argc, char **argv) {
         std::cout << "Failed to parse: " << automata().error() << '\n';
         return 1;
     }
-    automata().print();
     
     std::cout << "Matching " << str << " ...\n";
     std::cout << "result = " << std::boolalpha << automata().Match(str) << '\n';
