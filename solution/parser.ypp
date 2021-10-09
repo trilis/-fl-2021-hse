@@ -1,0 +1,202 @@
+%{
+#include <iostream>
+#include <string>
+#include <cstdlib>
+#include <map>
+#include <cassert>
+#include <set>
+#include <vector>
+
+int yylex();
+int yyerror(const char *p) { std::cerr << "Error!" << std::endl; return 1;}
+
+
+struct Transition {
+    std::string first;
+    std::string second;
+    char t;
+};
+
+struct Parser;
+
+struct Automate {
+
+private:
+
+    std::string start;
+    std::set<std::string> states;
+    std::set<std::string> terminals;
+    std::set<char> alphabet;
+    std::vector<Transition> transitions;
+    friend Parser;
+
+public:
+
+    void define_start(std::string start_) {
+        start = start_;
+    }
+
+    void add_state(std::string state_) {
+        states.insert(state_);
+    }
+
+    void add_terminal(std::string terminal_) {
+        terminals.insert(terminal_);
+    }
+
+    void add_letter(char letter_) {
+        alphabet.insert(letter_);
+    }
+
+    void add_transition(std::string state_1, std::string state_2, char letter_) {
+        Transition transition = {state_1, state_2, letter_};
+        transitions.push_back(transition);
+    }
+
+};
+
+Automate automate;
+
+%}
+
+%union {
+  char *val; 
+  char sym;
+};
+
+
+%token <val> STATES 
+%token <val> START
+%token <val> TERMINALS
+%token <val> ALPHABET
+%token <val> TRANSITIONS
+%token <val> STATE_NAME
+%token <sym> LETTER 
+%token <sym> SEMICOLON
+
+
+%%
+start: States Start Terminals Alphabet Transition {}
+
+States: STATES Enum_states {}
+
+Enum_states: Enum_states STATE_NAME {
+  automate.add_state(std::string($2));
+}
+
+| STATE_NAME {
+  automate.add_state(std::string($1));
+}
+
+Start: START STATE_NAME {
+  automate.define_start(std::string($2));
+}
+
+Terminals: TERMINALS Enum_terminals {}
+
+Enum_terminals: Enum_terminals STATE_NAME {
+  automate.add_terminal(std::string($2));
+}
+
+| STATE_NAME {
+  automate.add_terminal(std::string($1));
+}
+
+Alphabet: ALPHABET Enum_letters {}
+
+Enum_letters: Enum_letters LETTER {
+  automate.add_letter($2);
+}
+
+| LETTER {
+  automate.add_letter($1);
+}
+
+Transition: TRANSITIONS Enum_transition {}
+
+Enum_transition: Enum_transition transition_node {}
+
+| transition_node: STATE_NAME SEMICOLON STATE_NAME SEMICOLON LETTER {
+  automate.add_transition(std::string($1), std::string($3), $5);
+}
+%%
+
+struct state_current {
+
+    state_current(bool finish_) {
+        finish = finish_;
+    }
+
+    std::map<char, state_current*> transitions;
+
+    void change_state(char symbol) {
+        *this = *transitions[symbol];
+    }
+
+    void set_terminal() {
+        finish = true;
+    }
+
+    [[nodiscard]] bool finish_state() const{
+        return finish;
+    }
+
+private:
+    bool finish;
+};
+
+struct Parser {
+
+    Parser() {
+
+        for(auto state : automate.states){
+            states_[state] = new state_current(false);
+        }
+
+        for(auto transition: automate.transitions){
+            states_[transition.first]->transitions[transition.t] = states_[transition.second];
+        }
+
+        for(auto state : automate.terminals){
+            states_[state]->set_terminal();
+        }
+
+    }
+
+    bool parse(std::string string_to_parse) {
+        for(auto symbol : string_to_parse){
+            states_[automate.start]->change_state(symbol);
+        }
+        return states_[automate.start]->finish_state();
+    }
+
+private:
+    std::map<std::string, state_current*> states_;
+};
+
+
+int main(int argc, char* argv[]) {
+    freopen(argv[1], "r", stdin);
+    std::string string_to_parse;
+    yyparse();
+    fclose(stdin);
+
+    Parser parser;
+
+    freopen(argv[2], "r", stdin);
+    std::cin >> string_to_parse;
+    fclose(stdin);
+
+    bool parsing_result = parser.parse(string_to_parse);
+
+    if (parsing_result) {
+        std::cout << "Belongs to the language\n";
+        return 0;
+    }
+
+
+    std::cout << "Nо matching\n";
+
+    return 0;
+
+}
