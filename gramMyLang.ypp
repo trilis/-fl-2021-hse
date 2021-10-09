@@ -28,10 +28,10 @@ struct DFA{
     return is_complete;
   }
 
-  bool check_str(const string& str){
+  bool check_str(ifstream& in){
     int v = start;
     bool go;
-    for (char word : str){
+    for (char word = in.get(); !in.eof(); in.get(word)){
       go = false;
       for (const auto& edge : g[v]){
         if (word == edge.first[0]){
@@ -152,13 +152,10 @@ int main(int argc, char* argv[])
     cerr << "Error! Unable to open " << argv[1] << " for reading\n";
     return 1;
   }
-  string str;
-  while (getline(in, str)){
-    if (dfa.check_str(str)){
-      cout << "The string belong to the automaton\n";
-    }else{
-      cout << "The string doesn't belong to the automaton\n";
-    }
+  if (dfa.check_str(in)){
+    cout << "The string belong to the automaton\n";
+  }else{
+    cout << "The string doesn't belong to the automaton\n";
   }
   in.close();
   return 0;
