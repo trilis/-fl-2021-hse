@@ -21,7 +21,7 @@ struct DFA{
 
   bool is_correct(){
     if (start == -1){cerr << "Error! Unable to find start vertex\n"; return false;}
-    bool is_complete = true;
+    bool is_complete = g[0].size() != 0;
     int alphabet_size = g[0].size();
     for (const auto& p : g){ is_complete &= alphabet_size == p.size(); }
     if (!is_complete) {cerr << "Error! DFA is not complete\n"; }
