@@ -3,40 +3,146 @@
 #include <string>
 #include <map>
 #include <cstdlib>
+#include <cassert>
+#include <set>
+#include <fstream>
+
+
 using namespace std;
 
-int yylex(); 
-int yyerror(const char *p) { cerr << "Error!" << endl; }
+int yylex();
+
+int yyerror(const char *p) {
+    cerr << "Catch unexpected token " << p << endl;
+    return 1;
+}
+
+map<string, char> ver;
+map<pair<string, char>, string> tr;
+set<char> symbols;
+set<char> alpha;
+int cnt = 0;
+string start;
 %}
 
 %union {
-  int val; 
+  char* str;
   char sym;
 };
-%token <val> NUM
-%token <sym> OPA OPM LP RP STOP
-%type  <val> exp term sfactor factor
+
+%token <str> VERTEX
+%token <sym> CONDITION EDGE LP RP COMMA SYMBOL
+
+%%
+start: alphapet states transitions {}
+
+alphapet: alphapet SYMBOL                                { 
+    if (alpha.find($2) != alpha.end()) {
+        throw std::runtime_error("Symbols in alphabet are not unique");
+    }
+    alpha.insert($2); }
+| SYMBOL                                                 { 
+    if (alpha.find($1) != alpha.end()) {
+        throw std::runtime_error("Symbols in alphabet are not unique");
+    }
+    alpha.insert($1); }
+
+states: states VERTEX CONDITION                          { 
+    if (ver.find($2) != ver.end()) {
+        throw std::runtime_error("States are not unique");
+    }
+    if ($3 == 's' || $3 == 'u') {
+        start = $2;
+    }
+    ver[$2] = $3; }
+| VERTEX CONDITION                                       { 
+    if (ver.find($1) != ver.end()) {
+        throw std::runtime_error("States are not unique");
+    }
+    if ($2 == 's' || $2 == 'u') {
+        start = $1;
+    }
+    ver[$1] = $2; }
+
+transitions: transitions trans                          {}
+| trans                                                 {}
+
+sequence: sequence COMMA SYMBOL             { 
+    if (alpha.find($3) == alpha.end()) {
+        throw std::runtime_error("Non-alphabetical symbol");
+    }
+    symbols.insert($3); }
+| SYMBOL                                    { 
+    if (alpha.find($1) == alpha.end()) {
+        throw std::runtime_error("Non-alphabetical symbol");
+    }
+    symbols.insert($1); }
+
+trans: EDGE VERTEX VERTEX LP sequence RP    { 
+    for (auto x : symbols) {
+        auto p = make_pair($2, x);
+        if (tr.find(p) != tr.end()) {
+            throw std::runtime_error("Non-deterministic automat!");
+        }
+        tr[p] = $3;
+    }
+    symbols.clear();
+ } 
 
 %%
 
-start: exp            { cout << $1 << endl; }
+bool match(const string& expr) {
+    string state = start;
+    int idx = 0;
+    while (idx != expr.size()){
+        if (alpha.find(expr[idx]) == alpha.end()) {
+            return false;
+        }
+        state = tr[make_pair(state, expr[idx])];
+        idx++;
+    }
+    if (ver[state] == 't' || ver[state] == 'u') {
+        return true;
+    }
+    return false;
+}
 
-exp: exp OPA term     { $$ = ($2 == '+' ? $1 + $3 : $1 - $3); }
-| term                { $$ = $1; }
 
-term: term OPM factor { $$ = ($2 == '*' ? $1 * $3 : $1 / $3); }
-| sfactor             { $$ = $1; }
+void check_correct() {
+    if (start.empty()) {
+        throw std::runtime_error("Automat has no starting state!");
+    }
+    if (alpha.size() * ver.size() != tr.size()) {
+        throw std::runtime_error("Automat not full");
+    }
+}
 
-sfactor: OPA factor   { $$ = ($1 == '+' ? $2 : -$2); }
-| factor              { $$ = $1; }
 
-factor: NUM           { $$ = $1; }
-| LP exp RP           { $$ = $2; }
+int main(int argc, char* argv[]) {
+  freopen(argv[1], "r", stdin);
+  try{
+       yyparse();
+       check_correct();
+    }
+    catch(std::runtime_error &s){
+         cout << s.what() << endl;
+         return 0;
+    }
+  fclose(stdin);
 
-%%
-
-int main()
-{
-  yyparse();
-  return 0;
+  std::ifstream input(argv[2]);
+    std::string matched_string;
+    while (input >> matched_string) {
+        try{
+            if (match(matched_string)){
+                std::cout << "YES\n";
+            } else {
+                std::cout << "NO\n";
+            }
+        } catch(std::runtime_error &s){
+            cout << s.what() << endl;
+            return 0;
+        }
+    }
+    return 0;
 }
