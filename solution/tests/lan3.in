@@ -1,0 +1,5 @@
+states: empty zero one
+start: empty
+terminals: one
+alphabet: '0' '1'
+transitions: empty;zero;'1' empty;one;'0' zero;zero;'0' zero;zero;'1' one;one;'1' one;one;'0'
