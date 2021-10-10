@@ -67,9 +67,8 @@ TRANSITION_ALPHABETS: LP TRANSITION_ALPHABETS RP { }
 %%
 
 // argv[0] -- путь к файлу с автоматом
-// argv[1] -- путь к файлу с проверяемой строкой
+// argv[1] -- путь к файлу с проверяемым словом
 int main(int argc, char **argv) {
-  // cout << "read automat from file: " << argv[1] << "\n";
   freopen(argv[1], "r", stdin);
   try {
     yyparse();
@@ -138,37 +137,12 @@ int main(int argc, char **argv) {
   }
 
   freopen(argv[2], "r", stdin);
-  // cout << "initial state: " << init_state << "\n";
-
-  // for (auto alph: alphabet) {
-  //   cout << "!" << alph << "!" << "\n";
-  // }
-  // cout << "-----\n";
-
-  // for (auto state: states) {
-  //   cout << "!" << state << "!" << "\n";
-  // }
-  // cout << "-----\n";
-
-  // for (auto state: final_states) {
-  //   cout << "!" << state << "!" << "\n";
-  // }
-
-  // for (auto transition: transitions) {
-  //   cout << "!" << transition.from << " -> " << transition.to << "!" << "\n";
-  //   for (auto alph: transition.alphabet) {
-  //     cout << "!" << alph << "!" << "\n";
-  //   }
-  // }
-
   string word;
   cin >> word;
-  // cout << "! match string: " << word << "\n";
   fclose(stdin);
 
   string cur_state = init_state;
   for (char c: word) {
-    // cout << "! cur state: " << cur_state << "\n"; 
     bool transition_found = false;
     for (Transition t: transitions) {
       if (t.from == cur_state) {
