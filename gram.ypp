@@ -2,41 +2,175 @@
 #include <iostream>
 #include <string>
 #include <map>
+#include <stdexcept>
+#include <vector>
 #include <cstdlib>
+#include "./gram_types.h"
+
 using namespace std;
 
 int yylex(); 
-int yyerror(const char *p) { cerr << "Error!" << endl; }
+int yyerror(const char *p) { cerr << "Error! " << p << endl; return 1; }
+
+vector<Transition *> transitions;
+string start_state;
+vector<string> terminal_states;
+vector<string> states;
+unordered_map<string, AutomataState *> automata_map;
+unordered_set<string> terminal_states_set;
+
 %}
 
 %union {
   int val; 
   char sym;
+  char *word;
+  std::vector<char> *sym_vector;
+  Transition *transition;
 };
+
+%token <sym> RIGHT_PAREN LEFT_PAREN
+%token <word> TRANSITIONS_KW
+%token <word> STATES_KW
+%token <word> ARROW_START
+%token <word> ARROW_END
+%token <word> START_KW
+%token <word> TERMINAL_KW
+%token <sym> STAR
+%token <sym> COMMA
 %token <val> NUM
-%token <sym> OPA OPM LP RP STOP
-%type  <val> exp term sfactor factor
+%token <sym> SYMBOL
+%token <word> ID
+%nterm <sym_vector> char_list
+%nterm <transition> transition_description
+%nterm <word> state_description
 
 %%
 
-start: exp            { cout << $1 << endl; }
+start: dfa
 
-exp: exp OPA term     { $$ = ($2 == '+' ? $1 + $3 : $1 - $3); }
-| term                { $$ = $1; }
+dfa: 
+    ID LEFT_PAREN states_block start_block transitions_block RIGHT_PAREN
 
-term: term OPM factor { $$ = ($2 == '*' ? $1 * $3 : $1 / $3); }
-| sfactor             { $$ = $1; }
+states_block: 
+    STATES_KW LEFT_PAREN states_list RIGHT_PAREN
 
-sfactor: OPA factor   { $$ = ($1 == '+' ? $2 : -$2); }
-| factor              { $$ = $1; }
+states_list: 
+    state_description { states.push_back(string($1)); }
+  | states_list COMMA state_description { states.push_back(string($3)); }
 
-factor: NUM           { $$ = $1; }
-| LP exp RP           { $$ = $2; }
+state_description: 
+    ID
+  | state_description TERMINAL_KW { $$=$1; terminal_states.push_back(string($$)); }
+
+start_block: 
+    START_KW LEFT_PAREN ID RIGHT_PAREN { start_state = string($3);}
+
+transitions_block: 
+    TRANSITIONS_KW LEFT_PAREN transitions_list RIGHT_PAREN
+
+transitions_list: 
+    transition_description { transitions.push_back($1); }
+  | transitions_list COMMA transition_description { transitions.push_back($3); }
+
+transition_description: 
+    ID ARROW_START char_list ARROW_END ID { $$ = new Transition{string($1), string($5), *($3)}; }
+
+char_list: 
+    STAR  { $$ = new vector<char>(); $$->push_back('*'); }
+  | SYMBOL { $$ = new vector<char>(); $$->push_back($1); }
+  | char_list COMMA SYMBOL { $$->push_back($3); }
+  | char_list COMMA STAR { $$->push_back('*'); }
 
 %%
 
-int main()
-{
+void test() {
+  
+}
+
+
+int main(int argc, char* argv[]) {
+  freopen(argv[1], "r", stdin);
   yyparse();
+  fclose(stdin);
+#ifdef HOME
+  cout << terminal_states.size() << endl;
+  cout << states.size() << endl;
+  cout << transitions.size() << endl;
+  cout << "start state: " << start_state << endl;
+  cout << "start state length: " << start_state.size() << endl;
+  for (auto & t : transitions) {
+    cout << t->from << ' ' << '{';
+    for (auto c : t->symbols) {
+      cout << c << ',';
+    }
+    cout << '}' << ' ' << t->to << endl;
+  }
+  for (auto & t : states) {
+    cout << t << endl;
+  }
+  for (auto & t : states) {
+    cout << t << endl;
+  }
+#endif
+  try {
+    
+    for (auto & s : states) {
+      if (automata_map.find(s) == automata_map.end()) {
+        automata_map[s] = new AutomataState{s};
+      } else {
+        throw logic_error("Given several states with same identifiers");
+      }
+    }
+
+    if (automata_map.find(start_state) == automata_map.end()) {
+      throw logic_error("Can not create start state that does not exist");
+    }
+    
+    for (auto t : transitions) {
+      if (automata_map.find(t->from) == automata_map.end() || automata_map.find(t->to) == automata_map.end()) {
+        throw logic_error("There are states that do not exist in transitions");
+      }
+      for (auto c : t->symbols) {
+        automata_map[t->from]->add_transition(c, automata_map[t->to]);
+      }
+    }
+    
+    for (auto & ts : terminal_states) {
+      if (automata_map.find(ts) == automata_map.end()) {
+        throw logic_error("Can not make terminal state that does not exist");
+      }
+      terminal_states_set.insert(ts);
+    }
+    
+  } catch(exception &e) {
+    cout << e.what() << endl;
+  }
+
+  freopen(argv[2], "r", stdin);
+  string word_to_validate;
+  cin >> word_to_validate;
+  fclose(stdin);
+
+  int cur_idx = 0;
+  
+  AutomataState * current_state = automata_map[start_state];
+  try {
+    while (cur_idx < word_to_validate.size()) {
+      #ifdef HOME
+      cout << "Current state is " << current_state->name << endl;
+      #endif
+      current_state = current_state->go(word_to_validate[cur_idx++]);
+    }
+  } catch (...) {
+    cout << "Word did not pass the check" << endl;
+  }
+
+  if (terminal_states_set.find(current_state->name) != terminal_states_set.end()) {
+    cout << "Word successfully passed check" << endl;
+  } else {
+    cout << "Word did not pass the check" << endl;
+  }
+
   return 0;
 }
