@@ -1,0 +1,267 @@
+%{
+#include <iostream>
+#include <string>
+#include <map>
+#include <cstdlib>
+#include <vector>
+#include <set>
+#include <fstream>
+#include <unordered_map>
+#include <map>
+
+using namespace std;
+
+int yylex(); 
+int yyerror(const char *p) { cerr << "Error: "<< p << endl; }
+
+enum cond_type {
+  start = 1, regular = 2, terminate_ = 3
+};
+
+class variable {
+protected:
+    std::string name;
+public:
+    variable(std::string name_) : name(std::move(name_)) {}
+
+    std::string get_name() const {
+        return name;
+    }
+
+    virtual void print() const {};
+    virtual ~variable() {}
+};
+
+static size_t global_count = 0;
+
+class cond : public variable {
+private:
+    cond_type type;
+    size_t global_index;
+
+public: 
+    cond(cond_type t, const char *name_) : variable(std::move(std::string(name_))), type(t), global_index(global_count++) {}
+
+    cond_type get_type() const {
+        return type;
+    }
+
+    size_t get_index() const {
+        return global_index;
+    }
+
+    void print() const override {
+        std::cout << name << ' ' << global_index << ' ' << type << endl;
+    }
+};
+
+class alph : public variable {
+private: 
+    std::set<char> container; 
+    std::string name;
+    
+public:
+    alph() = default;
+
+    alph(const char *name_, std::vector<char> buffer) :  variable(std::move(std::string(name_))) {
+        for (const auto &c: buffer) {
+            container.insert(c);
+        }
+    };
+
+    bool membership_test(char s) const {
+        return container.find(s) != container.end();
+    }
+
+    void add(char s) {
+        container.insert(s);
+    }
+
+    void print() const override {
+        for (auto it = container.begin(); it != container.end(); it++) {
+            std::cout << *it << ' ';
+        }
+        std::cout << endl;
+    }
+
+    void add_name(const char *name_) {
+        name = std::string(name_);
+    }
+};
+
+class edge : public variable {
+private:
+    cond *from, *to;
+    alph *req;
+
+public:
+    edge (cond *from_, cond *to_, alph *a, const char *name_) 
+    : variable(std::move(std::string(name_))), from(from_), to(to_), req(a) {}
+    
+    bool check(char s) const {
+        return req->membership_test(s);
+    }
+
+    cond *get_from() const {
+        return from;
+    }
+
+    cond *get_to() const {
+        return to;
+    }
+
+    alph *get_req() const {
+        return req;
+    }
+
+    void print() const override {
+        std::cout << name << ' ' << from->get_name() << ' ' << to->get_name() << ' ' << req->get_name() << endl;
+    }
+};
+
+class automat {  
+private:
+    std::vector<alph *> alph_list;
+    std::vector<cond *> cond_list;
+    std::vector<edge *> edge_list;
+    int start;
+    std::unordered_map<size_t, std::vector<edge *>> graph;
+    std::map<std::string, variable *> name_to_index;
+    std::unordered_map<size_t, int> terminated;
+
+public:
+    automat() {}
+
+    void add_alph(alph *a) {
+        alph_list.emplace_back(a);
+        name_to_index[a->get_name()] = a;
+    } 
+
+    void add_cond(cond *c) {
+        if (c->get_type() == start) {
+            start = c->get_index();
+        } 
+        if (c->get_type() == terminate_) {
+            terminated[c->get_index()] = 1;
+        }
+        cond_list.push_back(c);
+        name_to_index[c->get_name()] = c;
+    }
+
+    void print() const {
+        for (const auto &p : name_to_index) {
+            std::cout << p.first << ' ' ; p.second ->print();
+            std::cout << std::endl;
+        }
+    }
+
+    void add_edge(edge *e) {
+        edge_list.push_back(e);
+        name_to_index[e->get_name()] = e;
+        graph[e->get_from()->get_index()].emplace_back(e);
+    }       
+
+    variable *find(std::string s) {
+        return name_to_index[s];
+    }
+
+    bool run(const std::string &s) {
+        cond *v = cond_list[start];
+        
+        for (int i = 0; i < s.size(); i++) {
+            for (const auto &e : graph[v->get_index()]) {
+                if (e->check(s[i])) {
+                    v = e->get_to();
+                    break;
+                }
+            }
+        }
+        
+        return v->get_type() == terminate_;
+    }
+
+} global;
+
+std::vector<char> buffer;
+
+%}
+
+%union {
+  int val; 
+  char str[128];
+  char sym;
+};
+
+%type <str> file 
+%type <str> line 
+%token <str> var
+%token <str> cond_var
+%token <str> alph_var
+%token <str> edge_var
+%token <sym> op
+%token <str> ch
+%token <sym> LFP
+%token <sym> RFP
+%token <sym> LP
+%token <sym> RP
+%token <sym> COMMA
+%token <str> triple
+%token <str> simple_cond
+
+%%
+
+start : file { }
+
+
+file : file line {}
+| line {}
+
+line : cond_var var op simple_cond {
+    cond_type t = regular;
+    if (std::string($4) == "start") {
+        t = start;
+    }
+    if (std::string($4) == "terminate") {
+        t = terminate_;
+    }
+    cond *cnd = new cond(t, $2); 
+    global.add_cond(cnd);
+}
+| alph_var var op LFP tuple RFP {alph *al = new alph($2, buffer); global.add_alph(al); buffer.clear();}
+| edge_var var op LP var COMMA var COMMA var RP { 
+    cond *c1 = dynamic_cast<cond *> (global.find(std::string($5))); 
+    cond *c2 = dynamic_cast<cond *> (global.find(std::string($7))); 
+    alph *a = dynamic_cast<alph *> (global.find(std::string($9))); 
+    
+    edge *e = new edge(c1, c2, a, $2);
+    global.add_edge(e);
+}
+
+tuple : ch COMMA tuple {std::string st($1); buffer.push_back(st[1]);}
+| ch { std::string st($1); buffer.push_back(st[1]);}
+
+%%
+
+int main(int argc, char **argv) {
+  if (argc != 3) {
+      std::cout << "Invalid number of arguments: 2 are needed, but " << argc - 1 << "found\n";
+      exit(1);
+  } 
+
+  freopen(argv[1], "r", stdin);
+  yyparse();
+
+  std::ifstream fin{argv[2], std::ifstream::in};
+
+
+  while (!fin.eof()) {
+      std::string str;
+      fin >> str;
+      bool result = global.run(str);
+      std::cout << (result == 1 ? "YES" : "NO") << std::endl;
+  }
+
+  fin.close();
+  
+  return 0;
+}
