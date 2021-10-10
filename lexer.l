@@ -36,8 +36,6 @@ terminal        { num_chars += yyleng; yylval.word = yytext; return SPEC_TERMINA
     exit(1);
 }
 
-<<EOF>>     {return 0;}
-
 . {
     printf("ERROR in line %u, position %d, symbol %s\n", yylineno, num_chars, yytext);
     exit(1);

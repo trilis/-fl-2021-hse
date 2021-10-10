@@ -40,6 +40,8 @@ namespace parser {
             return 0;
         }
     }
+
+    static std::string buf;
 }
 
 %}
@@ -48,7 +50,6 @@ namespace parser {
 %union {
     char* word;
     char sym;
-    int error_code;
 }
 
 %token <word> KEY_STATES KEY_LINKS ID SPEC_BEGIN SPEC_TERMINAL BRACKET_OPEN BRACKET_CLOSE
@@ -57,9 +58,11 @@ namespace parser {
 
 %%
 
-start: init_states init_links {}
+start: init_states {}
+| init_states init_links init_states {}
+| init_states init_links {}
 
-init_states: KEY_STATES ID COLON states { }
+init_states: KEY_STATES ID COLON states {}
 
 states: TAB SPEC_BEGIN ID states { return parser::add_id($2, true, false); }
 | TAB SPEC_TERMINAL ID states { return parser::add_id($2, false, true); }
@@ -69,18 +72,18 @@ states: TAB SPEC_BEGIN ID states { return parser::add_id($2, true, false); }
 init_links: KEY_LINKS ID COLON links { }
 
 links: TAB ID arrow ID links { return parser::add_link($2, $3, $4); }
-| TAB ID arrow ID { return parser::add_link($2, $3, $4); }
+| TAB ID arrow ID { return parser::add_link($2, parser::buf, $4); }
 
 arrow: BRACKET_OPEN string BRACKET_CLOSE { }
 
-string: string CHAR {  }
-| CHAR {  }
+string: CHAR string { parser::buf += $2; }
+| CHAR { parser::buf.clear(); parser::buf += $1; }
 
 %%
 
 
-
 int main(int argc, char** argv) {
-    yyparse();
+    cout << yyparse() << endl;
+
     return 0;
 }
