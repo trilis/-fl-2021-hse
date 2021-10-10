@@ -22,14 +22,15 @@ namespace parser {
     std::unordered_map<std::string, Node*> used_names;
     Node* beginning = nullptr;
 
-    static int add_id(const std::string& id, bool is_beginnning, bool is_terminal) {
+    static void add_id(const std::string& id, bool is_beginnning, bool is_terminal) {
+        
         if (used_names.count(id)) {
-            return 1;
+            exit(1);
         }
 
         if (is_beginnning) {
             if (beginning) {
-                return 1;
+                exit(1);
             }
             else {
                 beginning = new Node(is_terminal);
@@ -39,23 +40,19 @@ namespace parser {
         else {
             used_names[id] = new Node(is_terminal);
         }
-
-        return 0;
         
     }
 
-    static int add_link(const std::string& id1, const std::string &link, const std::string& id2) {
-        
+    static void add_link(const std::string& id1, const std::string &link, const std::string& id2) {
         if (used_names.count(id1) == 0 || used_names.count(id2) == 0) {
-            return 1;
+            exit(1);
         }
 
         if (used_names[id1]->links.count(id2)) {
-            return 1;
+            exit(1);
         }
         else {
             used_names[id1]->links[link] = used_names[id2];
-            return 0;
         }
     }
 
@@ -72,14 +69,22 @@ namespace parser {
 
         for (auto it: current_node->links) {
             std::regex reg("[" + std::string(it.first) + "]");
-
-            if (regex_match(std::to_string(str[0]), reg)) {
+            
+            if (regex_match(std::string({str[0]}), reg)) {
                 
                 return is_match(it.second, str + 1);
             }
         }
 
         return 0;
+    }
+
+    static char* construct(const char *from, char c) {
+        int pos = std::strlen(from);
+        char *dest = new char[std::strlen(from) + 1];
+        strcpy(dest, from);
+        dest[pos] = c;
+        return dest;
     }
 }
 
@@ -97,30 +102,34 @@ namespace parser {
 
 %%
 
-start: init_states {}
-| init_states init_links init_states {}
-| init_states init_links {}
+start: dfa {}
 
-init_states: KEY_STATES ID COLON states {}
+dfa: init_states init_links {}
+
+init_states: KEY_STATES ID COLON states { }
 | KEY_STATES COLON states {}
 
-states: TAB SPEC_BEGIN ID states { return parser::add_id($3, true, false); }
-| TAB SPEC_BEGIN SPEC_TERMINAL ID states { return parser::add_id($4, true, true); }
-| TAB SPEC_TERMINAL SPEC_BEGIN ID states { return parser::add_id($4, true, true); }
-| TAB SPEC_TERMINAL ID states { return parser::add_id($3, false, true); }
-| TAB ID states { return parser::add_id($2, false, false); }
-| TAB ID { return parser::add_id($2, false, false); }
+states: TAB SPEC_BEGIN ID states {  parser::add_id($3, true, false); }
+| TAB SPEC_BEGIN ID {  parser::add_id($3, true, false); }
+| TAB SPEC_BEGIN SPEC_TERMINAL ID states {  parser::add_id($4, true, true); }
+| TAB SPEC_BEGIN SPEC_TERMINAL ID {  parser::add_id($4, true, true); }
+| TAB SPEC_TERMINAL SPEC_BEGIN ID states { parser::add_id($4, true, true); }
+| TAB SPEC_TERMINAL SPEC_BEGIN ID {  parser::add_id($4, true, true); }
+| TAB SPEC_TERMINAL ID states {  parser::add_id($3, false, true); }
+| TAB SPEC_TERMINAL ID {  parser::add_id($3, false, true); }
+| TAB ID states {  parser::add_id($2, false, false); }
+| TAB ID {  parser::add_id($2, false, false); }
 
 init_links: KEY_LINKS ID COLON links {}
 | KEY_LINKS COLON links {}
 
-links: TAB ID arrow ID links { return parser::add_link($2, $3, $4); }
-| TAB ID arrow ID { return parser::add_link($2, parser::buf, $4); }
+links: TAB ID arrow ID links {  parser::add_link($2, $3, $4); }
+| TAB ID arrow ID { parser::add_link($2, $3, $4); }
 
-arrow: BRACKET_OPEN string BRACKET_CLOSE { }
+arrow: BRACKET_OPEN string BRACKET_CLOSE { $$ = $2; }
 
-string: CHAR string { parser::buf += $2; }
-| CHAR { parser::buf.clear(); parser::buf += $1; }
+string: string CHAR { $$ = parser::construct($$, $2); }
+| CHAR { $$ = parser::construct("\0", $1); }
 
 %%
 
@@ -132,11 +141,10 @@ int main(int argc, char** argv) {
         yyparse();
         fclose(stdin);
     }
-    
+
     std::string buf;
     if(freopen(argv[2], "r", stdin)) {
         std::cin >> buf;
-
         fclose(stdin);
     }
     
