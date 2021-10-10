@@ -1,42 +1,176 @@
 %{
-#include <iostream>
-#include <string>
-#include <map>
 #include <cstdlib>
-using namespace std;
+#include <cstring>
+#include <fstream>
+#include <iostream>
+#include <map>
+#include <set>
+#include <string>
+#include <vector>
+    using namespace std;
 
-int yylex(); 
-int yyerror(const char *p) { cerr << "Error!" << endl; }
+    int yylex();
+    int yyerror(const char *p) {
+        cerr << "Error! " << p << endl;
+        exit(1);
+    }
+
+    struct graph {
+        int n;
+        vector<vector<set<int>>> g;
+        int start = -1;
+        int break_ = -1;
+        int cnt = 0;
+        map<int, int> mp;
+        map<int, int> types;
+        void is_correct() {
+            if (cnt != n) {
+                throw runtime_error("Error! Missing information about vertexes");
+            }
+            for (int i = 0; i < n; i++) {
+                if (types[i] == 1000) {
+                    if (start == -1) {
+                        start = i;
+                    } else {
+                        throw runtime_error("Error! More than one start vertexes");
+                    }
+                } else if (types[i] == 1) {
+                    if (break_ == -1) {
+                        break_ = i;
+                    } else {
+                        throw runtime_error("Error! More than one break point");
+                    }
+                }
+            }
+            if (start == -1) {
+                throw runtime_error("Error! There are no start vertexes");
+            }
+            if (!dfs(start)) {
+                throw runtime_error("Error! Automata is not finite");
+            }
+        }
+        vector<int> used;
+        bool dfs(int v) {
+            used[v] = true;
+            if (types[v] == 10) return true;
+            for (int i = 0; i < n; i++) {
+                if (!used[i] && i != v && !g[v][i].empty()) {
+                    if (dfs(i)) return true;
+                }
+            }
+            return false;
+        }
+
+        bool check(ifstream& in) {
+            int v = start;
+            int func;
+            while (!in.eof()) {
+                in >> func;
+                for (int i = 0; i < n; i++) {
+                    if (g[v][i].find(func) != g[v][i].end()) {
+                        v = i;
+                    }
+                }
+            }
+            if (types[v] == 10) return true;
+            return false;
+        }
+    };
+    graph &g() {
+        static graph g_;
+        return g_;
+    }
+    int &from() {
+        static int i = 0;
+        return i;
+    }
+    int &to() {
+        static int i = 0;
+        return i;
+    }
 %}
 
 %union {
-  int val; 
-  char sym;
+    int num;
+    char sym;
 };
-%token <val> NUM
-%token <sym> OPA OPM LP RP STOP
-%type  <val> exp term sfactor factor
+%token<num> T_NUMBER
+%token<sym> COMMA SEMICOLON AT_SIGN EXCLAMATION_MARK
+%type<tag> discr FAKE VERTEX_LIST EDGE_LIST EDGE
 
 %%
 
-start: exp            { cout << $1 << endl; }
+start : discr {}
 
-exp: exp OPA term     { $$ = ($2 == '+' ? $1 + $3 : $1 - $3); }
-| term                { $$ = $1; }
+discr : FAKE EXCLAMATION_MARK VERTEX_LIST AT_SIGN EDGE_LIST {
+}
 
-term: term OPM factor { $$ = ($2 == '*' ? $1 * $3 : $1 / $3); }
-| sfactor             { $$ = $1; }
+FAKE : T_NUMBER {
+    g().n = $1;
+    g().used.resize($1, false);
+    g().g.resize(g().n, vector<set<int>>(g().n));
 
-sfactor: OPA factor   { $$ = ($1 == '+' ? $2 : -$2); }
-| factor              { $$ = $1; }
+}
 
-factor: NUM           { $$ = $1; }
-| LP exp RP           { $$ = $2; }
+VERTEX_LIST : VERTEX_LIST T_NUMBER COMMA T_NUMBER SEMICOLON {
+    if (g().mp.find($2) != g().mp.end()) {
+        throw runtime_error("Error! The information about this vertex has already known");
+    }
+    g().mp[$2] = g().cnt;
+    cout << $4 << ' ';
+    g().types[g().cnt] = $4;
+    g().cnt++;
+}
+| T_NUMBER COMMA T_NUMBER SEMICOLON {
+    if (g().mp.find($2) != g().mp.end()) {
+        throw runtime_error("Error! The information about this vertex has already known");
+    }
+    g().mp[$2] = g().cnt;
+    g().types[g().cnt] = $3;
+    g().cnt++;
+}
 
+EDGE_LIST : EDGE_LIST EDGE SEMICOLON{}
+| EDGE SEMICOLON {}
+
+EDGE : T_NUMBER COMMA T_NUMBER COMMA T_NUMBER {
+    if (g().types[g().mp[$1]] == 1) {
+        throw runtime_error("Error! An edge from break");
+    }
+    from() = g().mp[$1];
+    to() = g().mp[$3];
+    g().g[g().mp[$1]][g().mp[$3]].insert($5);
+}
+| EDGE COMMA T_NUMBER{
+    g().g[from()][to()].insert($3);
+}
 %%
 
-int main()
-{
-  yyparse();
-  return 0;
+int main(int argc, char *argv[]) {
+    freopen(argv[1], "r", stdin);
+    try {
+        yyparse();
+    } catch (exception & e)
+    {
+        cerr << e.what() << '\n';
+        fclose(stdin);
+        return 1;
+    }
+
+    fclose(stdin);
+    try {
+         g().is_correct();
+    } catch (exception & e)
+    {
+        cerr << e.what() << '\n';
+        return 1;
+    }
+
+    ifstream crunch(argv[2]);
+    if (g().check(crunch)){
+        cout << "YES\n";
+    } else {
+        cout << "NO\n";
+    }
+    return 0;
 }
