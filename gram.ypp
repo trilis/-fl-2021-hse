@@ -65,6 +65,9 @@ edge: EDGE SEP NUM SEP NUM SEP WORD {
 	int state_from = $3;
 	int state_to = $5;
 	string edge($7);
+	if (alphabet.count(edge) == 0) {
+		yyerror((edge + " does not exist in alphabet").c_str());
+	}
 	states[state_from].go[edge] = state_to;
 }
 

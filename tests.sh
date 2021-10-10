@@ -43,4 +43,11 @@ else
   echo "test6 is failed"
 fi
 
+./run tests/test7.aut tests/test3.wrd 1>/dev/null 2>tests/cur_ans
+if cmp -s -- tests/test7.ans tests/cur_ans; then
+  echo "test7 is ok"
+else
+  echo "test7 is failed"
+fi
+
 rm tests/cur_ans
