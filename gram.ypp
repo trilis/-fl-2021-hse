@@ -1,42 +1,269 @@
 %{
-#include <iostream>
 #include <string>
-#include <map>
-#include <cstdlib>
-using namespace std;
+#include <iostream>
+#include <vector>
+#include <unordered_map>
+#include <set>
+#include <fstream>
+#include <exception>
 
-int yylex(); 
-int yyerror(const char *p) { cerr << "Error!" << endl; }
+int yylex();
+int yyerror(const char *p) { std::cerr << "Error!" << std::endl; }
+
+//to make map work
+struct pair_hash
+{
+    template <class T1, class T2>
+    std::size_t operator()(const std::pair<T1, T2> &p) const
+    {
+        auto h1 = std::hash<T1>{}(p.first);
+        auto h2 = std::hash<T2>{}(p.second);
+        //genius move from https://stackoverflow.com/questions/5889238/why-is-xor-the-default-way-to-combine-hashes/27952689#27952689
+        return h1 ^ (h2 << 1);
+    }
+};
+
+class Automata
+{
+private:
+    std::size_t start_node = 0;
+    std::size_t drain_node = 0;
+    std::vector<bool> is_term_node = {};
+    std::unordered_map<std::pair<std::size_t, std::size_t>, std::size_t, pair_hash> trans;
+
+
+public:
+    Automata() = default;
+    void set_terminal_state(std::size_t node_id)
+    {
+        if (node_id < 1)
+        {
+            throw std::runtime_error("Node number is not valid");
+        }
+        else
+        {
+            if (is_term_node.size() < node_id + 1)
+            {
+                is_term_node.resize(node_id + 1, false);
+            }
+            is_term_node[node_id] = true;
+        }
+    }
+
+    void set_start_node(std::size_t node_id)
+    {
+        if (node_id < 1)
+        {
+            throw std::runtime_error("Node number is not valid");
+        }
+        else
+        {
+            start_node = node_id;
+        }
+    }
+
+    void set_drain_node(std::size_t node_id)
+    {
+        if (node_id < 1)
+        {
+            throw std::runtime_error("Node number is not valid");
+        }
+        else
+        {
+            drain_node = node_id;
+        }
+    }
+
+    void add_trans(std::size_t from_node, std::size_t to_node, const std::string &trans_args)
+    {
+        if (from_node < 1 || to_node < 1)
+        {
+            throw std::runtime_error("Node number is not valid.");
+        }
+        else if (trans_args.empty()){
+            throw std::runtime_error("Transition arguments are not valid.");
+        }
+        else
+        {
+            std::string ta = trans_args.substr(1, trans_args.size() - 2);
+            std::vector<std::size_t> args;
+            std::string delimiter = ",";
+            std::size_t pos = 0;
+            std::string token;
+            while ((pos = ta.find(delimiter)) != std::string::npos)
+            {
+                token = ta.substr(0, pos);
+                args.push_back(atoi(token.c_str()));
+                ta.erase(0, pos + delimiter.length());
+            }
+            args.push_back(atoi(ta.c_str()));
+            for (auto arg : args){
+                auto it = trans.find(std::pair<std::size_t, std::size_t>(from_node, arg));
+                if (it==trans.end())
+                {
+                    trans[std::pair<std::size_t, std::size_t>(from_node, arg)] = to_node;   
+                }
+                else{
+                    if (trans[std::pair<std::size_t, std::size_t>(from_node, arg)] != to_node){
+                        throw std::runtime_error("Transition arguments are not valid.");
+                    }
+                }
+            }
+        }
+    }
+
+
+    bool match(const std::string &str)
+    {
+        if (str.empty()){
+            throw std::runtime_error("Your string is empty. I don't like it. It's sus.");
+        }
+        std::size_t cur_node = start_node;
+        std::size_t arg;
+        for (int i = 0; i < str.size(); i++)
+        {
+            arg = str[i]-'0';
+            auto it = trans.find(std::pair<std::size_t, std::size_t>(cur_node, arg));
+            if (it != trans.end())
+            {
+                cur_node = it->second;
+                if (drain_node == cur_node)
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
+            }
+        }
+        return is_term_node[cur_node];
+    }
+};
+
+Automata automata;
+
+
 %}
 
 %union {
-  int val; 
-  char sym;
+    int num;
+    char str[512];
+    char c;
 };
-%token <val> NUM
-%token <sym> OPA OPM LP RP STOP
-%type  <val> exp term sfactor factor
+
+%token <str> DELIM
+%token <str> NODE_TYPE_ST
+%token <str> NODE_TYPE_TERM
+%token <str> NODE_TYPE_US
+%token <str> NODE_TYPE_DR
+%token <num> NODE
+%token <str> COLON
+%token <str> COMMA
+%token <str> ARGS
+%token <str> ARROW
 
 %%
+all: states DELIM trans{
 
-start: exp            { cout << $1 << endl; }
+}
 
-exp: exp OPA term     { $$ = ($2 == '+' ? $1 + $3 : $1 - $3); }
-| term                { $$ = $1; }
+states: s_node us_nodes term_nodes dr_node {
+} | s_node us_nodes term_nodes {
+} | s_node term_nodes dr_node {
+} | s_node term_nodes {
+}
 
-term: term OPM factor { $$ = ($2 == '*' ? $1 * $3 : $1 / $3); }
-| sfactor             { $$ = $1; }
+s_node: NODE_TYPE_ST COLON NODE {
+    try{
+        automata.set_start_node($3);
+    } catch (std::runtime_error &e) {
+        throw;
+    }
 
-sfactor: OPA factor   { $$ = ($1 == '+' ? $2 : -$2); }
-| factor              { $$ = $1; }
+}
 
-factor: NUM           { $$ = $1; }
-| LP exp RP           { $$ = $2; }
+term_nodes: NODE_TYPE_TERM COLON NODE COMMA term_nodes {
+    try{
+        automata.set_terminal_state($3);
+    } catch (std::runtime_error &e) {
+        throw;
+    }
+} | NODE COMMA term_nodes {
+    try{
+        automata.set_terminal_state($1);
+    } catch (std::runtime_error &e) {
+        throw;
+    }
+} | NODE {
+    try{
+        automata.set_terminal_state($1);
+    } catch (std::runtime_error &e) {
+        throw;
+    }
+} | NODE_TYPE_TERM COLON NODE {
+    try{
+        automata.set_terminal_state($3);
+    } catch (std::runtime_error &e) {
+        throw;
+    }
+}
 
+us_nodes: NODE_TYPE_US COLON NODE COMMA us_nodes {
+    
+} | NODE COMMA us_nodes{
+    
+} | NODE {
+    
+} | NODE_TYPE_US COLON NODE {
+    
+}
+
+
+
+dr_node: NODE_TYPE_DR COLON NODE {
+    try{
+        automata.set_drain_node($3);
+    } catch (std::runtime_error &e) {
+        throw;
+    }
+}
+
+trans: ARGS COLON NODE ARROW NODE trans {
+    try{
+        automata.add_trans($3, $5, $1);
+    } catch (std::runtime_error &e) {
+        throw;
+    }
+
+} | ARGS COLON NODE ARROW NODE {
+    try{
+        automata.add_trans($3, $5, $1);
+    } catch (std::runtime_error &e) {
+        throw;
+    }
+}
 %%
 
-int main()
+int main(int argc, char **argv)
 {
-  yyparse();
-  return 0;
+    freopen(argv[1], "r", stdin);
+    std::ifstream input{argv[2], std::ifstream::in};
+    std::string str;
+    input >> str;
+    try{
+        yyparse();
+    } catch (std::runtime_error &e){
+        std::cout<<"Oops! Something went wrong:"<<e.what()<<'\n';
+        return 0;
+    }
+    if (automata.match(str))
+    {
+        std::cout << "YES" << '\n';
+    }
+    else
+    {
+        std::cout << "NO" << '\n';
+    }
+    return 0;
 }
