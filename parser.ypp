@@ -5,18 +5,41 @@
 #include <cstdlib>
 #include <unordered_map>
 #include <regex>
-using namespace std;
+#include <vector>
+#include <stdexcept>
 
 int yylex(); 
-int yyerror(const char *p) { cerr << "Error!" << endl; return 1; }
+int yyerror(const char *p) { 
+    std::cerr << "Syntax error" << std::endl;
+    exit(1);
+}
+
 
 namespace parser {
+    
+    struct unavailible_name_exception : std::logic_error {
+        unavailible_name_exception(const std::string& e): logic_error(e) {}
+    };
+
+    struct link_exception : std::logic_error {
+        link_exception(const std::string& e): logic_error(e) {}
+    };
+
+    struct state_exception: std::logic_error {
+        state_exception(const std::string& e): logic_error(e) {}
+    };
+
+
+
     struct Node {
         bool is_terminal = 0;
         std::unordered_map<std::string, Node*> links;
-        explicit Node(bool is_terminal) : is_terminal(is_terminal) {
-            
+        
+        std::vector<int> used_symbols;
+
+        explicit Node(bool is_terminal) : is_terminal(is_terminal), used_symbols(100, 0) {
         }
+        
     };
 
     std::unordered_map<std::string, Node*> used_names;
@@ -25,12 +48,12 @@ namespace parser {
     static void add_id(const std::string& id, bool is_beginnning, bool is_terminal) {
         
         if (used_names.count(id)) {
-            exit(1);
+            throw unavailible_name_exception("Repeated name \"" + id + "\"");
         }
 
         if (is_beginnning) {
             if (beginning) {
-                exit(1);
+                throw state_exception("Multiple beginning states");
             }
             else {
                 beginning = new Node(is_terminal);
@@ -45,15 +68,33 @@ namespace parser {
 
     static void add_link(const std::string& id1, const std::string &link, const std::string& id2) {
         if (used_names.count(id1) == 0 || used_names.count(id2) == 0) {
-            exit(1);
+            throw unavailible_name_exception("No states with this name: \"" +
+                (used_names.count(id1) == 0 ? id1 : id2) + "\"");
         }
 
         if (used_names[id1]->links.count(id2)) {
-            exit(1);
+            std::regex reg("[" + link + "]");
+            
+            auto mark_as_used = [&](char from, char to) {
+                for (char c = from; c <= to; ++c) {
+                    if (regex_match(std::string({c}), reg)) {
+                        if (used_names[id1]->used_symbols[c]) {
+                            throw link_exception("Link " + std::string({c}) + " is ambiguous");
+                        }
+                        else {
+                            used_names[id1]->used_symbols[c] = 1;
+                        }
+                    }
+                }
+            };
+
+            mark_as_used('0', '9');
+            mark_as_used('a', 'z');
+            mark_as_used('A', 'Z');
+            mark_as_used('_', '_');
         }
-        else {
-            used_names[id1]->links[link] = used_names[id2];
-        }
+        
+        used_names[id1]->links[link] = used_names[id2];
     }
 
     static std::string buf;
@@ -68,10 +109,8 @@ namespace parser {
         }
 
         for (auto it: current_node->links) {
-            std::regex reg("[" + std::string(it.first) + "]");
-            
+            std::regex reg("[" + it.first + "]");
             if (regex_match(std::string({str[0]}), reg)) {
-                
                 return is_match(it.second, str + 1);
             }
         }
@@ -141,15 +180,34 @@ int main(int argc, char** argv) {
         yyparse();
         fclose(stdin);
     }
+    else {
+        std::cerr << "Can not open " << argv[1] << std::endl;
+        return 1;
+    }
 
     std::string buf;
     if(freopen(argv[2], "r", stdin)) {
         std::cin >> buf;
         fclose(stdin);
     }
-    
-    
-    std::cout << (parser::is_match(parser::beginning, buf.c_str()) ? "Valid" : "Invalid") << endl; 
+    else {
+        std::cerr << "Can not open " << argv[2] << std::endl;
+        return 1;
+    }
 
-    return 0;
+    try {
+        std::cout << (parser::is_match(parser::beginning, buf.c_str()) ? "Valid" : "Invalid") << std::endl; 
+        return 0;
+    }
+    catch(const parser::state_exception &e) {
+        std::cerr << e.what() << std::endl; 
+    }
+    catch(const parser::link_exception &e) {
+        std::cerr << e.what() << std::endl; 
+    }
+    catch(const parser::unavailible_name_exception &e) {
+        std::cerr << e.what() << std::endl; 
+    }
+
+    return 1;
 }
