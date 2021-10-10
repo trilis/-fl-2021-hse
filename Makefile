@@ -1,7 +1,7 @@
 build: clean
 	bison -d gram.ypp
 	flex lex.l
-	g++ gram.tab.cpp lex.yy.c
+	g++ -Wc++11-extensions gram.tab.cpp lex.yy.c
 
 run: build
 

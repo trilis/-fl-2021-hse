@@ -69,7 +69,7 @@ TRANSITION_ALPHABETS: LP TRANSITION_ALPHABETS RP { }
 // argv[0] -- путь к файлу с автоматом
 // argv[1] -- путь к файлу с проверяемой строкой
 int main(int argc, char **argv) {
-  cout << "read automat from file: " << argv[1] << "\n";
+  // cout << "read automat from file: " << argv[1] << "\n";
   freopen(argv[1], "r", stdin);
   try {
     yyparse();
@@ -114,64 +114,61 @@ int main(int argc, char **argv) {
   }
 
   for (string &from_state: states) {
-    unique_alpabet.clear();
+    unordered_set<string> from_alpabet;
     for (Transition &t: transitions) {
       if (t.from == from_state) {
         for (string &a: t.alphabet) {
-          unique_alpabet.insert(a);
+          if (unique_states.find(t.to) == unique_states.end()) {
+            cerr << "Exception: invalid `to` state in transition";
+            return 1;
+          } 
+          from_alpabet.insert(a);
         }
       }
+    }for (const string &a: from_alpabet) {
+      if (unique_alpabet.find(a) == unique_alpabet.end()) {
+        cerr << "Exception: invalid alphabet symbol in transition";
+        return 1;
+      } 
     }
-    if (unique_alpabet.size() != alphabet.size()) {
+    if (from_alpabet.size() != alphabet.size()) {
       cerr << "Exception: DFA not full";
       return 1;
     }
   }
 
-  // for (Transition t: transitions) {
-  //     if (t.from == cur_state) {
-  //       for (string a: t.alphabet) {
-  //         if (a == string(1, c)) {
-  //           transition_found = true;
-  //           cur_state = t.to;
-  //           break;
-  //         }
-  //       }
-  //     }
-  //   }
-
   freopen(argv[2], "r", stdin);
-  cout << "initial state: " << init_state << "\n";
+  // cout << "initial state: " << init_state << "\n";
 
-  for (auto alph: alphabet) {
-    cout << "!" << alph << "!" << "\n";
-  }
-  cout << "-----\n";
+  // for (auto alph: alphabet) {
+  //   cout << "!" << alph << "!" << "\n";
+  // }
+  // cout << "-----\n";
 
-  for (auto state: states) {
-    cout << "!" << state << "!" << "\n";
-  }
-  cout << "-----\n";
+  // for (auto state: states) {
+  //   cout << "!" << state << "!" << "\n";
+  // }
+  // cout << "-----\n";
 
-  for (auto state: final_states) {
-    cout << "!" << state << "!" << "\n";
-  }
+  // for (auto state: final_states) {
+  //   cout << "!" << state << "!" << "\n";
+  // }
 
-  for (auto transition: transitions) {
-    cout << "!" << transition.from << " -> " << transition.to << "!" << "\n";
-    for (auto alph: transition.alphabet) {
-      cout << "!" << alph << "!" << "\n";
-    }
-  }
+  // for (auto transition: transitions) {
+  //   cout << "!" << transition.from << " -> " << transition.to << "!" << "\n";
+  //   for (auto alph: transition.alphabet) {
+  //     cout << "!" << alph << "!" << "\n";
+  //   }
+  // }
 
   string word;
   cin >> word;
-  cout << "! match string: " << word << "\n";
+  // cout << "! match string: " << word << "\n";
   fclose(stdin);
 
   string cur_state = init_state;
   for (char c: word) {
-    cout << "! cur state: " << cur_state << "\n"; 
+    // cout << "! cur state: " << cur_state << "\n"; 
     bool transition_found = false;
     for (Transition t: transitions) {
       if (t.from == cur_state) {
