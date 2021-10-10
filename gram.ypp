@@ -23,6 +23,7 @@
         int cnt = 0;
         map<int, int> mp;
         map<int, int> types;
+        set<int> vocab;
         void is_correct() {
             if (cnt != n) {
                 throw runtime_error("Error! Missing information about vertexes");
@@ -44,6 +45,18 @@
             }
             if (start == -1) {
                 throw runtime_error("Error! There are no start vertexes");
+            }
+            for (int i = 0; i < n; i++) {
+                for (auto j = vocab.begin(); j != vocab.end(); j = next(j)) {
+                    bool flag = false;
+                    for (int k = 0; k < n; k++) {
+                        if (g[i][k].find(*j) != g[i][k].end()) flag = true;
+                    }
+                    if (flag == false) {
+                        cout << i << ' ' << *j;
+                        throw runtime_error("Error! Automata is not finite");
+                    }
+                }
             }
             if (!dfs(start)) {
                 throw runtime_error("Error! Automata is not finite");
@@ -106,6 +119,9 @@ discr : FAKE EXCLAMATION_MARK VERTEX_LIST AT_SIGN EDGE_LIST {
 }
 
 FAKE : T_NUMBER {
+    if ($1 < 1) {
+        throw exception_error("Error! No vertexes");
+    }
     g().n = $1;
     g().used.resize($1, false);
     g().g.resize(g().n, vector<set<int>>(g().n));
@@ -117,7 +133,6 @@ VERTEX_LIST : VERTEX_LIST T_NUMBER COMMA T_NUMBER SEMICOLON {
         throw runtime_error("Error! The information about this vertex has already known");
     }
     g().mp[$2] = g().cnt;
-    cout << $4 << ' ';
     g().types[g().cnt] = $4;
     g().cnt++;
 }
@@ -139,9 +154,11 @@ EDGE : T_NUMBER COMMA T_NUMBER COMMA T_NUMBER {
     }
     from() = g().mp[$1];
     to() = g().mp[$3];
+    g().vocab.insert($5);
     g().g[g().mp[$1]][g().mp[$3]].insert($5);
 }
 | EDGE COMMA T_NUMBER{
+    g().vocab.insert($3);
     g().g[from()][to()].insert($3);
 }
 %%
