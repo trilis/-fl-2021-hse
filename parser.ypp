@@ -1,0 +1,169 @@
+%{
+#include <iostream>
+#include <string>
+#include <vector>
+#include <unordered_map>
+#include <cstdlib>
+#include <set>
+#include <cassert>
+#include <cstdlib>
+#include <fstream>
+
+using std::vector;
+using std::unordered_map;
+using std::set;
+
+int yylex();
+void yyerror(const char *p) { std::cerr << "Error\n"<< std::endl; }
+
+enum states{
+  START = 0,
+  DEFAULT = 1,
+  STOCK = 2,
+  TERMINAL = 3
+};
+
+struct Parser{
+  int start_;
+  int stock_;
+  set <char> moves;
+  set <int> vertex;
+  set <char> alphabet;
+  unordered_map <int, unordered_map<char,int> > edges;
+  unordered_map <int, int> vertexes_and_states;
+  int count_of_edges = 0;
+
+  bool matching(const std::string &str){
+    int start = start_;
+    int pos = 0;
+    while(pos != str.size()){
+        start = edges[start][str[pos]];
+        pos++;
+    }
+    return (vertexes_and_states[start] == states::TERMINAL);
+  }
+} parser;
+
+%}
+
+%union {
+  char *word;
+  char sym;
+  int num;
+};
+
+
+%token <num> VERTEX
+%token <sym> COMMA
+%token <sym> COLON
+%token <sym> DASH
+%token <sym> RBR
+%token <sym> LBR
+%token <sym> SRBR
+%token <sym> SLBR
+%token <sym> ALPHA
+%token <word> ARROW
+%%
+
+parse: alphabet_symbols vertexes edges
+
+alphabet_symbols: ALPHA COMMA alphabet_symbols {
+    if (parser.alphabet.find($1) == parser.alphabet.end()){
+        parser.alphabet.insert($1);
+    } else {
+        throw std::runtime_error("Error, alphabet is not unique\n");
+    }
+}
+| ALPHA {
+    if (parser.alphabet.find($1) == parser.alphabet.end()){
+        parser.alphabet.insert($1);
+    } else {
+        throw std::runtime_error("Error, alphabet is not unique\n");
+    }
+}
+
+vertexes: LBR VERTEX DASH VERTEX RBR vertexes{
+  if(parser.vertexes_and_states.find($2) == parser.vertexes_and_states.end()){
+    parser.vertex.insert($2);
+    parser.vertexes_and_states[$2] = $4;
+  } else {
+    throw std::runtime_error("Error, vertex already in vertexes_and_states\n");
+  }
+  if($4 == states::START){
+    parser.start_ = $2;
+  }
+  if($4 == states::STOCK){
+    parser.stock_ = $2;
+  }
+}
+| LBR VERTEX DASH VERTEX RBR  {
+      if(parser.vertexes_and_states.find($2) == parser.vertexes_and_states.end()){
+        parser.vertex.insert($2);
+        parser.vertexes_and_states[$2] = $4;
+      } else {
+           throw std::runtime_error("Error, vertex already in vertexes_and_states\n");
+         }
+      if($4 == states::START){
+        parser.start_ = $2;
+      }
+      if($4 == states::STOCK){
+        parser.stock_ = $2;
+      }
+}
+
+edges: SLBR VERTEX ARROW VERTEX COLON ALPHA SRBR edges {
+    if (parser.edges[$2][$6] != 0){
+        throw std::runtime_error("Error, automat is not deterministic");
+    }
+    if(parser.stock_ == $2 and $4 != parser.stock_){
+        throw std::runtime_error("Error, trying to add edge out of stock\n");
+    }
+    parser.edges[$2][$6] = $4;
+    parser.count_of_edges++;
+}
+| SLBR VERTEX ARROW VERTEX COLON ALPHA SRBR  {
+    if (parser.edges[$2][$6] != 0){
+        throw std::runtime_error("Error, automat is not deterministic\n");
+    }
+    if(parser.stock_ == $2 and $4 != parser.stock_){
+            throw std::runtime_error("Error, trying to add edge out of stock\n");
+    }
+    parser.edges[$2][$6] = $4;
+    parser.count_of_edges++;
+}
+
+%%
+
+int main(int argc, char* argv[]) {
+  freopen(argv[1], "r", stdin);
+  try{
+    yyparse();
+  } catch (std::runtime_error &e){
+    std::cout << e.what() << '\n';
+    fclose(stdin);
+    return 1;
+  }
+  fclose(stdin);
+
+  if (parser.start_ == 0){
+      std::cerr << "Error, no start vertex\n";
+      return 1;
+  }
+
+  std::ifstream ifs(argv[2]);
+  std::string string_to_parse;
+  ifs >> string_to_parse;
+
+  std::cout << string_to_parse << '\n';
+  try{
+      if (parser.matching(string_to_parse)){
+        std::cout << "Belongs to the language\n";
+      } else {
+        std::cout << "Does NOT belong to the language\n";
+      }
+  } catch (std::runtime_error &e){
+    std::cout << e.what() << '\n';
+    return 1;
+  }
+  return 0;
+}
