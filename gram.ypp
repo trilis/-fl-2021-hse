@@ -3,40 +3,169 @@
 #include <string>
 #include <map>
 #include <cstdlib>
+#include <vector>
+#include <unordered_set>
 using namespace std;
 
-int yylex(); 
-int yyerror(const char *p) { cerr << "Error!" << endl; }
+int yylex();
+void yyerror(const char *p) { throw runtime_error(p); }
+
+string init_state;
+vector<string> alphabet;
+vector<string> states;
+vector<string> final_states;
+
+struct Transition {
+  string from;
+  string to;
+  vector<string> alphabet;
+};
+
+vector<string> transition_alphabet;
+vector<Transition> transitions;
 %}
 
 %union {
-  int val; 
   char sym;
+  char *val;
 };
-%token <val> NUM
-%token <sym> OPA OPM LP RP STOP
-%type  <val> exp term sfactor factor
-
+%token <sym> LP RP LB RB COMMA STOP
+%token <val> STATE ALPHABET
 %%
 
-start: exp            { cout << $1 << endl; }
+start: ALPHABETS COMMA STATES COMMA STATE COMMA FINAL_STATES COMMA TRANSITIONS {
+  init_state = $5;
+}
 
-exp: exp OPA term     { $$ = ($2 == '+' ? $1 + $3 : $1 - $3); }
-| term                { $$ = $1; }
+ALPHABETS: LP ALPHABETS RP   { }
+  | ALPHABET COMMA ALPHABETS { alphabet.push_back($1); }
+  | ALPHABET                 { alphabet.push_back($1); }
 
-term: term OPM factor { $$ = ($2 == '*' ? $1 * $3 : $1 / $3); }
-| sfactor             { $$ = $1; }
+STATES: LP STATES RP   { }
+  | STATE COMMA STATES { states.push_back($1); }
+  | STATE              { states.push_back($1); }
 
-sfactor: OPA factor   { $$ = ($1 == '+' ? $2 : -$2); }
-| factor              { $$ = $1; }
+FINAL_STATES: LP FINAL_STATES RP { }
+  | STATE COMMA FINAL_STATES     { final_states.push_back($1); }
+  | STATE                        { final_states.push_back($1); }
 
-factor: NUM           { $$ = $1; }
-| LP exp RP           { $$ = $2; }
+TRANSITIONS: LB TRANSITIONS RB   { }
+  | TRANSITION COMMA TRANSITIONS { }
+  | TRANSITION                   { }
 
+TRANSITION : LP STATE COMMA STATE COMMA TRANSITION_ALPHABETS RP {
+  char *from = $2;
+  char *to   = $4;
+  Transition t = {from, to, transition_alphabet};
+  transitions.push_back(t);
+  transition_alphabet.clear();
+}
+
+TRANSITION_ALPHABETS: LP TRANSITION_ALPHABETS RP { }
+  | ALPHABET COMMA TRANSITION_ALPHABETS { transition_alphabet.push_back($1); }
+  | ALPHABET                            { transition_alphabet.push_back($1); }
 %%
 
-int main()
-{
-  yyparse();
+// argv[0] -- путь к файлу с автоматом
+// argv[1] -- путь к файлу с проверяемым словом
+int main(int argc, char **argv) {
+  freopen(argv[1], "r", stdin);
+  try {
+    yyparse();
+  } catch (exception &e) {
+    cerr << "Exception: " << e.what() << "\n";
+    fclose(stdin);
+    return 1;
+  }
+  fclose(stdin);
+
+  unordered_set<string> unique_alpabet;
+  for (string &a: alphabet) {
+    if (unique_alpabet.find(a) == unique_alpabet.end()) {
+      unique_alpabet.insert(a);
+    } else {
+      cerr << "Exception: non-unique alphabet";
+      return 1;
+    }
+  }
+
+  unordered_set<string> unique_states;
+  for (string &state: states) {
+    if (unique_states.find(state) == unique_states.end()) {
+      unique_states.insert(state);
+    } else {
+      cerr << "Exception: non-unique states";
+      return 1;
+    }
+  }
+
+  for (string &final_state: final_states) {
+    bool is_correct = false;
+    for (string &state: states) {
+      if (final_state == state) {
+        is_correct = true;
+      }
+    }
+    if (!is_correct) {
+      cerr << "Exception: final state not in set of states";
+      return 1;
+    }
+  }
+
+  for (string &from_state: states) {
+    unordered_set<string> from_alpabet;
+    for (Transition &t: transitions) {
+      if (t.from == from_state) {
+        for (string &a: t.alphabet) {
+          if (unique_states.find(t.to) == unique_states.end()) {
+            cerr << "Exception: invalid `to` state in transition";
+            return 1;
+          } 
+          from_alpabet.insert(a);
+        }
+      }
+    }for (const string &a: from_alpabet) {
+      if (unique_alpabet.find(a) == unique_alpabet.end()) {
+        cerr << "Exception: invalid alphabet symbol in transition";
+        return 1;
+      } 
+    }
+    if (from_alpabet.size() != alphabet.size()) {
+      cerr << "Exception: DFA not full";
+      return 1;
+    }
+  }
+
+  freopen(argv[2], "r", stdin);
+  string word;
+  cin >> word;
+  fclose(stdin);
+
+  string cur_state = init_state;
+  for (char c: word) {
+    bool transition_found = false;
+    for (Transition t: transitions) {
+      if (t.from == cur_state) {
+        for (string a: t.alphabet) {
+          if (a == string(1, c)) {
+            transition_found = true;
+            cur_state = t.to;
+            break;
+          }
+        }
+      }
+      if (transition_found) break;
+    }
+    if (!transition_found) {
+      cerr << "Exception: transition not found!";
+      return 1;
+    }
+  }
+
+  bool is_accepted = false;
+  for (string state: final_states) {
+    if (state == cur_state) is_accepted = true;
+  }
+  cout << (is_accepted ? "Word accepted" : "Not accepted");
   return 0;
 }
