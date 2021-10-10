@@ -91,7 +91,6 @@ namespace parser {
             mark_as_used('0', '9');
             mark_as_used('a', 'z');
             mark_as_used('A', 'Z');
-            mark_as_used('_', '_');
         }
         
         used_names[id1]->links[link] = used_names[id2];
@@ -124,6 +123,25 @@ namespace parser {
         strcpy(dest, from);
         dest[pos] = c;
         return dest;
+    }
+
+    static bool check_fullness() {
+        bool ans = 1;
+        for(auto it: used_names) {
+            
+            auto check_interval = [&](char from, char to) {
+                bool correct = 1;
+                for (char c = from; c <= to; ++c) {
+                    correct &= it.second->used_symbols[c];
+                }
+                return correct;
+            };
+
+            ans &= check_interval('0', '0');
+            ans &= check_interval('a', 'z');
+            ans &= check_interval('A', 'Z');
+        }
+        return ans;
     }
 }
 
@@ -196,7 +214,12 @@ int main(int argc, char** argv) {
     }
 
     try {
-        std::cout << (parser::is_match(parser::beginning, buf.c_str()) ? "Valid" : "Invalid") << std::endl; 
+        std::cout << (parser::is_match(parser::beginning, buf.c_str()) ? "Valid" : "Invalid"); 
+        if (!parser::check_fullness()) {
+            std::cerr << ", but automata is not full";
+        }
+        std::cout << std::endl;
+
         return 0;
     }
     catch(const parser::state_exception &e) {

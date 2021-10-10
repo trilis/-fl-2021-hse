@@ -34,7 +34,7 @@ terminal        { num_chars += yyleng; return SPEC_TERMINAL; }
 
 <INITIAL>"[" { BEGIN(INLINK); num_chars += yyleng; return BRACKET_OPEN; }
 <INLINK>"]>" { BEGIN(INITIAL); num_chars += yyleng; return BRACKET_CLOSE; }
-<INLINK>[A-Za-z0-9\-] { num_chars += yyleng; yylval.sym = yytext[0]; return CHAR; };
+<INLINK>[A-Za-z0-9] { num_chars += yyleng; yylval.sym = yytext[0]; return CHAR; };
 <INLINK>. {
     printf("ERROR in line %u, position %d, symbol \"%s\" doesn't contain in allowed alphabet\n", yylineno, num_chars, yytext);
     exit(1);
