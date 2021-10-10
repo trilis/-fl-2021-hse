@@ -2,41 +2,109 @@
 #include <iostream>
 #include <string>
 #include <map>
+#include <set>
 #include <cstdlib>
 using namespace std;
 
+int lineno();
 int yylex(); 
-int yyerror(const char *p) { cerr << "Error!" << endl; }
+int yyerror(const char *p) { cerr << ": " << p << ", line :" << lineno() << endl; exit(1);}
+
+int alphabet_size = -1, start_state = -1, states_num = -1, edges_num = -1;
+
+struct Node {
+	map<string, int> go;
+	bool is_term = false;
+};
+
+map<int, Node> states;
+set<string> alphabet;
+
+bool is_mathced() {
+	int v = start_state;
+	string s;
+	while (getline(cin, s)) {
+		if (states[v].go.count(s)) {
+			v = states[v].go[s];
+		} else {
+			return false;
+		}
+	}
+	return states[v].is_term;
+}
+
 %}
 
 %union {
-  int val; 
-  char sym;
+  char *word;
+  int num;
 };
-%token <val> NUM
-%token <sym> OPA OPM LP RP STOP
-%type  <val> exp term sfactor factor
+%token <num> NUM
+%token <word> EDGE STATE ST_NUM ALPH_SIZE START_ST ED_NUM STATE_DEF SEP WORD
+%%
+
+start: alphabet_size_def SEP start_state_def SEP states_num_def SEP edges_num_def SEP word_seq SEP state_seq SEP edge_seq SEP  {}
+
+
+
+alphabet_size_def : ALPH_SIZE SEP NUM   {alphabet_size = $3;}
+start_state_def   : START_ST SEP NUM    {start_state = $3;}
+states_num_def    : ST_NUM SEP NUM      {states_num = $3;}
+edges_num_def     : ED_NUM SEP NUM      {edges_num = $3;}
+
+word_seq: word_seq SEP word {}
+        | word              {}
+
+edge_seq: edge_seq SEP edge {}
+        | edge              {}
+
+state_seq: state_seq SEP state {}
+         | state               {}
+
+edge: EDGE SEP NUM SEP NUM SEP WORD { 
+	int state_from = $3;
+	int state_to = $5;
+	string edge($7);
+	states[state_from].go[edge] = state_to;
+}
+
+state: STATE SEP NUM SEP STATE_DEF { 
+	int state = $3;
+	string def = $5;
+	if (states.count(state)) {
+		yyerror("Not unique automata states");
+	}
+	states[state].is_term = (def == "term");
+}
+
+word: WORD {
+	if (alphabet.count($1)) {
+		yyerror("Not unique alphabet elements");
+	}
+	alphabet.insert($1);
+}
 
 %%
 
-start: exp            { cout << $1 << endl; }
-
-exp: exp OPA term     { $$ = ($2 == '+' ? $1 + $3 : $1 - $3); }
-| term                { $$ = $1; }
-
-term: term OPM factor { $$ = ($2 == '*' ? $1 * $3 : $1 / $3); }
-| sfactor             { $$ = $1; }
-
-sfactor: OPA factor   { $$ = ($1 == '+' ? $2 : -$2); }
-| factor              { $$ = $1; }
-
-factor: NUM           { $$ = $1; }
-| LP exp RP           { $$ = $2; }
-
-%%
-
-int main()
+int main(int argc, char **argv)
 {
+  freopen(argv[1], "r", stdin);	
   yyparse();
+  fclose(stdin);
+  if (states.size() != states_num) {
+  	cerr << "Wrong ST_NUM" << endl;
+  	exit(1);
+  }
+  if (alphabet.size() != alphabet_size) {
+  	cerr << "Wrong ALPH_SIZE" << endl;
+  	exit(1);
+  }
+  freopen(argv[2], "r", stdin);	
+  if (is_mathced()) {
+  	cout << "YES\n";
+  } else {
+  	cout << "NO\n";
+  }
+  fclose(stdin);
   return 0;
 }
