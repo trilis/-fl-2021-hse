@@ -8,6 +8,7 @@
 #include <set>
 #include <cstdlib>
 #include <algorithm>
+#include <sstream>
 
 #include <fstream>
 #include <string>
@@ -18,11 +19,11 @@ int yylex();
 void yyerror(const char *s) { fprintf (stderr, "ERROR %s\n", s); }
 
 void warning(string s) {
-    cerr << "[Warning] " << s << "\n";
+    cout << "[Warning] " << s << "\n";
 }
 
 void error(string s) {
-    cerr << "[Error] " << s << "\n";
+    cout << "[Error] " << s << "\n";
     exit(0);
 }
 
@@ -40,6 +41,10 @@ struct Edge {
     string begin;
     string end;
 };
+
+string quote(string s) {
+    return "'" + s + "'";
+}
 
 
 template<typename T>
@@ -91,6 +96,70 @@ struct Automata {
         states[s.id] = s;
     }
 
+    void validate() {
+        map<string, bool> existing_letters;
+        map<string, bool> existing_states;
+        map<string, bool> existing_edges;
+        set<string> sorted_alphabet;
+        for(auto x: alphabet_list.get_value()) {
+            existing_letters[x] = true;
+            sorted_alphabet.insert(x);
+        }
+
+        for(auto x: states_list.get_value()) {
+            existing_states[x] = true;
+        }
+
+        for(auto x: edges_list.get_value()) {
+            existing_edges[x] = true;
+        }
+
+        if(q0.get_value().empty()) {
+            error("Start state is not set");
+        }
+
+        for(auto x: existing_states) {
+            string state_id = x.first;
+            set<string> letters;
+            map<string, bool> used_letters;
+
+            for(auto e_id: states[state_id].edges) {
+                for(auto w: edges[e_id].allowed_letters) {
+                    if(used_letters[w]) {
+                        error("One letter can't be used in two edges. State " + quote(state_id) + ".");
+                    }
+
+                    letters.insert(w);
+                    used_letters[w] = true;
+                }
+            }
+
+            if (sorted_alphabet != letters) {
+                warning("Automata is not full. State id " + quote(state_id));
+            }
+        }
+    }
+
+    bool check(vector<string> letters) {
+        string curr_s = q0.get_value();
+        for(auto letter: letters) {
+            bool next_state_is_found = false;
+
+            for(auto edge_id: states[curr_s].edges) {
+                const auto &edge = edges[edge_id];
+                if(find(edge.allowed_letters.begin(), edge.allowed_letters.end(), letter) != edge.allowed_letters.end()) {
+                    next_state_is_found = true;
+                    curr_s = edge.end;
+                    break;
+                } 
+            }
+            
+            if(!next_state_is_found) {
+                return false;
+            }
+        }
+        return true;
+    }
 };
 
 Automata & automata() {
@@ -140,7 +209,6 @@ struct Parser {
     }
 
 
-    //[_]Alphabet|[_]States|[_]Edges|[_]Q0
     void initialize(string s) {
         sort(variables.begin(), variables.end());
         for(int i = 0; i + 1 < variables.size(); i++) {
@@ -169,25 +237,25 @@ struct Parser {
         Edge res;
         res.id = id;
         if(!allowed_letters.is_assigned()) {
-            error("Edge with id " + id + " doesn't have field __allowed_letters");
+            error("Edge with id " + quote(id) + " doesn't have field __allowed_letters");
         } else {
             res.allowed_letters = allowed_letters.get_value();
             if(res.allowed_letters.empty()) {
-                error("Edge with id " + id + " has empty __allowed_letters");
+                error("Edge with id " + quote(id) + " has empty __allowed_letters");
             } 
         }
 
         allowed_letters.reset();
         
         if(!begin.is_assigned()) {
-            error("Edge with id " + id + "doesn't have field begin");
+            error("Edge with id " + quote(id) + "doesn't have field begin");
         }
 
         res.begin = begin.get_value();
         begin.reset();
         
         if(!end.is_assigned()) {
-            error("Edge with id " + id + "doesn't have field end");
+            error("Edge with id " + quote(id) + "doesn't have field end");
         }
 
         res.end = end.get_value();
@@ -334,8 +402,35 @@ int main(int argc, char* argv[]) {
     }
     
     try {
-        freopen(argv[1], "r", stdin);   
-        return yyparse();
+        freopen(argv[1], "r", stdin);
+        std::cout << "-----------------------Creating automata------------------------"  << "\n";   
+        yyparse();
+        automata().validate();
+        std::cout << "----------------Automata is created successfully----------------"  << "\n\n\n";
+        
+        
+        std::cout << "----------------------" << "Start testing " << argv[2] <<"----------------"  << "\n\n\n";
+
+        freopen(argv[2], "r", stdin);
+        std::string input;
+        int test = 1;
+        while(std::getline(std::cin, input)) {
+            std::stringstream ist(input);
+            std::cout << "TEST #" << test << ": " << input << "\n";
+            vector<string> letters;
+            for (std::string word; ist >> word; ) {
+                letters.push_back(word);
+            }
+
+            if(automata().check(letters)) {
+                std::cout << "True\n";
+            } else {
+                std::cout << "False\n";
+            }
+            test++;
+        }
+
+
     } catch(std::exception &e) {
         std::cout << e.what() << '\n';
         return 1;

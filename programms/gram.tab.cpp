@@ -77,6 +77,7 @@
 #include <set>
 #include <cstdlib>
 #include <algorithm>
+#include <sstream>
 
 #include <fstream>
 #include <string>
@@ -87,11 +88,11 @@ int yylex();
 void yyerror(const char *s) { fprintf (stderr, "ERROR %s\n", s); }
 
 void warning(string s) {
-    cerr << "[Warning] " << s << "\n";
+    cout << "[Warning] " << s << "\n";
 }
 
 void error(string s) {
-    cerr << "[Error] " << s << "\n";
+    cout << "[Error] " << s << "\n";
     exit(0);
 }
 
@@ -109,6 +110,10 @@ struct Edge {
     string begin;
     string end;
 };
+
+string quote(string s) {
+    return "'" + s + "'";
+}
 
 
 template<typename T>
@@ -160,6 +165,70 @@ struct Automata {
         states[s.id] = s;
     }
 
+    void validate() {
+        map<string, bool> existing_letters;
+        map<string, bool> existing_states;
+        map<string, bool> existing_edges;
+        set<string> sorted_alphabet;
+        for(auto x: alphabet_list.get_value()) {
+            existing_letters[x] = true;
+            sorted_alphabet.insert(x);
+        }
+
+        for(auto x: states_list.get_value()) {
+            existing_states[x] = true;
+        }
+
+        for(auto x: edges_list.get_value()) {
+            existing_edges[x] = true;
+        }
+
+        if(q0.get_value().empty()) {
+            error("Start state is not set");
+        }
+
+        for(auto x: existing_states) {
+            string state_id = x.first;
+            set<string> letters;
+            map<string, bool> used_letters;
+
+            for(auto e_id: states[state_id].edges) {
+                for(auto w: edges[e_id].allowed_letters) {
+                    if(used_letters[w]) {
+                        error("One letter can't be used in two edges. State " + quote(state_id) + ".");
+                    }
+
+                    letters.insert(w);
+                    used_letters[w] = true;
+                }
+            }
+
+            if (sorted_alphabet != letters) {
+                warning("Automata is not full. State id " + quote(state_id));
+            }
+        }
+    }
+
+    bool check(vector<string> letters) {
+        string curr_s = q0.get_value();
+        for(auto letter: letters) {
+            bool next_state_is_found = false;
+
+            for(auto edge_id: states[curr_s].edges) {
+                const auto &edge = edges[edge_id];
+                if(find(edge.allowed_letters.begin(), edge.allowed_letters.end(), letter) != edge.allowed_letters.end()) {
+                    next_state_is_found = true;
+                    curr_s = edge.end;
+                    break;
+                } 
+            }
+            
+            if(!next_state_is_found) {
+                return false;
+            }
+        }
+        return true;
+    }
 };
 
 Automata & automata() {
@@ -209,7 +278,6 @@ struct Parser {
     }
 
 
-    //[_]Alphabet|[_]States|[_]Edges|[_]Q0
     void initialize(string s) {
         sort(variables.begin(), variables.end());
         for(int i = 0; i + 1 < variables.size(); i++) {
@@ -238,25 +306,25 @@ struct Parser {
         Edge res;
         res.id = id;
         if(!allowed_letters.is_assigned()) {
-            error("Edge with id " + id + " doesn't have field __allowed_letters");
+            error("Edge with id " + quote(id) + " doesn't have field __allowed_letters");
         } else {
             res.allowed_letters = allowed_letters.get_value();
             if(res.allowed_letters.empty()) {
-                error("Edge with id " + id + " has empty __allowed_letters");
+                error("Edge with id " + quote(id) + " has empty __allowed_letters");
             } 
         }
 
         allowed_letters.reset();
         
         if(!begin.is_assigned()) {
-            error("Edge with id " + id + "doesn't have field begin");
+            error("Edge with id " + quote(id) + "doesn't have field begin");
         }
 
         res.begin = begin.get_value();
         begin.reset();
         
         if(!end.is_assigned()) {
-            error("Edge with id " + id + "doesn't have field end");
+            error("Edge with id " + quote(id) + "doesn't have field end");
         }
 
         res.end = end.get_value();
@@ -302,7 +370,7 @@ Parser& parser() {
 
 
 
-#line 306 "gram.tab.cpp"
+#line 374 "gram.tab.cpp"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -380,11 +448,11 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 237 "gram.ypp"
+#line 305 "gram.ypp"
 
     const char *str;
 
-#line 388 "gram.tab.cpp"
+#line 456 "gram.tab.cpp"
 
 };
 typedef union YYSTYPE YYSTYPE;
@@ -762,10 +830,10 @@ static const yytype_int8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int16 yyrline[] =
 {
-       0,   276,   276,   277,   278,   279,   280,   283,   286,   287,
-     288,   290,   291,   292,   293,   296,   299,   300,   301,   303,
-     304,   305,   306,   310,   313,   315,   316,   317,   318,   320,
-     322,   323,   324,   325,   326
+       0,   344,   344,   345,   346,   347,   348,   351,   354,   355,
+     356,   358,   359,   360,   361,   364,   367,   368,   369,   371,
+     372,   373,   374,   378,   381,   383,   384,   385,   386,   388,
+     390,   391,   392,   393,   394
 };
 #endif
 
@@ -1617,91 +1685,91 @@ yyreduce:
   switch (yyn)
     {
   case 7:
-#line 283 "gram.ypp"
+#line 351 "gram.ypp"
                                                                                                                            { parser().add_edge((yyvsp[-4].str));}
-#line 1623 "gram.tab.cpp"
+#line 1691 "gram.tab.cpp"
     break;
 
   case 12:
-#line 291 "gram.ypp"
+#line 359 "gram.ypp"
                                                                                          { parser().set_allowed_letters(); }
-#line 1629 "gram.tab.cpp"
+#line 1697 "gram.tab.cpp"
     break;
 
   case 13:
-#line 292 "gram.ypp"
+#line 360 "gram.ypp"
                                                                                 { parser().set_begin((yyvsp[-1].str));}
-#line 1635 "gram.tab.cpp"
+#line 1703 "gram.tab.cpp"
     break;
 
   case 14:
-#line 293 "gram.ypp"
+#line 361 "gram.ypp"
                                                                               { parser().set_end((yyvsp[-1].str));}
-#line 1641 "gram.tab.cpp"
+#line 1709 "gram.tab.cpp"
     break;
 
   case 15:
-#line 296 "gram.ypp"
+#line 364 "gram.ypp"
                                                                                                                               { parser().add_state((yyvsp[-4].str));}
-#line 1647 "gram.tab.cpp"
+#line 1715 "gram.tab.cpp"
     break;
 
   case 20:
-#line 304 "gram.ypp"
+#line 372 "gram.ypp"
                                                                                    {parser().set_edges();}
-#line 1653 "gram.tab.cpp"
+#line 1721 "gram.tab.cpp"
     break;
 
   case 21:
-#line 305 "gram.ypp"
+#line 373 "gram.ypp"
                                                                             {parser().set_comment((yyvsp[0].str));}
-#line 1659 "gram.tab.cpp"
+#line 1727 "gram.tab.cpp"
     break;
 
   case 22:
-#line 306 "gram.ypp"
+#line 374 "gram.ypp"
                                                                                  { if((yyvsp[0].str) == "True") parser().set_is_terminal(1); else parser().set_is_terminal(0);}
-#line 1665 "gram.tab.cpp"
+#line 1733 "gram.tab.cpp"
     break;
 
   case 23:
-#line 310 "gram.ypp"
+#line 378 "gram.ypp"
                                                                   { parser().initialize((yyvsp[-2].str)); }
-#line 1671 "gram.tab.cpp"
+#line 1739 "gram.tab.cpp"
     break;
 
   case 24:
-#line 313 "gram.ypp"
+#line 381 "gram.ypp"
                                                                       {}
-#line 1677 "gram.tab.cpp"
+#line 1745 "gram.tab.cpp"
     break;
 
   case 26:
-#line 316 "gram.ypp"
+#line 384 "gram.ypp"
                                              { parser().add_variable((yyvsp[-1].str));}
-#line 1683 "gram.tab.cpp"
+#line 1751 "gram.tab.cpp"
     break;
 
   case 27:
-#line 317 "gram.ypp"
+#line 385 "gram.ypp"
                                             { parser().add_variable((yyvsp[-2].str));}
-#line 1689 "gram.tab.cpp"
+#line 1757 "gram.tab.cpp"
     break;
 
   case 28:
-#line 318 "gram.ypp"
+#line 386 "gram.ypp"
                                   {}
-#line 1695 "gram.tab.cpp"
+#line 1763 "gram.tab.cpp"
     break;
 
   case 29:
-#line 320 "gram.ypp"
+#line 388 "gram.ypp"
                                           { (yyval.str) = (yyvsp[-1].str);}
-#line 1701 "gram.tab.cpp"
+#line 1769 "gram.tab.cpp"
     break;
 
 
-#line 1705 "gram.tab.cpp"
+#line 1773 "gram.tab.cpp"
 
       default: break;
     }
@@ -1933,7 +2001,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 328 "gram.ypp"
+#line 396 "gram.ypp"
 
 
 int main(int argc, char* argv[]) {
@@ -1943,8 +2011,35 @@ int main(int argc, char* argv[]) {
     }
     
     try {
-        freopen(argv[1], "r", stdin);   
-        return yyparse();
+        freopen(argv[1], "r", stdin);
+        std::cout << "-----------------------Creating automata------------------------"  << "\n";   
+        yyparse();
+        automata().validate();
+        std::cout << "----------------Automata is created successfully----------------"  << "\n\n\n";
+        
+        
+        std::cout << "----------------------" << "Start testing " << argv[2] <<"----------------"  << "\n\n\n";
+
+        freopen(argv[2], "r", stdin);
+        std::string input;
+        int test = 1;
+        while(std::getline(std::cin, input)) {
+            std::stringstream ist(input);
+            std::cout << "TEST #" << test << ": " << input << "\n";
+            vector<string> letters;
+            for (std::string word; ist >> word; ) {
+                letters.push_back(word);
+            }
+
+            if(automata().check(letters)) {
+                std::cout << "True\n";
+            } else {
+                std::cout << "False\n";
+            }
+            test++;
+        }
+
+
     } catch(std::exception &e) {
         std::cout << e.what() << '\n';
         return 1;

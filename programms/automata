@@ -24,13 +24,11 @@ new State(empty):
 
 new State(zero):
     __edges: {}
-    __comment: 'пустая строка x2'
     __is_terminal: True
 
 new State(not_zero):
     __edges: {not_zero_not_zero}
     __is_terminal: True
-
 
 new Edge(empty_not_zero):
     __allowed_letters: {d1,d2,d3,d4,d5,d6,d7,d8,d9} 
@@ -47,3 +45,4 @@ new Edge(not_zero_not_zero):
     __allowed_letters: {d0, d1,d2,d3,d4,d5,d6,d7,d8,d9}
     __begin: not_zero_not_zero
     __end: not_zero_not_zero
+    
