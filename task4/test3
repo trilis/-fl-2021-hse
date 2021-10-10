@@ -1,6 +1,9 @@
-1 2 2
-u
-1 notterm
-2 term
-1 2 u
-2 2 u
+ALPH_SIZE 1
+START_ST 1
+ST_NUM 2 
+ED_NUM 2
+"u"
+STATE 1, notterm
+STATE 2, term
+EDGE 1, 2, "u"
+EDGE 2, 2, "u"

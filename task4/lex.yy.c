@@ -373,8 +373,8 @@ static void yynoreturn yy_fatal_error ( const char* msg  );
 	(yy_hold_char) = *yy_cp; \
 	*yy_cp = '\0'; \
 	(yy_c_buf_p) = yy_cp;
-#define YY_NUM_RULES 7
-#define YY_END_OF_BUFFER 8
+#define YY_NUM_RULES 8
+#define YY_END_OF_BUFFER 9
 /* This struct is not used in this scanner,
    but its presence is necessary. */
 struct yy_trans_info
@@ -382,10 +382,11 @@ struct yy_trans_info
 	flex_int32_t yy_verify;
 	flex_int32_t yy_nxt;
 	};
-static const flex_int16_t yy_accept[15] =
+static const flex_int16_t yy_accept[25] =
     {   0,
-        4,    4,    8,    7,    6,    4,    5,    1,    2,    4,
-        3,    4,    5,    0
+        0,    0,    9,    7,    6,    5,    7,    2,    1,    7,
+        7,    0,    2,    1,    0,    0,    3,    0,    0,    0,
+        4,    0,    0,    0
     } ;
 
 static const YY_CHAR yy_ec[256] =
@@ -393,16 +394,16 @@ static const YY_CHAR yy_ec[256] =
         1,    1,    1,    1,    1,    1,    1,    1,    2,    3,
         1,    1,    2,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,    4,    1,    1,    5,    1,    1,    1,    1,    6,
-        7,    1,    1,    1,    1,    1,    1,    8,    8,    8,
-        8,    8,    8,    8,    8,    8,    8,    1,    9,    1,
-        1,    1,    1,    1,    8,    8,    8,    8,    8,    8,
-        8,    8,    8,    8,    8,    8,    8,    8,    8,    8,
-        8,    8,    8,    8,    8,    8,    8,    8,    8,    8,
-        1,    1,    1,    1,    1,    1,    8,    8,    8,    8,
+        1,    2,    1,    4,    1,    1,    1,    1,    1,    1,
+        1,    1,    1,    2,    1,    1,    1,    5,    5,    5,
+        5,    5,    5,    5,    5,    5,    5,    1,    1,    1,
+        2,    1,    1,    1,    6,    6,    6,    6,    6,    6,
+        6,    6,    6,    6,    6,    6,    6,    6,    6,    6,
+        6,    6,    6,    6,    6,    6,    6,    6,    6,    6,
+        1,    1,    1,    1,    7,    1,    8,    8,    8,    8,
 
-        8,    8,    8,    8,    8,    8,    8,    8,    8,    8,
-        8,    8,    8,    8,    8,    8,    8,    8,    8,    8,
+        9,    8,    8,    8,    8,    8,    8,    8,   10,   11,
+       12,    8,    8,   13,    8,   14,    8,    8,    8,    8,
         8,    8,    1,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
@@ -420,41 +421,48 @@ static const YY_CHAR yy_ec[256] =
         1,    1,    1,    1,    1
     } ;
 
-static const YY_CHAR yy_meta[10] =
+static const YY_CHAR yy_meta[15] =
     {   0,
-        1,    1,    2,    3,    1,    1,    1,    3,    1
+        1,    1,    1,    1,    2,    2,    1,    2,    2,    2,
+        2,    2,    2,    2
     } ;
 
-static const flex_int16_t yy_base[17] =
+static const flex_int16_t yy_base[26] =
     {   0,
-        0,    0,   13,   14,   14,    0,    0,   14,   14,    0,
-       14,    0,    0,   14,    8,    9
+        0,    0,   32,   33,   33,   33,    0,   26,    9,   18,
+       20,   24,   22,   11,   12,   12,   33,   10,   13,   13,
+       33,    8,   10,   33,   17
     } ;
 
-static const flex_int16_t yy_def[17] =
+static const flex_int16_t yy_def[26] =
     {   0,
-       14,    1,   14,   14,   14,   15,   16,   14,   14,   15,
-       14,   15,   16,    0,   14,   14
+       24,    1,   24,   24,   24,   24,   25,   24,   24,   24,
+       24,   25,   24,   24,   24,   24,   24,   24,   24,   24,
+       24,   24,   24,    0,   24
     } ;
 
-static const flex_int16_t yy_nxt[24] =
+static const flex_int16_t yy_nxt[48] =
     {   0,
-        4,    5,    5,    6,    7,    8,    9,   10,   11,   13,
-       12,   13,   14,    3,   14,   14,   14,   14,   14,   14,
-       14,   14,   14
+        4,    5,    6,    7,    8,    9,    9,    4,    4,    4,
+       10,    4,    4,   11,   14,   14,   14,   14,   12,   21,
+       23,   22,   21,   20,   19,   18,   13,   17,   16,   15,
+       13,   24,    3,   24,   24,   24,   24,   24,   24,   24,
+       24,   24,   24,   24,   24,   24,   24
     } ;
 
-static const flex_int16_t yy_chk[24] =
+static const flex_int16_t yy_chk[48] =
     {   0,
-        1,    1,    1,    1,    1,    1,    1,    1,    1,   16,
-       15,   16,    3,   14,   14,   14,   14,   14,   14,   14,
-       14,   14,   14
+        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+        1,    1,    1,    1,    9,    9,   14,   14,   25,   23,
+       22,   20,   19,   18,   16,   15,   13,   12,   11,   10,
+        8,    3,   24,   24,   24,   24,   24,   24,   24,   24,
+       24,   24,   24,   24,   24,   24,   24
     } ;
 
 /* Table of booleans, true if rule could match eol. */
-static const flex_int32_t yy_rule_can_match_eol[8] =
+static const flex_int32_t yy_rule_can_match_eol[9] =
     {   0,
-0, 0, 0, 0, 0, 1, 0,     };
+0, 0, 0, 0, 1, 0, 0, 0,     };
 
 static yy_state_type yy_last_accepting_state;
 static char *yy_last_accepting_cpos;
@@ -474,164 +482,30 @@ char *yytext;
 #line 2 "calc.l"
 #include <stdio.h>
 #include <stdlib.h>
-#include <ctype.h>
 
 enum token {
-	WORD_ = 1,
-	EXIT = 2	
+  T_ID = 1, T_INT = 2, T_WORD = 3, T_STATE_DEF = 4, T_LP = 5, T_RP = 6
 };
 
-int alphabet_size = 0;
-int states_num = 0;
-int edges_num = 0;
+int num;
+char *word;
+int current_char = 0;
+int to_add = 0;
 
-int is_num(char *start, char *end) {
-	for (; start != end; ++start) {
-		if (!isdigit(*start)) {
-			return 0;
-		}
-	}
-	return 1;
-}
-
-void print_word(char *start, char *end) {
-	for (; start != end; ++start) {
-		printf("%c", *start);
-	}
-}
-
-int check_term(char *start, char *end) {
-	if (end - start == 7 && strncmp(start, "notterm", 7) == 0) {
-		return 1;
-	}
-	if (end - start == 4 && strncmp(start, "term", 4) == 0) {
-		return 1;
-	}
-	return 0;
-}
-
-int get_num(char **s) {
-	char *ptr = *s;
-	while (isspace(*ptr)) {
-		++ptr;
-	}
-	if (!isdigit(*ptr)) {
-		return -1;
-	}
-	int res = 0;
-	while (isdigit(*ptr)) {
-		res *= 10;
-		res += (*ptr) - '0';
-		++ptr;
-	}
-	*s = ptr;
-	return res;
-}
-
-void process_first_line(char *s) {
-	char *start = s;
-	int first = get_num(&s);
-	if (first == -1) {
-		printf("ERROR: expected 3 non negative numbers in first line\n");
-		exit(0);
-	} else {
-		printf("alphabet_size %d 1 %d\n", first, s - start);
-	}
-	int second = get_num(&s);
-	if (second == -1) {
-		printf("ERROR: expected 3 non negative numbers in first line\n");
-		exit(0);
-	} else {
-		printf("states_num %d 1 %d\n", second, s - start);
-	}
-	int third = get_num(&s);
-	if (third == -1) {
-		printf("ERROR: expected 3 non negative numbers in first line\n");
-		exit(0);
-	} else {
-		printf("edges_num %d 1 %d\n", third, s - start);
-	}
-	if (*s != '\0') {
-		printf("ERROR: expected 3 non negative numbers in first line, something extra is here\n");
-		exit(0);
+void check_id(char *id) {
+	if (strcmp(id, "ALPH_SIZE") != 0 &&
+		strcmp(id, "ST_NUM") != 0 &&
+		strcmp(id, "ED_NUM") != 0 &&
+		strcmp(id, "STATE") != 0 &&
+		strcmp(id, "EDGE") != 0 &&
+		strcmp(id, "START_ST") != 0) {
+		printf("Error: wrong ID %s, %d %d\n", id, yylineno, current_char);
+		exit(1);
 	}
 }
 
-char *get_word(char **s) {
-	while (isspace(**s)) {
-		++*s;
-	}
-	char *ptr = *s;
-	while (*ptr != '\0' && !isspace(*ptr)) {
-		++ptr;
-	}
-	return ptr;
-}
-
-void process_second_line(char *s) {
-	char *start = s;
-	while (*s != '\0') {
-		char *ptr = get_word(&s);
-		printf("alphabet_character ");
-		char *word_start = s;
-		print_word(s, ptr);
-		printf(" %d %d\n", 2, word_start - start);
-		s = ptr;
-	}
-	printf("\n");
-}
-
-void parse_line(char *s) {
-	char *first_word_end = get_word(&s);
-	char *first_word_start = s;
-	s = first_word_end;
-	char *second_word_end = get_word(&s);
-	char *second_word_start = s;
-	s = second_word_end;
-	char *third_word_end = get_word(&s);
-	char *third_word_start = s;
-	s = third_word_end;
-	if (*s != '\0') {
-		printf("ERROR: expected at most 3 words in line %u\n", yylineno);
-		exit(0);
-	}
-
-	if (first_word_end == second_word_end) {
-		printf("ERROR: expected at least 2 words in line %u\n", yylineno);
-		exit(0);
-	}
-	if (second_word_end == third_word_end) {
-		if (is_num(first_word_start, first_word_end) && 
-			check_term(second_word_start, second_word_end)) {
-			print_word(second_word_start, second_word_end);
-			printf(" vertex ");
-			print_word(first_word_start, first_word_end);
-			printf(" %u %d", yylineno, 0);
-		} else {
-			printf("ERROR: expected vertex definition in line %u\n", yylineno);
-			exit(0);
-		}
-	} else {
-		if (is_num(first_word_start, first_word_end) &&
-			is_num(second_word_start, second_word_end)) {
-			printf("edge ");
-			print_word(first_word_start, first_word_end);
-			printf(" -- ");
-			print_word(second_word_start, second_word_end);
-			printf(" with character ");
-			print_word(third_word_start, third_word_end);
-			printf(" %u %d", yylineno, 0);
-		} else {
-			printf("ERROR: expected edge definition in line %u\n", yylineno);
-			exit(0);
-		}
-	}
-	printf("\n");
-}
-
-
-#line 634 "lex.yy.c"
-#line 635 "lex.yy.c"
+#line 508 "lex.yy.c"
+#line 509 "lex.yy.c"
 
 #define INITIAL 0
 
@@ -848,12 +722,9 @@ YY_DECL
 		}
 
 	{
-#line 167 "calc.l"
+#line 36 "calc.l"
 
-
-#line 170 "calc.l"
- /* Print delimiters. */
-#line 857 "lex.yy.c"
+#line 728 "lex.yy.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -880,13 +751,13 @@ yy_match:
 			while ( yy_chk[yy_base[yy_current_state] + yy_c] != yy_current_state )
 				{
 				yy_current_state = (int) yy_def[yy_current_state];
-				if ( yy_current_state >= 15 )
+				if ( yy_current_state >= 25 )
 					yy_c = yy_meta[yy_c];
 				}
 			yy_current_state = yy_nxt[yy_base[yy_current_state] + yy_c];
 			++yy_cp;
 			}
-		while ( yy_base[yy_current_state] != 14 );
+		while ( yy_base[yy_current_state] != 33 );
 
 yy_find_action:
 		yy_act = yy_accept[yy_current_state];
@@ -922,56 +793,53 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 171 "calc.l"
-{printf("(left-parenthesis %u)\n", yylineno);}
+#line 37 "calc.l"
+{to_add = strlen(yytext);word = yytext; return T_ID;}
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 172 "calc.l"
-{printf("(right-parenthesis %u)\n", yylineno);}
+#line 38 "calc.l"
+{to_add = strlen(yytext);num = atoi(yytext); return T_INT;}
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 173 "calc.l"
-{printf("(semicolon %u)\n", yylineno);}
+#line 39 "calc.l"
+{to_add = strlen(yytext);word = yytext; return T_WORD;}
 	YY_BREAK
-/* Print identifiers, integers and operators. */
 case 4:
 YY_RULE_SETUP
-#line 176 "calc.l"
-{
-	if (yylineno == 1) {
-		process_first_line(yytext);
-	} else if (yylineno == 2) {
-		//printf("%s\n", yytext);
-		process_second_line(yytext);
-	} else {
-		parse_line(yytext);
-	}
-}
+#line 40 "calc.l"
+{to_add = strlen(yytext);word = yytext; return T_STATE_DEF;}
 	YY_BREAK
-/* Ignore comments and whitespace. */
 case 5:
+/* rule 5 can match eol */
 YY_RULE_SETUP
-#line 188 "calc.l"
-{}
+#line 42 "calc.l"
+{current_char = 0;}
 	YY_BREAK
 case 6:
-/* rule 6 can match eol */
 YY_RULE_SETUP
-#line 189 "calc.l"
-{}
+#line 43 "calc.l"
+{++current_char;}
 	YY_BREAK
 case YY_STATE_EOF(INITIAL):
-#line 191 "calc.l"
+#line 44 "calc.l"
 {printf("(eof %u)\n", yylineno); return 0;}
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 193 "calc.l"
+#line 46 "calc.l"
+{
+  printf("ERROR in line %u, char_num %d, symbol %s\n", yylineno, current_char, yytext);
+  exit(1);
+}
+	YY_BREAK
+case 8:
+YY_RULE_SETUP
+#line 50 "calc.l"
 ECHO;
 	YY_BREAK
-#line 975 "lex.yy.c"
+#line 843 "lex.yy.c"
 
 	case YY_END_OF_BUFFER:
 		{
@@ -1266,7 +1134,7 @@ static int yy_get_next_buffer (void)
 		while ( yy_chk[yy_base[yy_current_state] + yy_c] != yy_current_state )
 			{
 			yy_current_state = (int) yy_def[yy_current_state];
-			if ( yy_current_state >= 15 )
+			if ( yy_current_state >= 25 )
 				yy_c = yy_meta[yy_c];
 			}
 		yy_current_state = yy_nxt[yy_base[yy_current_state] + yy_c];
@@ -1294,11 +1162,11 @@ static int yy_get_next_buffer (void)
 	while ( yy_chk[yy_base[yy_current_state] + yy_c] != yy_current_state )
 		{
 		yy_current_state = (int) yy_def[yy_current_state];
-		if ( yy_current_state >= 15 )
+		if ( yy_current_state >= 25 )
 			yy_c = yy_meta[yy_c];
 		}
 	yy_current_state = yy_nxt[yy_base[yy_current_state] + yy_c];
-	yy_is_jam = (yy_current_state == 14);
+	yy_is_jam = (yy_current_state == 24);
 
 		return yy_is_jam ? 0 : yy_current_state;
 }
@@ -1986,10 +1854,38 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 193 "calc.l"
+#line 50 "calc.l"
+
 
 
 int main(int argc, char* argv[]) {
-  yylex() ;
+  while (1) {
+    enum token t = yylex();
+    if (t == 0) {
+      break;
+    }
+    if (t == T_INT) {
+    	printf("T_INT %d %d %d\n", num, yylineno, current_char);
+    }
+    if (t == T_ID) {
+    	check_id(word);
+    	printf("T_ID %s %d %d\n", word, yylineno, current_char);
+    }
+    if (t == T_WORD) {
+    	printf("T_WORD ");
+    	for (; *word != '\0'; ++word) {
+    		if (*word != '"') {
+    			printf("%c", *word);
+    		}
+    	}
+    	printf(" %d %d\n", yylineno, current_char);
+    }
+    if (t == T_STATE_DEF) {
+    	printf("T_STATE_DEF %s %d %d\n", word, yylineno, current_char);
+    }
+
+    current_char += to_add;
+    to_add = 0;
+  };
   return EXIT_SUCCESS ;
 }
