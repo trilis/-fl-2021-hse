@@ -1,0 +1,91 @@
+
+%{
+#include <iostream>
+#include <string>
+#include <cstdlib>
+#include <stdio.h>
+#include <stdlib.h>
+#include <fstream> 
+using namespace std;
+extern FILE *yyin;
+
+int yylex(); 
+int yyerror(const char *p) { cerr << "Invalide symbol!" << endl; return 1; }
+%}
+
+%code requires { #include "graph.hpp" }
+
+%union {
+  int val; 
+  char sym;
+  char* string;
+  std::vector<int> *ver;
+  std::vector<char*> *al;
+  Edge* edges;
+  Graph* graphs;
+};
+
+%token <val> VERTEX SVERTEX 
+%token <sym> LP RP CONDITION EQ COMMA Q A COL OTHER
+%token <string> LETTER
+
+%type <graphs> graph 
+%type <edges> edge 
+%type <al> alphabet 
+%type <ver> vertex 
+%type <ver> other
+
+%%
+
+start: vertex alphabet graph { save_states(*$1); save_alphabet(*$2); save_graph(*$3); }    
+
+graph: %empty  { $$ = new Graph(); }
+| edge graph   { $$ = $2->addEdge($1);}           
+
+edge: LP SVERTEX COMMA CONDITION COMMA LETTER COMMA VERTEX COMMA CONDITION RP { $$ = new Edge($2, $4, $6, $8, $10); }
+|LP VERTEX COMMA CONDITION COMMA LETTER COMMA VERTEX COMMA CONDITION RP { $$ = new Edge($2, $4, $6, $8, $10); }
+|LP VERTEX COMMA CONDITION COMMA LETTER COMMA SVERTEX COMMA CONDITION RP { $$ = new Edge($2, $4, $6, $8, $10); }
+|LP SVERTEX COMMA CONDITION COMMA LETTER COMMA SVERTEX COMMA CONDITION RP { $$ = new Edge($2, $4, $6, $8, $10); }
+
+vertex: Q COL LETTER  { $$ = new std::vector<int>(); $$->push_back(int(*$3 - '0')); }
+| vertex LETTER        { $1->push_back(int(*$2 - '0')); }
+
+alphabet: A COL LETTER { $$ = new std::vector<char*>(); $$->push_back($3);}
+| alphabet LETTER      { $1->push_back($2); }
+
+other: OTHER           {  }
+
+%%
+
+int main(int argc, char *argv[])
+{
+  if (argc != 3) {
+    std::cout << "Not enough input parameters\n";
+    return 1;
+  }
+  yyin = fopen (argv[1], "r");
+  if (!yyin)
+    {
+      std::cout << "Can't open input file_1\n";
+      return 1;
+    }
+  int res = yyparse();
+  if (res) {
+    fclose (yyin);
+    return 1;
+  }
+  fclose (yyin);
+  
+  if (check_automata_correctness()) {
+    return 1;
+  }
+
+  std::string s;
+  ifstream file(argv[2]);
+  while(getline(file, s)){ 
+    check(s);   
+  }
+  file.close();
+  
+  return 0;
+}
