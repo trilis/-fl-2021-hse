@@ -1,0 +1,10 @@
+Alphabet: {a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x}
+Start: {q0}
+Accept: {q3}
+Edge: (q0, q1), {f} 
+Edge: (q1, q2), {a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x} 
+Edge: (q2, q3), {a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x} 
+Edge: (q3, q4), {a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x} 
+Edge: (q4, q4), {a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x}
+Edge: (q0, q4), {a, b, c, d, e, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x}
+.

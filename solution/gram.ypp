@@ -1,0 +1,168 @@
+%{
+#include <iostream>
+#include <string>
+#include <vector>
+#include <map>
+#include <unordered_map>
+#include <set>
+#include <cstdlib>
+#include <fstream>
+#include <exception>
+
+
+struct automat{
+    int count = 0;
+    int start_node = -1;
+    std::set <char> alphabet;
+    std::set <int> nodes;
+    std::set <int> accept_nodes;
+    std::set <int> start_nodes;
+    std::vector<std::pair<int, char>> edges_list;
+    std::unordered_map <int, std::unordered_map<char, int>> edges;
+
+    std::vector<char> sym_list;
+    std::vector<int> node_list;
+
+    void add_alphabet(){
+      for(auto & sym : sym_list){
+        alphabet.insert(sym);
+      }
+      if(sym_list.size() != alphabet.size()){
+        throw std::runtime_error("Error! Alphabet symbols are not unique.");
+      }
+      sym_list.clear();
+    }
+
+    void add_start_nodes(){
+      start_node = node_list[0];
+      for(auto & node : node_list){
+        start_nodes.insert(node);
+      }
+      node_list.clear();
+    }
+
+    void add_accept_nodes(){
+      for(auto & node : node_list){
+        accept_nodes.insert(node);
+      }
+      node_list.clear();
+    }
+
+    void add_edge(int node1, int node2){
+      for(auto & sym : sym_list){
+        if(alphabet.find(sym) == alphabet.end()){
+          throw std::runtime_error("Error! Symbol is not in alphabet.");
+        }
+        edges[node1][sym] = node2; 
+        edges_list.push_back({node1, sym});
+      }
+      sym_list.clear();
+    }
+
+
+    bool match(const std::string &str){
+      int current_node = start_node;
+      int current_index = 0;
+
+      while (current_index != str.size()){
+        current_node = edges[current_node][str[current_index]];
+        current_index++;
+      }
+      return accept_nodes.find(current_node) != accept_nodes.end();
+    }
+
+    void check(){
+      if(start_nodes.size() == 0){
+        throw std::runtime_error("Error! No start state.");
+      }
+      if(start_nodes.size() > 1){
+        throw std::runtime_error("Error! Too many start states.");
+      }
+
+      for (int i = 0; i < edges_list.size(); ++i){
+        nodes.insert(edges_list[i].first);
+        for (int j = 0; j < edges_list.size(); ++j){
+          if(i != j && edges_list[i] == edges_list[j]){
+            std::string str(1, edges_list[i].second);
+            throw std::runtime_error("Error! Automat is not deterministic. Edge \'" + str + "\' from state q" + std::to_string(edges_list[i].first) + ".");
+          }
+        }
+      }
+
+      if(nodes.size() * alphabet.size() != edges_list.size()){
+        throw std::runtime_error("Error! Automat is not complete.");
+      }
+    }
+
+};
+
+automat & get_automat(){
+    static automat automat_;
+    return automat_;
+}
+
+
+
+int yylex(); 
+int yyerror(const char *p) { std::cout << "Parse error!" << std::endl; }
+%}
+
+%union {
+  char sym;
+  int val;
+  char * word;
+};
+%token <word> ID
+%token <val> NODE
+%token <sym> LB RB LP RP COL COM DOT SYM
+
+%%
+
+start: exp  { }
+
+exp: ID COL st exp {}
+| DOT {}
+
+st: LB ls RB                        {
+  get_automat().count++;
+  if(get_automat().count == 1){
+    get_automat().add_alphabet();
+  }else if(get_automat().count == 2){
+    get_automat().add_start_nodes();
+  }else if(get_automat().count == 3){
+    get_automat().add_accept_nodes();
+  }
+}
+| LP NODE COM NODE RP COM LB ls RB  {get_automat().add_edge($2, $4);}
+
+ls: NODE COM ls      {get_automat().node_list.push_back($1);}
+| NODE               {get_automat().node_list.push_back($1);}
+| SYM COM ls         {get_automat().sym_list.push_back($1);}
+| SYM                {get_automat().sym_list.push_back($1);}
+
+%%
+
+int main(int argc, char ** argv)
+{
+    try{
+      freopen(argv[1], "r", stdin);
+      yyparse();
+      fclose(stdin);
+      get_automat().check();
+
+
+      std::ifstream fin(argv[2]);
+      std::string matched_string;
+      fin >> matched_string;
+
+      std::cout << "Matched string: " <<matched_string << '\n';
+      if (get_automat().match(matched_string)){
+        std::cout << "Yes\n";
+      } else {
+        std::cout << "No\n";
+      }
+    }catch(std::exception &e){
+      std::cout << e.what() << "\n";
+      return 1;
+    }
+}

@@ -1,0 +1,10 @@
+Alphabet: {0, 1}
+Start: {q0}
+Accept: {q0}
+Edge: (q0, q0), {0} 
+Edge: (q0, q1), {1} 
+Edge: (q1, q0), {1} 
+Edge: (q1, q2), {0} 
+Edge: (q2, q1), {0}
+Edge: (q2, q2), {1}
+.

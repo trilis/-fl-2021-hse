@@ -1,0 +1,44 @@
+Результаты тестов:
+Тест 1: Слова длины 3, начинающиеся с "f"
+Matched string: fre
+Yes
+Matched string: frog
+No
+
+Тест 2: Чётные числа
+Matched string: 1234898790
+Yes
+Matched string: 6859471247
+No
+
+Тест 3: Двоичные числа, делящиеся на 3
+Matched string: 10101
+Yes
+Matched string: 110010000
+No
+
+Тест 4: Натуральные числа и 0 без лидирующих нулей, делящиеся на 5
+Matched string: 0
+Yes
+Matched string: 000045
+No
+Matched string: 148785
+Yes
+Matched string: 117899438
+No
+
+Неккоректные автоматы:
+Тест 1: Начальное состояние корректно определено
+Error! Too many start states.
+
+Тест 2: Повторяющиеся символы алфавита
+Error! Alphabet symbols are not unique.
+
+Тест 3: Символ не из алфавита
+Error! Symbol is not in alphabet.
+
+Тест 4: Автомат не детерминирован
+Error! Automat is not deterministic. Edge '0' from state q0.
+
+Тест 5: Автомат не полон
+Error! Automat is not complete.
