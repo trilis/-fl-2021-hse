@@ -1,0 +1,17 @@
+_Alphabet {
+    d0,
+    d1,
+}
+
+_States {
+    empty,
+    s0,
+    s1,
+}
+
+_Edges {
+    empty_d0,
+    empty_d1,
+    s1_d0,
+    s0_d1,
+}

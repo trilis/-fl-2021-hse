@@ -1,0 +1,49 @@
+_Alphabet {
+    d0, d1, d2, d3, d4, d5, d6, d7, d8, d9
+}
+
+_States {
+    empty,
+    zero,
+    not_zero,
+}
+
+_Edges {
+    empty_not_zero,
+    empty_zero,
+    not_zero_not_zero
+}
+
+_Q0{empty}
+
+
+new State(empty):
+    __edges: {empty_not_zero, empty_zero}
+    __comment: 'пустая строка'
+    __is_terminal: False
+
+new State(zero):
+    __edges: {}
+    __comment: 'пустая строка x2'
+    __is_terminal: True
+
+new State(not_zero):
+    __edges: {not_zero_not_zero}
+    __is_terminal: True
+
+
+new Edge(empty_not_zero):
+    __allowed_letters: {d1,d2,d3,d4,d5,d6,d7,d8,d9} 
+    __begin: empty
+    __end: not_zero 
+
+new Edge(empty_zero):
+    __allowed_letters: {d0}
+    __begin: empty
+    __end: zero
+
+
+new Edge(not_zero_not_zero):
+    __allowed_letters: {d0, d1,d2,d3,d4,d5,d6,d7,d8,d9}
+    __begin: not_zero_not_zero
+    __end: not_zero_not_zero

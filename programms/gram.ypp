@@ -2,57 +2,344 @@
 #include <iostream>
 #include <string>
 #include <map>
+#include <stack>
 #include <vector>
 #include <cstring>
 #include <set>
 #include <cstdlib>
+#include <algorithm>
+
 #include <fstream>
 #include <string>
 
 using namespace std;
 
 int yylex(); 
-int yyerror(const char *p) { cerr << "Error! " << p << endl; exit(1);}
+void yyerror(const char *s) { fprintf (stderr, "ERROR %s\n", s); }
+
+void warning(string s) {
+    cerr << "[Warning] " << s << "\n";
+}
+
+void error(string s) {
+    cerr << "[Error] " << s << "\n";
+    exit(0);
+}
+
+struct State {
+    string id;
+    vector<string> edges;
+    string comment;
+    bool is_terminal;
+};
+
+
+struct Edge {
+    string id;
+    vector<string> allowed_letters;
+    string begin;
+    string end;
+};
+
+
+template<typename T>
+class Parameter {
+    string field_name;
+    T value;
+    bool assigned = false;
+public:
+    Parameter(){}
+
+    Parameter(string f_n) {
+        field_name = f_n;
+    }
+
+    void set(T other) {
+        if(assigned) {
+            error(field_name  + " must be defined only one time");
+        }
+
+        value = other;
+        assigned = true;
+    }
+
+    void reset() {
+        assigned = false;
+        value = T();
+    } 
+
+    bool is_assigned() {
+        return assigned;
+    }
+
+    T get_value() {
+        return value;
+    }
+};
+
+struct Automata {
+    Parameter<vector<string>> alphabet_list = "_Alphabet"s, states_list = "_States"s, edges_list = "_Edges"s;
+    map<string, Edge> edges;
+    map<string, State> states;
+    Parameter<string> q0 = "_Q0"s; 
+
+    void add_edge(Edge e) {
+        edges[e.id] = e;
+    }
+
+    void add_state(State s) {
+        states[s.id] = s;
+    }
+
+};
+
+Automata & automata() {
+    static Automata automata;
+    return automata;
+}
+
+
+struct Parser {
+    vector <string> variables; 
+
+    Parameter<vector<string>> allowed_letters = "__allowed_letters"s;
+    Parameter<string> begin = "__begin"s;
+    Parameter<string> end = "__end"s;
+    
+    Parameter<vector<string>> edges = "__edges"s;
+    Parameter<string> comment = "__comment"s;
+    Parameter<bool> is_terminal = "__is_terminal"s;
+
+    void add_variable(string s) {
+        variables.push_back(s);
+    }
+    void set_allowed_letters() {
+        allowed_letters.set(variables);
+        variables.clear();
+    }
+
+    void set_begin(string v) {
+        begin.set(v);
+    } 
+    
+    void set_end(string v) {
+        end.set(v);
+    } 
+
+    void set_edges() {
+        edges.set(variables);
+        variables.clear();
+    }
+
+    void set_is_terminal(bool flag) {
+        is_terminal.set((bool)flag);
+    }
+
+    void set_comment(string s) {
+        comment.set(s); 
+    }
+
+
+    //[_]Alphabet|[_]States|[_]Edges|[_]Q0
+    void initialize(string s) {
+        sort(variables.begin(), variables.end());
+        for(int i = 0; i + 1 < variables.size(); i++) {
+            if(variables[i] == variables[i + 1]) {
+                warning("All elements " + s + " should be unique");
+            }
+        }
+
+        if(s == "_Alphabet") {
+            automata().alphabet_list.set(variables);
+        } else if( s == "_States") {
+            automata().states_list.set(variables);
+        } else if (s == "_Edges") {
+            automata().edges_list.set(variables);
+        } else if(s == "_Q0") {
+            if(variables.size() != 1) {
+                error("QO must be inizializate by one state");
+            }
+            automata().q0.set(variables[0]);
+        }
+
+        variables.clear();
+    }
+
+    void add_edge(string id) {
+        Edge res;
+        res.id = id;
+        if(!allowed_letters.is_assigned()) {
+            error("Edge with id " + id + " doesn't have field __allowed_letters");
+        } else {
+            res.allowed_letters = allowed_letters.get_value();
+            if(res.allowed_letters.empty()) {
+                error("Edge with id " + id + " has empty __allowed_letters");
+            } 
+        }
+
+        allowed_letters.reset();
+        
+        if(!begin.is_assigned()) {
+            error("Edge with id " + id + "doesn't have field begin");
+        }
+
+        res.begin = begin.get_value();
+        begin.reset();
+        
+        if(!end.is_assigned()) {
+            error("Edge with id " + id + "doesn't have field end");
+        }
+
+        res.end = end.get_value();
+        end.reset();
+        
+        automata().add_edge(res);
+    }
+
+
+    void add_state(string id) {
+        State res;
+        res.id = id;
+
+        if(edges.is_assigned()) {
+            res.edges = edges.get_value();   
+        }
+        
+        edges.reset();
+
+        if(comment.is_assigned()) {
+            res.comment = comment.get_value();
+        }
+        comment.reset();
+
+        if(!is_terminal.is_assigned()) {
+            error("State with id " + id + " doesn't have __is_terminal field");
+        }
+
+        res.is_terminal = is_terminal.get_value();
+        is_terminal.reset();
+
+        automata().add_state(res);
+    }
+
+
+};
+
+
+Parser& parser() {
+  static Parser res;
+  return res;
+}
 
 
 %}
 
-%union{
-    int number;
-    string str;
-    char symbol;
-    bool boolean;
+%union {
+    const char *str;
 };
 
 
-%token <str> T_KEYWORD
+%token T_NEW
 %token <str> T_INITIALIZATION_VARIABLE
-%token <str> T_VARIABLE
-%token <str> T_STRUCT_NAME
-%token <str> T_STRUCT_FIELD
-%token <boolean> T_BOOLEAN
-%token <symbol> T_OPEN_CURLY_BRACKET  
+%token <str> T_VARIABLE 
+
+%token T_STATE
+%token T_EDGES_STATE_FIELD
+%token T_COMMENT_STATE_FIELD
+%token T_IS_TERMINAL_STATE_FIELD
+
+%token T_EDGE 
+%token T_ALLOWED_LETTERS_EDGE_FIELD 
+%token T_BEGIN_EDGE_FIELD
+%token T_END_EDGE_FIELD
+
+
+%token <str> T_BOOLEAN
 %token <str> T_STRING
-%token <symbol> T_CLOSE_CURLY_BRACKET
-%token <symbol> T_OPEN_ROUND_BRACKET
-%token <symbol> T_CLOSE_ROUND_BRACKET
-%token <symbol> T_COLON
-%token <symbol> T_EMPTY_LINE
+%token T_OPEN_CURLY_BRACKET  
+%token T_CLOSE_CURLY_BRACKET
+%token T_OPEN_ROUND_BRACKET
+%token T_CLOSE_ROUND_BRACKET
+%token T_COLON
+%token T_EMPTY_LINE
 %token <str> T_SPACES
-%token <symbol> T_COMM
-%token <symbol> T_DOT
+%token T_COMM
+%token T_DOT
+%token <number> T_EOF
+
+%type <str> SPACED_VARIABLE
+
 
 %%
 
 
+start: %empty
+       | T_EMPTY_LINE start
+       | initialization start 
+       | add_edge start
+       | add_state start
 
+
+add_edge: spaces T_NEW spaces T_EDGE T_OPEN_ROUND_BRACKET SPACED_VARIABLE T_CLOSE_ROUND_BRACKET spaces T_COLON edge_fields { parser().add_edge($6);}
+
+
+edge_fields: %empty  
+            | T_EMPTY_LINE edge_fields
+            | edge_field edge_fields
+
+edge_field: T_EMPTY_LINE edge_field
+            | spaces T_ALLOWED_LETTERS_EDGE_FIELD spaces T_COLON spaces enumeration_list { parser().set_allowed_letters(); }
+            | spaces T_BEGIN_EDGE_FIELD spaces T_COLON spaces T_VARIABLE spaces { parser().set_begin($6);}
+            | spaces T_END_EDGE_FIELD spaces T_COLON spaces T_VARIABLE spaces { parser().set_end($6);}
+
+
+add_state: spaces T_NEW spaces T_STATE T_OPEN_ROUND_BRACKET SPACED_VARIABLE T_CLOSE_ROUND_BRACKET spaces T_COLON state_fields { parser().add_state($6);} 
+
+
+state_fields: %empty  
+              | T_EMPTY_LINE state_fields
+              | state_field state_fields
+
+state_field:  T_EMPTY_LINE state_field
+              | spaces T_EDGES_STATE_FIELD spaces T_COLON spaces enumeration_list  {parser().set_edges();}
+              | spaces T_COMMENT_STATE_FIELD spaces T_COLON spaces T_STRING {parser().set_comment($6);}
+              | spaces T_IS_TERMINAL_STATE_FIELD spaces T_COLON spaces T_BOOLEAN { if($6 == "True") parser().set_is_terminal(1); else parser().set_is_terminal(0);}
+
+
+
+initialization: T_INITIALIZATION_VARIABLE spaces enumeration_list { parser().initialize($1); }
+
+
+enumeration_list: T_OPEN_CURLY_BRACKET sequence T_CLOSE_CURLY_BRACKET {}
+
+sequence: %empty
+          | SPACED_VARIABLE skip_empty_lines { parser().add_variable($1);}
+          | SPACED_VARIABLE T_COMM sequence { parser().add_variable($1);} 
+          | T_EMPTY_LINE sequence {}
+
+SPACED_VARIABLE: spaces T_VARIABLE spaces { $$ = $2;} 
+
+skip_empty_lines: %empty    
+                  | T_EMPTY_LINE skip_empty_lines
+                  | spaces skip_empty_lines
+spaces: %empty
+        | T_SPACES
 
 %%
 
-int main(int argc, char* argv[])
-{
-  yyparse();
+int main(int argc, char* argv[]) {
+    if (argc < 3) { 
+        printf("Arguments are not enough");
+        return 1;
+    }
+    
+    try {
+        freopen(argv[1], "r", stdin);   
+        return yyparse();
+    } catch(std::exception &e) {
+        std::cout << e.what() << '\n';
+        return 1;
+    }
 
-
-  return 0;
+    return 0;
 }

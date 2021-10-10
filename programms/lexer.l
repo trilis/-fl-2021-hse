@@ -2,14 +2,24 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include <string>
+#include <stdexcept>
 
-void error(){
-  printf("ERROR");
-  exit(1);
-}
-
+#include "gram.tab.hpp"
 
 int line_pos = 1;
+
+
+const int MAX_TOKEN_SIZE = 4 * (1 << 10) - 1;
+char buffer[MAX_TOKEN_SIZE] = "\0";
+
+
+const char *data_copy(char *text) {
+    strcpy(buffer, text);
+    char * tmp = new char[strlen(buffer) + 1];
+    strcpy(tmp, buffer);
+    return tmp;
+}
 
 %}
 
@@ -17,11 +27,22 @@ int line_pos = 1;
 %option noyywrap
 %option stack
 
-KEYWORD new
+NEW new
 INITIALIZATION_VARIABLE [_]Alphabet|[_]States|[_]Edges|[_]Q0
 VARIABLE [a-z][a-z_0-9]*
-STRUCT_NAME [A-Z][a-z_0-9]*
+STRUCT_NAME State|Edge
 STRUCT_FIELD [_]{2}[a-z][a-z_0-9]*
+
+STATE State
+EDGES_STATE_FIELD __edges
+COMMENT_STATE_FIELD __comment
+IS_TERMINAL_STATE_FIELD __is_terminal
+
+EDGE Edge
+ALLOWED_LETTERS_EDGE_FIELD __allowed_letters 
+BEGIN_EDGE_FIELD __begin
+END_EDGE_FIELD __end
+
 BOOLEAN False|True
 OPEN_CURLY_BRACKET "{"
 STRING ['].+[']
@@ -36,29 +57,34 @@ COMM ,
 DOT "."
 
 %%
-{KEYWORD} { printf("KEYWORD %s %u  %d\n", yytext, yylineno, line_pos); line_pos+=yyleng; return T_KEYWORD; }
-{INITIALIZATION_VARIABLE} { printf("INITIALIZATION_VARIABLE %s %u  %d\n", yytext, yylineno, line_pos); line_pos+=yyleng; }
-{VARIABLE} { printf("VARIABLE %s %u  %d\n", yytext, yylineno, line_pos); line_pos+=yyleng; }
-{STRING} { printf("STRING %s %u  %d\n", yytext, yylineno, line_pos); line_pos+=yyleng; }
-{BOOLEAN} { printf("BOOLEAN %s %u  %d\n", yytext, yylineno, line_pos); line_pos+=yyleng; }
-{STRUCT_NAME} { printf("STRUCT_NAME %s %u  %d\n", yytext, yylineno, line_pos); line_pos+=yyleng; }
-{DOT} { printf("DOT %u  %d\n", yylineno, line_pos); line_pos+=yyleng; }
-{STRUCT_FIELD} { printf("STRUCT_FIELD %s %u  %d\n", yytext, yylineno, line_pos); line_pos+=yyleng; }
-{OPEN_CURLY_BRACKET} { printf("OPEN_CURLY_BRACKET %u  %d\n", yylineno, line_pos); line_pos+=yyleng; }
-{CLOSE_CURLY_BRACKET} { printf("CLOSE_CURLY_BRACKET %u  %d\n", yylineno, line_pos); line_pos+=yyleng; }
-{OPEN_ROUND_BRACKET} { printf("OPEN_ROUND_BRACKET %u  %d\n", yylineno, line_pos); line_pos+=yyleng; }
-{CLOSE_ROUND_BRACKET} { printf("CLOSE_ROUND_BRACKET %u  %d\n", yylineno, line_pos); line_pos+=yyleng; }
-{COLON} { printf("COLON %u  %d\n", yylineno, line_pos); line_pos+=yyleng; }
-{COMM}  { printf("COMM %u  %d\n", yylineno, line_pos); line_pos+=yyleng; } 
-{EMPTY_LINE}  { line_pos=1; }
-[\r ]*  { line_pos+=1; }
+{NEW} { return T_NEW; }
+{INITIALIZATION_VARIABLE} { yylval.str = data_copy(yytext); return T_INITIALIZATION_VARIABLE; }
+{VARIABLE} { yylval.str = data_copy(yytext); return T_VARIABLE; }
+{STRING} { yylval.str = data_copy(yytext); return T_STRING; }
+{BOOLEAN} { yylval.str = data_copy(yytext); return T_BOOLEAN; }
+{DOT} { return T_DOT; }
 
-. {printf("ERROR '%s' %u %d\n", yytext, yylineno, line_pos); exit(1);}
-<<EOF>> {printf("EOF"); return 0;}
+{STATE} {return T_STATE;}
+{EDGES_STATE_FIELD} { return T_EDGES_STATE_FIELD; }
+{COMMENT_STATE_FIELD} { return T_COMMENT_STATE_FIELD; }
+{IS_TERMINAL_STATE_FIELD} {return T_IS_TERMINAL_STATE_FIELD;}
+
+
+{EDGE} {return T_EDGE;}
+{ALLOWED_LETTERS_EDGE_FIELD}  {return T_ALLOWED_LETTERS_EDGE_FIELD;}
+{BEGIN_EDGE_FIELD} {return T_BEGIN_EDGE_FIELD;}
+{END_EDGE_FIELD} {return T_END_EDGE_FIELD;}
+
+{OPEN_CURLY_BRACKET} { return T_OPEN_CURLY_BRACKET; }
+{CLOSE_CURLY_BRACKET} { return T_CLOSE_CURLY_BRACKET; }
+{OPEN_ROUND_BRACKET} { return T_OPEN_ROUND_BRACKET; }
+{CLOSE_ROUND_BRACKET} { return T_CLOSE_ROUND_BRACKET; }
+{COLON}  { return T_COLON; }
+{SPACES} { return T_SPACES;}
+{COMM}   { return T_COMM; } 
+{EMPTY_LINE}  {return T_EMPTY_LINE;}
+[\r ]*  { }
+<<EOF>> { return 0;}
+. { throw std::runtime_error("invalid character: " + std::string(yytext, yyleng)); return 1;}
 
 %%
-
-int main(int argc, char* argv[]) {
-  yylex() ;
-  return EXIT_SUCCESS ;
-}
