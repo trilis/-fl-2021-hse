@@ -54,7 +54,7 @@
                     }
                     if (flag == false) {
                         cout << i << ' ' << *j;
-                        throw runtime_error("Error! Automata is not finite");
+                        throw runtime_error("Error! Automata is not full");
                     }
                 }
             }
@@ -79,11 +79,14 @@
             int func;
             while (!in.eof()) {
                 in >> func;
+                bool flag = false;
                 for (int i = 0; i < n; i++) {
                     if (g[v][i].find(func) != g[v][i].end()) {
                         v = i;
+                        flag = true;
                     }
                 }
+                if (!flag) return false;
             }
             if (types[v] == 10) return true;
             return false;
@@ -120,7 +123,7 @@ discr : FAKE EXCLAMATION_MARK VERTEX_LIST AT_SIGN EDGE_LIST {
 
 FAKE : T_NUMBER {
     if ($1 < 1) {
-        throw exception_error("Error! No vertexes");
+        throw runtime_error("Error! No vertexes");
     }
     g().n = $1;
     g().used.resize($1, false);
