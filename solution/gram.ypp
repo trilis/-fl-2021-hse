@@ -1,0 +1,84 @@
+%{
+#include <iostream>
+#include <string>
+#include <cstdlib>
+#include <set>
+#include <map>
+#include <vector>
+
+using namespace std;
+
+int yylex();
+int yyerror(const char *p) { cerr << "Error!" << string(p) << endl; exit(1);}
+
+set<string> terms;
+map<string, vector<pair<char, string>>> edges;
+%}
+
+%union {
+  char* word;
+  char sym;
+};
+%token <word> T_STATE T_KEYWORD T_EDGE T_N
+%token <sym> T_WORD
+
+%%
+
+start: create_terminal create_edges                {}
+
+create_terminal: T_KEYWORD list_of_terminal T_N       {}
+
+list_of_terminal: list_of_terminal T_STATE         { terms.insert(string($2)); }
+| T_STATE                                          { terms.insert(string($1)); }
+
+create_edges: list_of_edges                   {}
+
+list_of_edges: list_of_edges T_STATE T_EDGE T_WORD T_EDGE T_STATE T_N { string from($2, $3 - $2), to(string($6)); if(to.back() != ')') {to.pop_back();} edges[from].push_back(make_pair(($4), to));}
+| T_STATE T_EDGE T_WORD T_EDGE T_STATE T_N { string from($1, $2 - $1), to(string($5)); if(to.back() != ')') {to.pop_back();} edges[from].push_back(make_pair(($3), to));}
+
+%%
+
+
+bool str_in_lang(string& str) {
+    string current_state = "@";
+    bool flag = false;
+    for (auto sym: str) {
+        for (auto &e: edges[current_state]) {
+            if (e.first == sym) {
+                current_state = e.second;
+                flag = true;
+                break;
+            }
+        }
+        if (!flag) {
+            cout << "ERROR: edge from" << current_state << " with word " << sym << " doesn't exist" << endl;
+            return false;
+        }
+        flag = false;
+    }
+    if (terms.find(current_state) != terms.end()) {
+        return true;
+    }
+    return false;
+}
+
+int main(int argc, char* argv[])
+{
+    if (argc != 3) {
+        cerr << "incorrect input" << endl;
+        exit(1);
+    }
+    freopen(argv[1], "r", stdin);
+    yyparse();
+    fclose(stdin);
+    freopen(argv[2], "r", stdin);
+    string str;
+    cin >> str;
+    fclose(stdin);
+    if (str_in_lang(str)) {
+        cout << "YES" << endl;
+    } else {
+        cout << "NO" << endl;
+    }
+    return 0;
+}
