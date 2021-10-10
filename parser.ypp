@@ -1,0 +1,86 @@
+%{
+#include <iostream>
+#include <string>
+#include <map>
+#include <cstdlib>
+#include <unordered_map>
+using namespace std;
+
+int yylex(); 
+int yyerror(const char *p) { cerr << "Error!" << endl; return 1; }
+
+namespace parser {
+    struct Node {
+        bool is_terminal = 0;
+        std::unordered_map<std::string, Node*> links;
+        explicit Node(bool is_terminal) : is_terminal(is_terminal) {
+            
+        }
+    };
+
+    std::unordered_map<std::string, Node*> used_names;
+    Node* beginning = nullptr;
+
+    static int add_id(const std::string& id, bool is_beginnning, bool is_terminal) {
+        if (used_names.count(id)) {
+            return 1;
+        }
+        else {
+            used_names[id] = new Node(is_terminal);
+            return 0;
+        }
+    }
+
+    static int add_link(const std::string& id1, const std::string &link, const std::string& id2) {
+        if (used_names[id1]->links.count(id2)) {
+            return 1;
+        }
+        else {
+            used_names[id1]->links[link] = used_names[id2];
+            return 0;
+        }
+    }
+}
+
+%}
+
+
+%union {
+    char* word;
+    char sym;
+    int error_code;
+}
+
+%token <word> KEY_STATES KEY_LINKS ID SPEC_BEGIN SPEC_TERMINAL BRACKET_OPEN BRACKET_CLOSE
+%token <sym> CHAR COLON TAB 
+%type <word> arrow string
+
+%%
+
+start: init_states init_links {}
+
+init_states: KEY_STATES ID COLON states { }
+
+states: TAB SPEC_BEGIN ID states { return parser::add_id($2, true, false); }
+| TAB SPEC_TERMINAL ID states { return parser::add_id($2, false, true); }
+| TAB ID states { return parser::add_id($2, false, false); }
+| TAB ID { return parser::add_id($2, false, false); }
+
+init_links: KEY_LINKS ID COLON links { }
+
+links: TAB ID arrow ID links { return parser::add_link($2, $3, $4); }
+| TAB ID arrow ID { return parser::add_link($2, $3, $4); }
+
+arrow: BRACKET_OPEN string BRACKET_CLOSE { }
+
+string: string CHAR {  }
+| CHAR {  }
+
+%%
+
+
+
+int main(int argc, char** argv) {
+    yyparse();
+    return 0;
+}
