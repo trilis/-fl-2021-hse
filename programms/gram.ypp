@@ -38,7 +38,6 @@ struct State {
 struct Edge {
     string id;
     vector<string> allowed_letters;
-    string begin;
     string end;
 };
 
@@ -140,11 +139,10 @@ struct Automata {
         }
     }
 
-    bool check(vector<string> letters) {
+    pair<int, State*> check(vector<string> letters) {
         string curr_s = q0.get_value();
         for(auto letter: letters) {
             bool next_state_is_found = false;
-
             for(auto edge_id: states[curr_s].edges) {
                 const auto &edge = edges[edge_id];
                 if(find(edge.allowed_letters.begin(), edge.allowed_letters.end(), letter) != edge.allowed_letters.end()) {
@@ -155,10 +153,12 @@ struct Automata {
             }
             
             if(!next_state_is_found) {
-                return false;
+                return make_pair(-1, nullptr);
             }
         }
-        return true;
+
+
+        return make_pair(states[curr_s].is_terminal ? 1 : 0, &states[curr_s]);
     }
 };
 
@@ -172,7 +172,6 @@ struct Parser {
     vector <string> variables; 
 
     Parameter<vector<string>> allowed_letters = "__allowed_letters"s;
-    Parameter<string> begin = "__begin"s;
     Parameter<string> end = "__end"s;
     
     Parameter<vector<string>> edges = "__edges"s;
@@ -186,10 +185,6 @@ struct Parser {
         allowed_letters.set(variables);
         variables.clear();
     }
-
-    void set_begin(string v) {
-        begin.set(v);
-    } 
     
     void set_end(string v) {
         end.set(v);
@@ -200,8 +195,8 @@ struct Parser {
         variables.clear();
     }
 
-    void set_is_terminal(bool flag) {
-        is_terminal.set((bool)flag);
+    void set_is_terminal(int flag) {
+        is_terminal.set(flag);
     }
 
     void set_comment(string s) {
@@ -246,13 +241,6 @@ struct Parser {
         }
 
         allowed_letters.reset();
-        
-        if(!begin.is_assigned()) {
-            error("Edge with id " + quote(id) + "doesn't have field begin");
-        }
-
-        res.begin = begin.get_value();
-        begin.reset();
         
         if(!end.is_assigned()) {
             error("Edge with id " + quote(id) + "doesn't have field end");
@@ -318,7 +306,6 @@ Parser& parser() {
 
 %token T_EDGE 
 %token T_ALLOWED_LETTERS_EDGE_FIELD 
-%token T_BEGIN_EDGE_FIELD
 %token T_END_EDGE_FIELD
 
 
@@ -357,7 +344,6 @@ edge_fields: %empty
 
 edge_field: T_EMPTY_LINE edge_field
             | spaces T_ALLOWED_LETTERS_EDGE_FIELD spaces T_COLON spaces enumeration_list { parser().set_allowed_letters(); }
-            | spaces T_BEGIN_EDGE_FIELD spaces T_COLON spaces T_VARIABLE spaces { parser().set_begin($6);}
             | spaces T_END_EDGE_FIELD spaces T_COLON spaces T_VARIABLE spaces { parser().set_end($6);}
 
 
@@ -371,7 +357,7 @@ state_fields: %empty
 state_field:  T_EMPTY_LINE state_field
               | spaces T_EDGES_STATE_FIELD spaces T_COLON spaces enumeration_list  {parser().set_edges();}
               | spaces T_COMMENT_STATE_FIELD spaces T_COLON spaces T_STRING {parser().set_comment($6);}
-              | spaces T_IS_TERMINAL_STATE_FIELD spaces T_COLON spaces T_BOOLEAN { if($6 == "True") parser().set_is_terminal(1); else parser().set_is_terminal(0);}
+              | spaces T_IS_TERMINAL_STATE_FIELD spaces T_COLON spaces T_BOOLEAN { string s = $6; if(s == "True") parser().set_is_terminal(1); else parser().set_is_terminal(0);}
 
 
 
@@ -409,7 +395,7 @@ int main(int argc, char* argv[]) {
         std::cout << "----------------Automata is created successfully----------------"  << "\n\n\n";
         
         
-        std::cout << "----------------------" << "Start testing " << argv[2] <<"----------------"  << "\n\n\n";
+        std::cout << "Start testing file: " << quote(argv[2]) << "\n\n";
 
         freopen(argv[2], "r", stdin);
         std::string input;
@@ -421,13 +407,20 @@ int main(int argc, char* argv[]) {
             for (std::string word; ist >> word; ) {
                 letters.push_back(word);
             }
+            auto res = automata().check(letters);
 
-            if(automata().check(letters)) {
-                std::cout << "True\n";
-            } else {
-                std::cout << "False\n";
+            if(res.first == 1) {
+                
+                std::cout << "True | Final state: " << (res.second->id) << " | " << (res.second->comment) << "\n";
+            } 
+            else if(res.first == 0) {
+                std::cout << res.second->is_terminal << "\n";
+                std::cout << "False | Final state: " << res.second->id << " | " << res.second->comment << "\n";
+            } else if(res.first == -1){
+                std::cout << "False | Final state: " << "None" << "\n";
             }
             test++;
+            std::cout << "\n";
         }
 
 

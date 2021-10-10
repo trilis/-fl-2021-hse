@@ -107,7 +107,6 @@ struct State {
 struct Edge {
     string id;
     vector<string> allowed_letters;
-    string begin;
     string end;
 };
 
@@ -209,11 +208,10 @@ struct Automata {
         }
     }
 
-    bool check(vector<string> letters) {
+    pair<int, State*> check(vector<string> letters) {
         string curr_s = q0.get_value();
         for(auto letter: letters) {
             bool next_state_is_found = false;
-
             for(auto edge_id: states[curr_s].edges) {
                 const auto &edge = edges[edge_id];
                 if(find(edge.allowed_letters.begin(), edge.allowed_letters.end(), letter) != edge.allowed_letters.end()) {
@@ -224,10 +222,12 @@ struct Automata {
             }
             
             if(!next_state_is_found) {
-                return false;
+                return make_pair(-1, nullptr);
             }
         }
-        return true;
+
+
+        return make_pair(states[curr_s].is_terminal ? 1 : 0, &states[curr_s]);
     }
 };
 
@@ -241,7 +241,6 @@ struct Parser {
     vector <string> variables; 
 
     Parameter<vector<string>> allowed_letters = "__allowed_letters"s;
-    Parameter<string> begin = "__begin"s;
     Parameter<string> end = "__end"s;
     
     Parameter<vector<string>> edges = "__edges"s;
@@ -255,10 +254,6 @@ struct Parser {
         allowed_letters.set(variables);
         variables.clear();
     }
-
-    void set_begin(string v) {
-        begin.set(v);
-    } 
     
     void set_end(string v) {
         end.set(v);
@@ -269,8 +264,8 @@ struct Parser {
         variables.clear();
     }
 
-    void set_is_terminal(bool flag) {
-        is_terminal.set((bool)flag);
+    void set_is_terminal(int flag) {
+        is_terminal.set(flag);
     }
 
     void set_comment(string s) {
@@ -315,13 +310,6 @@ struct Parser {
         }
 
         allowed_letters.reset();
-        
-        if(!begin.is_assigned()) {
-            error("Edge with id " + quote(id) + "doesn't have field begin");
-        }
-
-        res.begin = begin.get_value();
-        begin.reset();
         
         if(!end.is_assigned()) {
             error("Edge with id " + quote(id) + "doesn't have field end");
@@ -370,7 +358,7 @@ Parser& parser() {
 
 
 
-#line 374 "gram.tab.cpp"
+#line 362 "gram.tab.cpp"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -427,20 +415,19 @@ extern int yydebug;
     T_IS_TERMINAL_STATE_FIELD = 264,
     T_EDGE = 265,
     T_ALLOWED_LETTERS_EDGE_FIELD = 266,
-    T_BEGIN_EDGE_FIELD = 267,
-    T_END_EDGE_FIELD = 268,
-    T_BOOLEAN = 269,
-    T_STRING = 270,
-    T_OPEN_CURLY_BRACKET = 271,
-    T_CLOSE_CURLY_BRACKET = 272,
-    T_OPEN_ROUND_BRACKET = 273,
-    T_CLOSE_ROUND_BRACKET = 274,
-    T_COLON = 275,
-    T_EMPTY_LINE = 276,
-    T_SPACES = 277,
-    T_COMM = 278,
-    T_DOT = 279,
-    T_EOF = 280
+    T_END_EDGE_FIELD = 267,
+    T_BOOLEAN = 268,
+    T_STRING = 269,
+    T_OPEN_CURLY_BRACKET = 270,
+    T_CLOSE_CURLY_BRACKET = 271,
+    T_OPEN_ROUND_BRACKET = 272,
+    T_CLOSE_ROUND_BRACKET = 273,
+    T_COLON = 274,
+    T_EMPTY_LINE = 275,
+    T_SPACES = 276,
+    T_COMM = 277,
+    T_DOT = 278,
+    T_EOF = 279
   };
 #endif
 
@@ -448,11 +435,11 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 305 "gram.ypp"
+#line 293 "gram.ypp"
 
     const char *str;
 
-#line 456 "gram.tab.cpp"
+#line 443 "gram.tab.cpp"
 
 };
 typedef union YYSTYPE YYSTYPE;
@@ -771,19 +758,19 @@ union yyalloc
 /* YYFINAL -- State number of the termination state.  */
 #define YYFINAL  11
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   114
+#define YYLAST   108
 
 /* YYNTOKENS -- Number of terminals.  */
-#define YYNTOKENS  26
+#define YYNTOKENS  25
 /* YYNNTS -- Number of nonterminals.  */
 #define YYNNTS  14
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  34
+#define YYNRULES  33
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  92
+#define YYNSTATES  86
 
 #define YYUNDEFTOK  2
-#define YYMAXUTOK   280
+#define YYMAXUTOK   279
 
 
 /* YYTRANSLATE(TOKEN-NUM) -- Symbol number corresponding to TOKEN-NUM
@@ -822,18 +809,17 @@ static const yytype_int8 yytranslate[] =
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     1,     2,     3,     4,
        5,     6,     7,     8,     9,    10,    11,    12,    13,    14,
-      15,    16,    17,    18,    19,    20,    21,    22,    23,    24,
-      25
+      15,    16,    17,    18,    19,    20,    21,    22,    23,    24
 };
 
 #if YYDEBUG
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int16 yyrline[] =
 {
-       0,   344,   344,   345,   346,   347,   348,   351,   354,   355,
-     356,   358,   359,   360,   361,   364,   367,   368,   369,   371,
-     372,   373,   374,   378,   381,   383,   384,   385,   386,   388,
-     390,   391,   392,   393,   394
+       0,   331,   331,   332,   333,   334,   335,   338,   341,   342,
+     343,   345,   346,   347,   350,   353,   354,   355,   357,   358,
+     359,   360,   364,   367,   369,   370,   371,   372,   374,   376,
+     377,   378,   379,   380
 };
 #endif
 
@@ -845,13 +831,12 @@ static const char *const yytname[] =
   "$end", "error", "$undefined", "T_NEW", "T_INITIALIZATION_VARIABLE",
   "T_VARIABLE", "T_STATE", "T_EDGES_STATE_FIELD", "T_COMMENT_STATE_FIELD",
   "T_IS_TERMINAL_STATE_FIELD", "T_EDGE", "T_ALLOWED_LETTERS_EDGE_FIELD",
-  "T_BEGIN_EDGE_FIELD", "T_END_EDGE_FIELD", "T_BOOLEAN", "T_STRING",
-  "T_OPEN_CURLY_BRACKET", "T_CLOSE_CURLY_BRACKET", "T_OPEN_ROUND_BRACKET",
-  "T_CLOSE_ROUND_BRACKET", "T_COLON", "T_EMPTY_LINE", "T_SPACES", "T_COMM",
-  "T_DOT", "T_EOF", "$accept", "start", "add_edge", "edge_fields",
-  "edge_field", "add_state", "state_fields", "state_field",
-  "initialization", "enumeration_list", "sequence", "SPACED_VARIABLE",
-  "skip_empty_lines", "spaces", YY_NULLPTR
+  "T_END_EDGE_FIELD", "T_BOOLEAN", "T_STRING", "T_OPEN_CURLY_BRACKET",
+  "T_CLOSE_CURLY_BRACKET", "T_OPEN_ROUND_BRACKET", "T_CLOSE_ROUND_BRACKET",
+  "T_COLON", "T_EMPTY_LINE", "T_SPACES", "T_COMM", "T_DOT", "T_EOF",
+  "$accept", "start", "add_edge", "edge_fields", "edge_field", "add_state",
+  "state_fields", "state_field", "initialization", "enumeration_list",
+  "sequence", "SPACED_VARIABLE", "skip_empty_lines", "spaces", YY_NULLPTR
 };
 #endif
 
@@ -862,16 +847,16 @@ static const yytype_int16 yytoknum[] =
 {
        0,   256,   257,   258,   259,   260,   261,   262,   263,   264,
      265,   266,   267,   268,   269,   270,   271,   272,   273,   274,
-     275,   276,   277,   278,   279,   280
+     275,   276,   277,   278,   279
 };
 # endif
 
-#define YYPACT_NINF (-63)
+#define YYPACT_NINF (-73)
 
 #define yypact_value_is_default(Yyn) \
   ((Yyn) == YYPACT_NINF)
 
-#define YYTABLE_NINF (-34)
+#define YYTABLE_NINF (-33)
 
 #define yytable_value_is_error(Yyn) \
   0
@@ -880,16 +865,15 @@ static const yytype_int16 yytoknum[] =
      STATE-NUM.  */
 static const yytype_int8 yypact[] =
 {
-       0,   -13,     0,   -63,     5,     0,     0,     0,    14,     9,
-     -63,   -63,   -63,   -63,   -63,   -13,     2,   -63,    -4,     2,
-      18,    75,    41,    30,    32,   -63,   -63,    20,     2,   -63,
-      20,   -13,   -13,   -13,   -63,   -63,   -63,   -63,    33,    34,
-     -13,   -13,    35,    39,    58,    73,    58,   -63,    58,    94,
-      73,   -63,    73,    93,   -63,    61,   -63,   -13,   -13,   -13,
-     -63,    78,   -63,   -13,   -13,   -13,    72,    87,    88,    89,
-      90,    91,   -13,   -13,   -13,   -13,   -13,   -13,     9,    46,
-      67,     9,   107,   108,   -63,   -63,   -63,   -63,   -13,   -13,
-     -63,   -63
+       1,    -8,     1,   -73,    25,     1,     1,     1,    38,    33,
+     -73,   -73,   -73,   -73,   -73,    -8,    -4,   -73,    36,    -4,
+      39,    70,    47,    65,    69,   -73,   -73,   -12,    -4,   -73,
+     -12,    -8,    -8,    -8,   -73,   -73,   -73,   -73,    63,    78,
+      -8,    -8,    55,    79,     3,    64,     3,   -73,     3,    86,
+      64,   -73,    64,    56,   -73,    57,   -73,    -8,    -8,    -8,
+     -73,    68,   -73,    -8,    -8,    80,    81,    82,    83,    84,
+      -8,    -8,    -8,    -8,    -8,    33,    73,    91,    33,    92,
+     -73,   -73,   -73,   -73,    -8,   -73
 };
 
   /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -897,23 +881,22 @@ static const yytype_int8 yypact[] =
      means the default is an error.  */
 static const yytype_int8 yydefact[] =
 {
-       2,    33,     2,    34,     0,     2,     2,     2,     0,     0,
-       3,     1,     5,     6,     4,    33,    25,    23,     0,    25,
-       0,    30,     0,     0,     0,    28,    24,    30,    25,    26,
-      30,    33,    33,    33,    31,    27,    32,    29,     0,     0,
-      33,    33,     0,     0,    16,     8,    16,    15,    16,     0,
-       8,     7,     8,     0,    17,    16,    18,    33,    33,    33,
-       9,     8,    10,    33,    33,    33,     0,     0,     0,     0,
-       0,     0,    33,    33,    33,    33,    33,    33,     0,     0,
-       0,     0,     0,     0,    20,    21,    22,    12,    33,    33,
-      13,    14
+       2,    32,     2,    33,     0,     2,     2,     2,     0,     0,
+       3,     1,     5,     6,     4,    32,    24,    22,     0,    24,
+       0,    29,     0,     0,     0,    27,    23,    29,    24,    25,
+      29,    32,    32,    32,    30,    26,    31,    28,     0,     0,
+      32,    32,     0,     0,    15,     8,    15,    14,    15,     0,
+       8,     7,     8,     0,    16,    15,    17,    32,    32,    32,
+       9,     8,    10,    32,    32,     0,     0,     0,     0,     0,
+      32,    32,    32,    32,    32,     0,     0,     0,     0,     0,
+      19,    20,    21,    12,    32,    13
 };
 
   /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
-     -63,     6,   -63,   -17,    43,   -63,    -8,    68,   -63,   -62,
-     -18,    45,     7,    -1
+     -73,    31,   -73,   -43,    58,   -73,    15,    59,   -73,   -72,
+       0,     2,    23,    -1
 };
 
   /* YYDEFGOTO[NTERM-NUM].  */
@@ -928,68 +911,65 @@ static const yytype_int8 yydefgoto[] =
      number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_int8 yytable[] =
 {
-       9,    25,    23,   -33,     1,    11,    24,   -33,    10,     3,
-      35,    12,    13,    14,    18,    22,    84,    15,    22,    87,
-      30,     2,     3,    19,     3,    16,    30,    22,    51,    30,
-      37,    22,    22,    60,    34,    26,    47,    36,    54,    42,
-      43,    27,     3,    49,    53,    49,    31,    49,    32,    53,
-      33,    53,    40,    41,    49,    44,    66,    67,    68,    45,
-      53,    85,    69,    70,    71,   -33,   -33,   -33,   -19,   -19,
-     -19,    78,    79,    80,    81,    82,    83,    38,    39,    46,
-       3,    86,    46,     3,   -33,   -33,   -33,    90,    91,   -11,
-     -11,   -11,    72,    61,    50,     3,    27,     3,    28,    50,
-       3,    57,    58,    59,    63,    64,    65,    73,    74,    75,
-      76,    77,    88,    89,    55
+       9,   -32,    51,    80,   -32,     1,    83,    60,    27,     3,
+     -32,   -32,   -32,     3,    18,    22,    19,     3,    22,    25,
+      30,     2,     3,    46,     3,    11,    30,    22,    35,    30,
+      37,    22,    22,    10,    38,    39,    12,    13,    14,    42,
+      43,    15,    23,    49,    53,    49,    24,    49,    16,    53,
+      34,    53,    31,    36,    49,    26,    65,    66,    67,    47,
+      53,    54,    68,    69,   -18,   -18,   -18,    63,    64,    75,
+      76,    77,    78,    79,    44,   -32,   -32,    46,     3,   -11,
+     -11,    40,    32,    85,    50,     3,    33,    81,    50,     3,
+      27,     3,    28,    57,    58,    59,    41,    84,    45,    70,
+      71,    72,    73,    74,    82,    55,     0,     0,    61
 };
 
 static const yytype_int8 yycheck[] =
 {
-       1,    19,     6,     3,     4,     0,    10,     5,     2,    22,
-      28,     5,     6,     7,    15,    16,    78,     3,    19,    81,
-      21,    21,    22,    21,    22,    16,    27,    28,    45,    30,
-      31,    32,    33,    50,    27,    17,    44,    30,    46,    40,
-      41,    21,    22,    44,    45,    46,     5,    48,    18,    50,
-      18,    52,    19,    19,    55,    20,    57,    58,    59,    20,
-      61,    15,    63,    64,    65,     7,     8,     9,     7,     8,
-       9,    72,    73,    74,    75,    76,    77,    32,    33,    21,
-      22,    14,    21,    22,    11,    12,    13,    88,    89,    11,
-      12,    13,    20,    50,    21,    22,    21,    22,    23,    21,
-      22,     7,     8,     9,    11,    12,    13,    20,    20,    20,
-      20,    20,     5,     5,    46
+       1,     5,    45,    75,     3,     4,    78,    50,    20,    21,
+       7,     8,     9,    21,    15,    16,    20,    21,    19,    19,
+      21,    20,    21,    20,    21,     0,    27,    28,    28,    30,
+      31,    32,    33,     2,    32,    33,     5,     6,     7,    40,
+      41,     3,     6,    44,    45,    46,    10,    48,    15,    50,
+      27,    52,     5,    30,    55,    16,    57,    58,    59,    44,
+      61,    46,    63,    64,     7,     8,     9,    11,    12,    70,
+      71,    72,    73,    74,    19,    11,    12,    20,    21,    11,
+      12,    18,    17,    84,    20,    21,    17,    14,    20,    21,
+      20,    21,    22,     7,     8,     9,    18,     5,    19,    19,
+      19,    19,    19,    19,    13,    46,    -1,    -1,    50
 };
 
   /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
      symbol of state STATE-NUM.  */
 static const yytype_int8 yystos[] =
 {
-       0,     4,    21,    22,    27,    28,    31,    34,    39,    39,
-      27,     0,    27,    27,    27,     3,    16,    35,    39,    21,
-      36,    37,    39,     6,    10,    36,    17,    21,    23,    38,
-      39,     5,    18,    18,    38,    36,    38,    39,    37,    37,
-      19,    19,    39,    39,    20,    20,    21,    32,    33,    39,
-      21,    29,    30,    39,    32,    33,    32,     7,     8,     9,
-      29,    30,    29,    11,    12,    13,    39,    39,    39,    39,
-      39,    39,    20,    20,    20,    20,    20,    20,    39,    39,
-      39,    39,    39,    39,    35,    15,    14,    35,     5,     5,
-      39,    39
+       0,     4,    20,    21,    26,    27,    30,    33,    38,    38,
+      26,     0,    26,    26,    26,     3,    15,    34,    38,    20,
+      35,    36,    38,     6,    10,    35,    16,    20,    22,    37,
+      38,     5,    17,    17,    37,    35,    37,    38,    36,    36,
+      18,    18,    38,    38,    19,    19,    20,    31,    32,    38,
+      20,    28,    29,    38,    31,    32,    31,     7,     8,     9,
+      28,    29,    28,    11,    12,    38,    38,    38,    38,    38,
+      19,    19,    19,    19,    19,    38,    38,    38,    38,    38,
+      34,    14,    13,    34,     5,    38
 };
 
   /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
 static const yytype_int8 yyr1[] =
 {
-       0,    26,    27,    27,    27,    27,    27,    28,    29,    29,
-      29,    30,    30,    30,    30,    31,    32,    32,    32,    33,
-      33,    33,    33,    34,    35,    36,    36,    36,    36,    37,
-      38,    38,    38,    39,    39
+       0,    25,    26,    26,    26,    26,    26,    27,    28,    28,
+      28,    29,    29,    29,    30,    31,    31,    31,    32,    32,
+      32,    32,    33,    34,    35,    35,    35,    35,    36,    37,
+      37,    37,    38,    38
 };
 
   /* YYR2[YYN] -- Number of symbols on the right hand side of rule YYN.  */
 static const yytype_int8 yyr2[] =
 {
        0,     2,     0,     2,     2,     2,     2,    10,     0,     2,
-       2,     2,     6,     7,     7,    10,     0,     2,     2,     2,
-       6,     6,     6,     3,     3,     0,     2,     3,     2,     3,
-       0,     2,     2,     0,     1
+       2,     2,     6,     7,    10,     0,     2,     2,     2,     6,
+       6,     6,     3,     3,     0,     2,     3,     2,     3,     0,
+       2,     2,     0,     1
 };
 
 
@@ -1685,91 +1665,85 @@ yyreduce:
   switch (yyn)
     {
   case 7:
-#line 351 "gram.ypp"
+#line 338 "gram.ypp"
                                                                                                                            { parser().add_edge((yyvsp[-4].str));}
-#line 1691 "gram.tab.cpp"
+#line 1671 "gram.tab.cpp"
     break;
 
   case 12:
-#line 359 "gram.ypp"
+#line 346 "gram.ypp"
                                                                                          { parser().set_allowed_letters(); }
-#line 1697 "gram.tab.cpp"
+#line 1677 "gram.tab.cpp"
     break;
 
   case 13:
-#line 360 "gram.ypp"
-                                                                                { parser().set_begin((yyvsp[-1].str));}
-#line 1703 "gram.tab.cpp"
+#line 347 "gram.ypp"
+                                                                              { parser().set_end((yyvsp[-1].str));}
+#line 1683 "gram.tab.cpp"
     break;
 
   case 14:
-#line 361 "gram.ypp"
-                                                                              { parser().set_end((yyvsp[-1].str));}
-#line 1709 "gram.tab.cpp"
+#line 350 "gram.ypp"
+                                                                                                                              { parser().add_state((yyvsp[-4].str));}
+#line 1689 "gram.tab.cpp"
     break;
 
-  case 15:
-#line 364 "gram.ypp"
-                                                                                                                              { parser().add_state((yyvsp[-4].str));}
-#line 1715 "gram.tab.cpp"
+  case 19:
+#line 358 "gram.ypp"
+                                                                                   {parser().set_edges();}
+#line 1695 "gram.tab.cpp"
     break;
 
   case 20:
-#line 372 "gram.ypp"
-                                                                                   {parser().set_edges();}
-#line 1721 "gram.tab.cpp"
+#line 359 "gram.ypp"
+                                                                            {parser().set_comment((yyvsp[0].str));}
+#line 1701 "gram.tab.cpp"
     break;
 
   case 21:
-#line 373 "gram.ypp"
-                                                                            {parser().set_comment((yyvsp[0].str));}
-#line 1727 "gram.tab.cpp"
+#line 360 "gram.ypp"
+                                                                                 { string s = (yyvsp[0].str); if(s == "True") parser().set_is_terminal(1); else parser().set_is_terminal(0);}
+#line 1707 "gram.tab.cpp"
     break;
 
   case 22:
-#line 374 "gram.ypp"
-                                                                                 { if((yyvsp[0].str) == "True") parser().set_is_terminal(1); else parser().set_is_terminal(0);}
-#line 1733 "gram.tab.cpp"
+#line 364 "gram.ypp"
+                                                                  { parser().initialize((yyvsp[-2].str)); }
+#line 1713 "gram.tab.cpp"
     break;
 
   case 23:
-#line 378 "gram.ypp"
-                                                                  { parser().initialize((yyvsp[-2].str)); }
-#line 1739 "gram.tab.cpp"
+#line 367 "gram.ypp"
+                                                                      {}
+#line 1719 "gram.tab.cpp"
     break;
 
-  case 24:
-#line 381 "gram.ypp"
-                                                                      {}
-#line 1745 "gram.tab.cpp"
+  case 25:
+#line 370 "gram.ypp"
+                                             { parser().add_variable((yyvsp[-1].str));}
+#line 1725 "gram.tab.cpp"
     break;
 
   case 26:
-#line 384 "gram.ypp"
-                                             { parser().add_variable((yyvsp[-1].str));}
-#line 1751 "gram.tab.cpp"
+#line 371 "gram.ypp"
+                                            { parser().add_variable((yyvsp[-2].str));}
+#line 1731 "gram.tab.cpp"
     break;
 
   case 27:
-#line 385 "gram.ypp"
-                                            { parser().add_variable((yyvsp[-2].str));}
-#line 1757 "gram.tab.cpp"
+#line 372 "gram.ypp"
+                                  {}
+#line 1737 "gram.tab.cpp"
     break;
 
   case 28:
-#line 386 "gram.ypp"
-                                  {}
-#line 1763 "gram.tab.cpp"
-    break;
-
-  case 29:
-#line 388 "gram.ypp"
+#line 374 "gram.ypp"
                                           { (yyval.str) = (yyvsp[-1].str);}
-#line 1769 "gram.tab.cpp"
+#line 1743 "gram.tab.cpp"
     break;
 
 
-#line 1773 "gram.tab.cpp"
+#line 1747 "gram.tab.cpp"
 
       default: break;
     }
@@ -2001,7 +1975,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 396 "gram.ypp"
+#line 382 "gram.ypp"
 
 
 int main(int argc, char* argv[]) {
@@ -2018,7 +1992,7 @@ int main(int argc, char* argv[]) {
         std::cout << "----------------Automata is created successfully----------------"  << "\n\n\n";
         
         
-        std::cout << "----------------------" << "Start testing " << argv[2] <<"----------------"  << "\n\n\n";
+        std::cout << "Start testing file: " << quote(argv[2]) << "\n\n";
 
         freopen(argv[2], "r", stdin);
         std::string input;
@@ -2030,13 +2004,20 @@ int main(int argc, char* argv[]) {
             for (std::string word; ist >> word; ) {
                 letters.push_back(word);
             }
+            auto res = automata().check(letters);
 
-            if(automata().check(letters)) {
-                std::cout << "True\n";
-            } else {
-                std::cout << "False\n";
+            if(res.first == 1) {
+                
+                std::cout << "True | Final state: " << (res.second->id) << " | " << (res.second->comment) << "\n";
+            } 
+            else if(res.first == 0) {
+                std::cout << res.second->is_terminal << "\n";
+                std::cout << "False | Final state: " << res.second->id << " | " << res.second->comment << "\n";
+            } else if(res.first == -1){
+                std::cout << "False | Final state: " << "None" << "\n";
             }
             test++;
+            std::cout << "\n";
         }
 
 

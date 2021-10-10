@@ -58,20 +58,19 @@ extern int yydebug;
     T_IS_TERMINAL_STATE_FIELD = 264,
     T_EDGE = 265,
     T_ALLOWED_LETTERS_EDGE_FIELD = 266,
-    T_BEGIN_EDGE_FIELD = 267,
-    T_END_EDGE_FIELD = 268,
-    T_BOOLEAN = 269,
-    T_STRING = 270,
-    T_OPEN_CURLY_BRACKET = 271,
-    T_CLOSE_CURLY_BRACKET = 272,
-    T_OPEN_ROUND_BRACKET = 273,
-    T_CLOSE_ROUND_BRACKET = 274,
-    T_COLON = 275,
-    T_EMPTY_LINE = 276,
-    T_SPACES = 277,
-    T_COMM = 278,
-    T_DOT = 279,
-    T_EOF = 280
+    T_END_EDGE_FIELD = 267,
+    T_BOOLEAN = 268,
+    T_STRING = 269,
+    T_OPEN_CURLY_BRACKET = 270,
+    T_CLOSE_CURLY_BRACKET = 271,
+    T_OPEN_ROUND_BRACKET = 272,
+    T_CLOSE_ROUND_BRACKET = 273,
+    T_COLON = 274,
+    T_EMPTY_LINE = 275,
+    T_SPACES = 276,
+    T_COMM = 277,
+    T_DOT = 278,
+    T_EOF = 279
   };
 #endif
 
@@ -79,11 +78,11 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 305 "gram.ypp"
+#line 293 "gram.ypp"
 
     const char *str;
 
-#line 87 "gram.tab.hpp"
+#line 86 "gram.tab.hpp"
 
 };
 typedef union YYSTYPE YYSTYPE;
