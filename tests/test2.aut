@@ -1,0 +1,12 @@
+ALPH_SIZE=2
+START_ST=1
+ST_NUM=3 
+ED_NUM=4
+"0" "1"
+STATE 1, term 
+STATE 2, term 
+STATE 3, notterm
+EDGE 1, 2, "0"
+EDGE 2, 1, "1"
+EDGE 1, 2, "1"
+EDGE 2, 3, "0"
