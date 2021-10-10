@@ -26,13 +26,14 @@ namespace parser {
         if (used_names.count(id)) {
             return 1;
         }
+
         if (is_beginnning) {
             if (beginning) {
                 return 1;
             }
             else {
                 beginning = new Node(is_terminal);
-                used_names[id] = new Node(is_terminal);
+                used_names[id] = beginning;
             }
         }
         else {
@@ -44,6 +45,11 @@ namespace parser {
     }
 
     static int add_link(const std::string& id1, const std::string &link, const std::string& id2) {
+        
+        if (used_names.count(id1) == 0 || used_names.count(id2) == 0) {
+            return 1;
+        }
+
         if (used_names[id1]->links.count(id2)) {
             return 1;
         }
@@ -55,17 +61,21 @@ namespace parser {
 
     static std::string buf;
 
-    static bool is_match(Node* current_node, char* str) {
+    static bool is_match(Node* current_node, const char* str) {
+        if (!current_node) {
+            return 0;
+        }
+
         if (*str == '\0') {
             return current_node->is_terminal;
         }
-        
+
         for (auto it: current_node->links) {
             std::regex reg("[" + std::string(it.first) + "]");
-            for (int i = 0; i < it.first.size(); ++i) {
-                if (regex_match(std::to_string(str[0]), reg)) {
-                    return is_match(it.second, str + 1);
-                }
+
+            if (regex_match(std::to_string(str[0]), reg)) {
+                
+                return is_match(it.second, str + 1);
             }
         }
 
@@ -92,13 +102,17 @@ start: init_states {}
 | init_states init_links {}
 
 init_states: KEY_STATES ID COLON states {}
+| KEY_STATES COLON states {}
 
-states: TAB SPEC_BEGIN ID states { return parser::add_id($2, true, false); }
-| TAB SPEC_TERMINAL ID states { return parser::add_id($2, false, true); }
+states: TAB SPEC_BEGIN ID states { return parser::add_id($3, true, false); }
+| TAB SPEC_BEGIN SPEC_TERMINAL ID states { return parser::add_id($4, true, true); }
+| TAB SPEC_TERMINAL SPEC_BEGIN ID states { return parser::add_id($4, true, true); }
+| TAB SPEC_TERMINAL ID states { return parser::add_id($3, false, true); }
 | TAB ID states { return parser::add_id($2, false, false); }
 | TAB ID { return parser::add_id($2, false, false); }
 
-init_links: KEY_LINKS ID COLON links { }
+init_links: KEY_LINKS ID COLON links {}
+| KEY_LINKS COLON links {}
 
 links: TAB ID arrow ID links { return parser::add_link($2, $3, $4); }
 | TAB ID arrow ID { return parser::add_link($2, parser::buf, $4); }
@@ -114,16 +128,20 @@ string: CHAR string { parser::buf += $2; }
 
 
 int main(int argc, char** argv) {
-    freopen(argv[1], "r", stdin);
-    yyparse();
-    fclose(stdin);
+    if (freopen(argv[1], "r", stdin)) {
+        yyparse();
+        fclose(stdin);
+    }
     
-    freopen(argv[1], "r", stdin);
-    char buf[1001];
-    std::scanf("%1000s", buf);
+    std::string buf;
+    if(freopen(argv[2], "r", stdin)) {
+        std::cin >> buf;
 
-    cout << (parser::is_match(parser::beginning, buf) ? "Valid\n" : "Invalid\n"); 
-    fclose(stdin);
+        fclose(stdin);
+    }
+    
+    
+    std::cout << (parser::is_match(parser::beginning, buf.c_str()) ? "Valid" : "Invalid") << endl; 
 
     return 0;
 }
