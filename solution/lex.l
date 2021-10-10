@@ -2,6 +2,7 @@
 #include <iostream>
 #include "gram.tab.hpp"
 unsigned int pos = 1;
+using namespace std;
 %}
 
 %option yylineno
@@ -10,7 +11,7 @@ unsigned int pos = 1;
 T_KEYWORD   Terminal
 T_EDGE      ->
 T_STATE     \([A-Za-z_0-9]+\)|@
-T_WORD    [A-Za-z_0-9]
+T_WORD    [A-Za-z0-9]
 T_N       [\n]
 
 %%

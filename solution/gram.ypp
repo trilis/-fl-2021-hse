@@ -62,6 +62,34 @@ bool str_in_lang(string& str) {
     return false;
 }
 
+void automaton_is_correct() {
+    set<char> alphabet;
+    for (auto& v: edges) {
+        for(auto& e: v.second) {
+            alphabet.insert(e.first);
+        }
+    }
+    bool flag = false;
+    for (auto& sym: alphabet) {
+        for (auto& v: edges) {
+            for (auto& e: v.second) {
+                if (e.first == sym) {
+                    if (flag) {
+                        cerr << "Automaton is nondeterministic" << endl;
+                        exit(1);
+                    }
+                    flag = true;
+                }
+            }
+            if (!flag) {
+                cerr << "Automaton is not complete" << endl;
+                exit(1);
+            }
+            flag = false;
+        }
+    }
+}
+
 int main(int argc, char* argv[])
 {
     if (argc != 3) {
@@ -71,6 +99,9 @@ int main(int argc, char* argv[])
     freopen(argv[1], "r", stdin);
     yyparse();
     fclose(stdin);
+
+    automaton_is_correct();
+
     freopen(argv[2], "r", stdin);
     string str;
     cin >> str;
