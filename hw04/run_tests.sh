@@ -2,7 +2,7 @@
 
 ./build.sh
 
-for TEST in test-data/*.txt; do
-    TEST="$(basename "$TEST" .txt)"
-    ./run.sh "test-data/$TEST.txt" "test-data/string$TEST.txt"
+for TEST in test-data/*.in; do
+    TEST="$(basename "$TEST" .in)"
+    printf "test #$TEST: %s\n" "$(./run.sh test-data/$TEST.in test-data/string$TEST.txt)"
 done

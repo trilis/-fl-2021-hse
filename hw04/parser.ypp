@@ -1,13 +1,16 @@
 %{
 #include <cstddef>
-#include <exception>
 #include <fstream>
 #include <iostream>
+#include <set>
+#include <sstream>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
 
-struct Automata {
+void yyerror(const char *);
+
+class Automata {
   std::size_t alphabet_size, states_quantity;
   std::unordered_set<char> alphabet;
   std::vector<std::unordered_map<char, int>> graph;
@@ -17,84 +20,118 @@ struct Automata {
   std::vector<std::size_t> cur_adj_states;
   std::vector<char> cur_edge_symbols;
 
-  bool check_symbol(char c) {
-    return alphabet.find(c) != alphabet.end();
+  void check_symbol(char c) {
+    if (alphabet.find(c) == alphabet.end()) {
+      std::stringstream ss;
+      ss << "Symbol \"" << c << "\" is not in the alphabet";
+      yyerror(ss.str().c_str());
+    }
   }
-  bool check_state(std::size_t state) {
-    return 0 <= state && state < states_quantity;
+  void check_state(std::size_t state) {
+    if (!(0 <= state && state < states_quantity)) {
+      std::stringstream ss;
+      ss << "State " << state << " doesn't exist";
+      yyerror(ss.str().c_str());
+    }
   }
-  void add_all_edges() {
-    if (cur_adj_states.size() != cur_adj_states.capacity()) {}
-    graph.emplace_back();
-    for (int i = 0; i < cur_adj_states.size(); ++i) {
-      graph.back()[cur_edge_symbols[i]] = cur_adj_states[i];
+  void check_size(std::size_t size) {
+    if (size == 0) {
+      yyerror("Size can't be 0");
     }
   }
 
 public:
   void set_alphabet_size(std::size_t size) {
-//    std::cout << "alphabet size " << size << '\n';
-    if (size == 0) {}
+    check_size(size);
     alphabet_size = size;
     alphabet.reserve(size);
   }
   void add_alphabet_symbol(char c) {
-//    std::cout << "alphabet symbol " << c << '\n';
-    if (alphabet.find(c) != alphabet.end()) {}
+    if (alphabet.find(c) != alphabet.end()) {
+      std::stringstream ss;
+      ss << "Symbol \"" << c << "\" is already in the alphabet";
+      yyerror(ss.str().c_str());
+    }
     alphabet.insert(c);
   }
   void set_states_quantity(std::size_t size) {
-//    std::cout << "number of states: " << size << '\n';
-    if (size == 0) {}
+    check_size(size);
     states_quantity = size;
     graph.reserve(size);
     terminal.reserve(size);
   }
   void set_state_info(std::size_t size, bool is_terminal) {
-//    std::cout << size << " edges to other states";
-//    if (is_terminal) std::cout << " && TERMINAL";
-//    std::cout << '\n';
-    cur_adj_states.clear();
+    check_size(size);
+    if (size != alphabet.size()) {
+      yyerror("Automata isn't complete");
+    }
+    std::vector<std::size_t>().swap(cur_adj_states);
     cur_adj_states.reserve(size);
-    cur_edge_symbols.clear();
+    std::vector<char>().swap(cur_edge_symbols);
     cur_edge_symbols.reserve(size);
     terminal.push_back(is_terminal);
   }
   void add_adjacent_state(std::size_t state) {
-//    std::cout << "add edge to " << state << '\n';
-    if (!check_state(state)) {}
-    if (cur_adj_states.size() == cur_adj_states.capacity()) {}
+    check_state(state);
+    if (cur_adj_states.size() == cur_adj_states.capacity()) {
+      std::stringstream ss;
+      ss << "Too many adjacent states for state " << graph.size();
+      yyerror(ss.str().c_str());
+    }
     cur_adj_states.push_back(state);
   }
   void add_edge_symbol(char c) {
-//    std::cout << c << " on edge\n";
-    if (!check_symbol(c)) {}
-    if (cur_edge_symbols.size() == cur_edge_symbols.capacity()) {}
-    cur_edge_symbols.push_back(c);
+    check_symbol(c);
     if (cur_edge_symbols.size() == cur_edge_symbols.capacity()) {
-      add_all_edges();
+      std::stringstream ss;
+      ss << "Too many edge symbols for state " << graph.size();
+      yyerror(ss.str().c_str());
+    }
+    cur_edge_symbols.push_back(c);
+  }
+  void add_all_edges() {
+    if (cur_adj_states.size() < cur_adj_states.capacity()) {
+      std::stringstream ss;
+      ss << "Not enough adjacent states for state " << graph.size();
+      yyerror(ss.str().c_str());
+    }
+    if (cur_edge_symbols.size() < cur_edge_symbols.capacity()) {
+      std::stringstream ss;
+      ss << "Not enough edge symbols for state " << graph.size();
+      yyerror(ss.str().c_str());
+    }
+    if (std::set<char> unique_symbols(cur_edge_symbols.begin(), cur_edge_symbols.end());
+        unique_symbols.size() != cur_edge_symbols.size()) {
+      yyerror("Automata is non-deterministic");
+    }
+    graph.emplace_back();
+    for (int i = 0; i < cur_adj_states.size(); ++i) {
+      graph.back()[cur_edge_symbols[i]] = cur_adj_states[i];
     }
   }
   void set_start_state(std::size_t state) {
-//    std::cout << "initial state: " << state << "\n";
-    if (!check_state(state)) {}
+    check_state(state);
     start = state;
   }
   bool match(const std::string &s) {
     std::size_t state = start;
     for (char c : s) {
-      std::cout << state << ' ' << c << '\n';
+      check_symbol(c);
+      check_state(state);
       if (graph[state].find(c) == graph[state].end()) {
         return false;
       }
       state = graph[state][c];
     }
-    return true;
+    return terminal[state];
   }
 } automata;
 
 int yylex();
-void yyerror(const char *) { std::cout << "Error" << std::endl; }
+void yyerror(const char *msg) {
+  std::cout << msg << '\n';
+  exit(1);
+}
 %}
 
 %union {
@@ -106,67 +143,64 @@ void yyerror(const char *) { std::cout << "Error" << std::endl; }
 %token<str> T_KEYWORD
 %token<symb> T_SYMBOL T_END_LINE
 
-%type<val> ALPHABET_SIZE ALPHABET_SYMBOL STATES_QUANTITY STATE_INFO ADJACENT_STATE EDGE_SYMBOL START_STATE
-
 %%
 start
-  : parse_alphabet_size {}
-
-parse_alphabet_size
-  : ALPHABET_SIZE T_END_LINE parse_alphabet {}
-
-parse_alphabet
-  : ALPHABET_SYMBOL parse_alphabet {}
-  | ALPHABET_SYMBOL T_END_LINE parse_states_quantity {}
-
-parse_states_quantity
-  : STATES_QUANTITY T_END_LINE parse_state_info {}
+  : ALPHABET_SIZE ALPHABET STATES_QUANTITY parse_state_info {}
 
 parse_state_info
-  : STATE_INFO T_END_LINE parse_adjacent_states {}
-  | parse_start_state {}
+  : STATE_INFO parse_state_info {}
+  | START_STATE {}
 
-parse_adjacent_states
-  : ADJACENT_STATE parse_adjacent_states {}
-  | ADJACENT_STATE T_END_LINE parse_symbols_on_edges {}
-
-parse_symbols_on_edges
-  : EDGE_SYMBOL parse_symbols_on_edges {}
-  | EDGE_SYMBOL T_END_LINE parse_state_info {}
-
-parse_start_state : START_STATE {}
-
-ALPHABET_SIZE : T_NUMBER {
+ALPHABET_SIZE : T_NUMBER T_END_LINE {
   automata.set_alphabet_size($1);
 }
 
-ALPHABET_SYMBOL : T_SYMBOL {
-  automata.add_alphabet_symbol($1);
-}
+ALPHABET
+  : T_SYMBOL ALPHABET {
+    automata.add_alphabet_symbol($1);
+  }
+  | T_SYMBOL T_END_LINE {
+    automata.add_alphabet_symbol($1);
+  }
 
-STATES_QUANTITY : T_NUMBER {
-  automata.set_states_quantity($1);
-}
+STATES_QUANTITY
+  : T_NUMBER T_END_LINE {
+    automata.set_states_quantity($1);
+  }
 
 STATE_INFO
-  : T_NUMBER {
+  : STATE_HEADER ADJACENT_STATES EDGE_SYMBOLS {
+    automata.add_all_edges();
+  }
+
+STATE_HEADER
+  : T_NUMBER T_END_LINE {
     automata.set_state_info($1, false);
   }
-  | T_KEYWORD T_NUMBER {
+  | T_KEYWORD T_NUMBER T_END_LINE {
     automata.set_state_info($2, true);
   }
 
-ADJACENT_STATE : T_NUMBER {
-  automata.add_adjacent_state($1);
-}
+ADJACENT_STATES
+  : T_NUMBER ADJACENT_STATES {
+    automata.add_adjacent_state($1);
+  }
+  | T_NUMBER T_END_LINE {
+    automata.add_adjacent_state($1);
+  }
 
-EDGE_SYMBOL : T_SYMBOL {
-  automata.add_edge_symbol($1);
-}
+EDGE_SYMBOLS
+  : T_SYMBOL EDGE_SYMBOLS {
+    automata.add_edge_symbol($1);
+  }
+  | T_SYMBOL T_END_LINE {
+    automata.add_edge_symbol($1);
+  }
 
-START_STATE : T_NUMBER {
-  automata.set_start_state($1);
-}
+START_STATE
+  : T_NUMBER {
+    automata.set_start_state($1);
+  }
 %%
 
 int main(int argc, char *argv[]) {
