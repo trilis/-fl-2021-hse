@@ -1,0 +1,133 @@
+%{
+#include <iostream>
+#include <string>
+#include <map>
+#include <vector>
+#include <cstring>
+#include <set>
+#include <cstdlib>
+#include <fstream>
+using namespace std;
+
+int yylex(); 
+void yyerror(const char *p) { cerr << "Error!" << endl; }
+
+
+
+namespace{
+struct automata{
+    int alphabet_size = 0;
+    map<int, bool> alphabet;
+    int type[1000];
+    int exist[1000];
+    int graph_size = 0;
+    int vertex_size = 0;
+    map<pair<char, int>,int> edge;
+    automata() {};
+    bool check_string(string str) {
+        int position = 1;
+        for (int i = 0; i < str.length(); i++) {
+            position = edge[make_pair(str[i], position)];
+            std::cout << position << '\n';
+        }
+        return type[position] == 1;
+    }
+    void add_vertex(int num, int typ) {
+    	type[num] = typ;
+    	if (exist[num] == 0) {
+    	    exist[num] = 1;
+    	    vertex_size++;
+    	}
+    }
+    void add_edge(int from, int to, const vector<char>& s) {
+    	for (char x : s) {
+    	    if (edge.find(make_pair(x, from)) != edge.end()) {
+    	    	std::cout << "automat is not determined\n";
+    	    	throw 1;
+    	    }
+	    edge[make_pair(x, from)] = to;
+	    graph_size++;
+	    if (alphabet[x] == false) {
+	    	alphabet[x] = true;
+	    	alphabet_size++;
+	    }
+        }
+    }
+};
+
+automata dfa;
+vector<char> edge_now;
+}
+
+%}
+
+%union {
+  int val; 
+  char sym;
+};
+%token <val> NUM
+%token <sym> NEW_EDGE
+%token <sym> SYMBOL
+%token <sym> VISUAL 
+%token <sym> BEGINING
+%token <sym> ENDING
+
+%%
+
+
+
+start: auto                                      {;}
+
+auto: edge auto                                  {;}
+| edge                                           {;} 
+
+edge: NEW_EDGE NUM NUM NUM NUM BEGINING symbols ENDING {
+						       dfa.add_vertex($2, $3);
+						       dfa.add_vertex($4, $5);
+						       dfa.add_edge($2, $4, edge_now);
+						       edge_now.clear();
+						   }
+
+symbols: SYMBOL symbols                          {edge_now.push_back($1);}
+| NUM symbols                                    {edge_now.push_back(48+$1);}
+| SYMBOL                                         {edge_now.push_back($1);}
+| NUM                                            {edge_now.push_back(48+$1);}
+
+
+%%
+
+int main(int argc, char ** argv)
+{
+    freopen(argv[1], "r", stdin);
+    try{
+        yyparse();
+    } catch(std::exception & e)
+    {
+        std::cout << e.what() << "\n";
+        fclose(stdin);
+        return 1;
+    }
+    fclose(stdin);
+    
+    if (dfa.alphabet_size*dfa.vertex_size != dfa.graph_size) {
+    	std::cout << "Automat is not full!" << " edges: " << dfa.graph_size << " but suppose to be: " << dfa.alphabet_size*dfa.vertex_size << '\n';
+    	return 1;
+    }
+    std::cout << dfa.alphabet_size << ' ' << dfa.vertex_size << ' ' << dfa.graph_size << '\n';
+    if (dfa.exist[1] == 0) {
+    	std::cout << "Where is no start!\n";
+    	return 1;
+    }
+    
+    std::ifstream fin(argv[2]);
+    std::string st;
+    fin >> st;
+    std::cout << "Reading string: " << st << "\n";
+    std::cout << "Result:";
+    if (dfa.check_string(st)){
+        std::cout << "YES\n";
+    } else {
+        std::cout << "NO\n";
+    }
+    return 0;
+}
