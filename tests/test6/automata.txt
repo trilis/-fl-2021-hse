@@ -4,43 +4,33 @@ _Alphabet {
 
 _States {
     empty,
-    zero,
-    not_zero,
-}
-
-_Edges {
-    empty_not_zero,
-    empty_zero,
-    not_zero_not_zero
+    ost1,
+    ost2
 }
 
 _Q0{empty}
 
 
 new State(empty):
-    __edges: {empty_not_zero, empty_zero}
-    __comment: 'пустая строка'
+    __edges: {to_0, to_1}
+    __comment: 'начальное состояние'
     __is_terminal: False
 
-new State(zero):
-    __edges: {}
-    __comment: 'пустая строка x2'
+new State(ost1):
+    __edges: {to_0}
+    __comment: 'Текущая цифра чётная'
     __is_terminal: True
 
-new State(not_zero):
-    __edges: {not_zero_not_zero}
+new State(ost2):
+    __comment: 'Текущая цифра нечётная'
+    __edges: {to_1}
     __is_terminal: True
 
 
-new Edge(empty_not_zero):
-    __allowed_letters: {d1,d2,d3,d4,d5,d6,d7,d8,d9} 
-    __end: not_zero 
+new Edge(to_0):
+    __allowed_letters: {d0, d2, d4, d6, d8} 
+    __end: ost2 
 
-new Edge(empty_zero):
-    __allowed_letters: {d0}
-    __end: zero
-
-
-new Edge(not_zero_not_zero):
-    __allowed_letters: {d0, d1,d2,d3,d4,d5,d6,d7,d8,d9}
-    __end: not_zero
+new Edge(to_1):
+    __allowed_letters: {d1, d3, d5, d7, d9}
+    __end: ost1

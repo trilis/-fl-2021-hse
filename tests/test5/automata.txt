@@ -3,15 +3,22 @@ _Alphabet {
 }
 
 _States {
-    empty
+    empty1,
+    empty2
 }
 
 _Edges {
 }
 
-_Q0{}
+_Q0{empty1, empty2}
 
-new State(empty):
+new State(empty1):
+    __edges: {}
+    __comment: 'начальное состояние'
+    __is_terminal: False
+
+
+new State(empty2):
     __edges: {}
     __comment: 'начальное состояние'
     __is_terminal: False

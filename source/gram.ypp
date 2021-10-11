@@ -243,7 +243,7 @@ struct Parser {
         allowed_letters.reset();
         
         if(!end.is_assigned()) {
-            error("Edge with id " + quote(id) + "doesn't have field end");
+            error("Edge with id " + quote(id) + "doesn't have field __end");
         }
 
         res.end = end.get_value();
