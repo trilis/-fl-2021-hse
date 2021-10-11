@@ -1,0 +1,6 @@
+states:
+	terminal first
+	beginning second
+links:
+	first [0-9]> second
+	first [9a-z]> second

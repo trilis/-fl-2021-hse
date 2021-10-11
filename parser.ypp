@@ -37,13 +37,14 @@ namespace parser {
         
         std::vector<int> used_symbols;
 
-        explicit Node(bool is_terminal) : is_terminal(is_terminal), used_symbols(100, 0) {
+        explicit Node(bool is_terminal) : is_terminal(is_terminal), used_symbols(255, 0) {
         }
         
     };
 
     std::unordered_map<std::string, Node*> used_names;
     Node* beginning = nullptr;
+    static bool is_terminal_exists = 0;
 
     static void add_id(const std::string& id, bool is_beginnning, bool is_terminal) {
         
@@ -58,10 +59,12 @@ namespace parser {
             else {
                 beginning = new Node(is_terminal);
                 used_names[id] = beginning;
+                is_terminal_exists |= is_terminal;
             }
         }
         else {
             used_names[id] = new Node(is_terminal);
+            is_terminal_exists |= is_terminal;
         }
         
     }
@@ -72,31 +75,28 @@ namespace parser {
                 (used_names.count(id1) == 0 ? id1 : id2) + "\"");
         }
 
-        if (used_names[id1]->links.count(id2)) {
-            std::regex reg("[" + link + "]");
-            
-            auto mark_as_used = [&](char from, char to) {
-                for (char c = from; c <= to; ++c) {
-                    if (regex_match(std::string({c}), reg)) {
-                        if (used_names[id1]->used_symbols[c]) {
-                            throw link_exception("Link " + std::string({c}) + " is ambiguous");
-                        }
-                        else {
-                            used_names[id1]->used_symbols[c] = 1;
-                        }
+        
+        std::regex reg("[" + link + "]");
+        
+        auto mark_as_used = [&](char from, char to) {
+            for (char c = from; c <= to; ++c) {
+                if (regex_match(std::string({c}), reg)) {
+                    if (used_names[id1]->used_symbols[c]) {
+                        throw link_exception("Link " + std::string({c}) + " is ambiguous");
+                    }
+                    else {
+                        used_names[id1]->used_symbols[c] = 1;
                     }
                 }
-            };
+            }
+        };
 
-            mark_as_used('0', '9');
-            mark_as_used('a', 'z');
-            mark_as_used('A', 'Z');
-        }
+        mark_as_used('0', '9');
+        mark_as_used('a', 'z');
+        mark_as_used('A', 'Z');
         
         used_names[id1]->links[link] = used_names[id2];
     }
-
-    static std::string buf;
 
     static bool is_match(Node* current_node, const char* str) {
         if (!current_node) {
@@ -137,7 +137,7 @@ namespace parser {
                 return correct;
             };
 
-            ans &= check_interval('0', '0');
+            ans &= check_interval('0', '9');
             ans &= check_interval('a', 'z');
             ans &= check_interval('A', 'Z');
         }
@@ -163,7 +163,7 @@ start: dfa {}
 
 dfa: init_states init_links {}
 
-init_states: KEY_STATES ID COLON states { }
+init_states: KEY_STATES ID COLON states {}
 | KEY_STATES COLON states {}
 
 states: TAB SPEC_BEGIN ID states {  parser::add_id($3, true, false); }
@@ -205,7 +205,7 @@ int main(int argc, char** argv) {
 
     std::string buf;
     if(freopen(argv[2], "r", stdin)) {
-        std::cin >> buf;
+        std::getline(std::cin, buf);
         fclose(stdin);
     }
     else {
@@ -214,9 +214,16 @@ int main(int argc, char** argv) {
     }
 
     try {
+        if (!parser::beginning) {
+            throw parser::state_exception("No beginning state");
+        }
+        if (!parser::is_terminal_exists) {
+            throw parser::state_exception("No terminal states");
+        }
+
         std::cout << (parser::is_match(parser::beginning, buf.c_str()) ? "Valid" : "Invalid"); 
         if (!parser::check_fullness()) {
-            std::cerr << ", but automata is not full";
+            std::cout << ", but automata is not full";
         }
         std::cout << std::endl;
 
@@ -224,13 +231,15 @@ int main(int argc, char** argv) {
     }
     catch(const parser::state_exception &e) {
         std::cerr << e.what() << std::endl; 
+        return 1;
     }
     catch(const parser::link_exception &e) {
         std::cerr << e.what() << std::endl; 
+        return 1;
     }
     catch(const parser::unavailible_name_exception &e) {
         std::cerr << e.what() << std::endl; 
+        return 1;
     }
 
-    return 1;
 }

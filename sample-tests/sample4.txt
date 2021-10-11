@@ -1,0 +1,5 @@
+states:
+	terminal first
+	second
+links:
+	first [0]> second

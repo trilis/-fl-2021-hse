@@ -1,0 +1,6 @@
+states:
+	terminal beginning even
+	terminal odd
+links:
+	even [0-9a-zA-Z]> odd
+	odd [0-9a-zA-Z]> even
