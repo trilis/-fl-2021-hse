@@ -1,0 +1,38 @@
+-----------------------Creating automata------------------------
+[Warning] Automata is not full. State id 's0'
+[Warning] Automata is not full. State id 's1'
+----------------Automata is created successfully----------------
+
+
+Start testing file: './test2/tests.txt'
+
+TEST #1: d0 d1 d0 d0 d0 d0 d0 d0
+False | Final state: None
+
+TEST #2: d1 d0 d1 d0 d1 d0 d1 d0
+True | Final state: s0 | 'текущий символ - 0'
+
+TEST #3: d0 d1 d0 d1 d0 d1
+True | Final state: s1 | 'текущий символ - 1'
+
+TEST #4: d1 d1 d1 d1 
+False | Final state: None
+
+TEST #5: d0 d1 d1 
+False | Final state: None
+
+TEST #6: d1
+True | Final state: s1 | 'текущий символ - 1'
+
+TEST #7: d0
+True | Final state: s0 | 'текущий символ - 0'
+
+TEST #8: d1 d1
+False | Final state: None
+
+TEST #9: d0 d0 
+False | Final state: None
+
+TEST #10: 
+False | Final state: empty | 'пустая строка'
+

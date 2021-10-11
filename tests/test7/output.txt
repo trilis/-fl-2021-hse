@@ -1,0 +1,74 @@
+-----------------------Creating automata------------------------
+[Warning] Automata is not full. State id 'n0'
+[Warning] Automata is not full. State id 'ost3'
+----------------Automata is created successfully----------------
+
+
+Start testing file: './test7/tests.txt'
+
+TEST #1: d0 d0 d0
+False | Final state: None
+
+TEST #2: d0 
+True | Final state: n0 | 'число 0'
+
+TEST #3: d1 d0 d0
+False | Final state: ost1 | 'остаток 1'
+
+TEST #4: d1 d1 d1
+True | Final state: ost0 | 'остаток 0'
+
+TEST #5: d2 d2 d2
+True | Final state: ost0 | 'остаток 0'
+
+TEST #6: d1 d2 d1
+False | Final state: ost1 | 'остаток 1'
+
+TEST #7: d2 d2 d1
+False | Final state: ost2 | 'остаток 2'
+
+TEST #8: d1 d1 d1 d1 d1 d2
+False | Final state: ost1 | 'остаток 1'
+
+TEST #9: d1 d2 d0 d1 d1 d1
+True | Final state: ost0 | 'остаток 0'
+
+TEST #10: d1 d1 
+False | Final state: ost2 | 'остаток 2'
+
+TEST #11: d2 d1 d1 d2
+True | Final state: ost0 | 'остаток 0'
+
+TEST #12: d2 d2 d2 d2 d2 d2 d2 d2 d2 d2 d2 d2 d2 d2 d2
+True | Final state: ost0 | 'остаток 0'
+
+TEST #13: d1 d0 d0 d0 d0 d0 d2
+True | Final state: ost0 | 'остаток 0'
+
+TEST #14: d1 d2 d2 d2 d2
+True | Final state: ost0 | 'остаток 0'
+
+TEST #15: d0 d0 d0 d0
+False | Final state: None
+
+TEST #16: d1 d2 d1 d2 d0 d0 d0 d0 d0 d0 d0 d0 d1 d1 d1 d1 d1
+False | Final state: ost2 | 'остаток 2'
+
+TEST #17: d1 d1 d1
+True | Final state: ost0 | 'остаток 0'
+
+TEST #18: d1 
+False | Final state: ost1 | 'остаток 1'
+
+TEST #19: d1 d1
+False | Final state: ost2 | 'остаток 2'
+
+TEST #20: d2 d1
+True | Final state: ost0 | 'остаток 0'
+
+TEST #21: d1 d2
+True | Final state: ost0 | 'остаток 0'
+
+TEST #22: d2 d2 d2 d2 d1 
+True | Final state: ost0 | 'остаток 0'
+

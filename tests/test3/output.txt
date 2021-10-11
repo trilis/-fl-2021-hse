@@ -1,0 +1,27 @@
+-----------------------Creating automata------------------------
+[Warning] All elements _Alphabet should be unique
+[Warning] All elements _Alphabet should be unique
+[Warning] All elements _Alphabet should be unique
+[Warning] All elements _Alphabet should be unique
+[Warning] All elements _States should be unique
+[Warning] Automata is not full. State id 'empty'
+----------------Automata is created successfully----------------
+
+
+Start testing file: './test3/tests.txt'
+
+TEST #1: a b a b
+False | Final state: None
+
+TEST #2: b b
+False | Final state: None
+
+TEST #3: a a b
+False | Final state: None
+
+TEST #4: b b b 
+False | Final state: None
+
+TEST #5: a b 
+False | Final state: None
+

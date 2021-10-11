@@ -1,0 +1,2 @@
+-----------------------Creating automata------------------------
+[Error] One letter can't be used in two edges. State 'empty'.

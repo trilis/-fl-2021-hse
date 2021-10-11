@@ -1,0 +1,50 @@
+_Alphabet {
+    d0,
+    d1,
+}
+
+_States {
+    empty,
+    s0,
+    s1,
+}
+
+_Edges {
+    empty_d0,
+    empty_d1,
+    s1_d0,
+    s0_d1,
+}
+
+_Q0 { empty }
+
+new State(empty):
+    __edges: {empty_d0, empty_d1}
+    __comment: 'пустая строка'
+    __is_terminal: False
+
+new State(s0):
+    __edges: {s0_d1}
+    __comment: 'текущий символ - 0'
+    __is_terminal: True
+
+new State(s1):
+    __edges: {s1_d0}
+    __comment: 'текущий символ - 1'
+    __is_terminal: True
+
+new Edge(empty_d0):
+    __allowed_letters: {d0} 
+    __end: s0
+
+new Edge(empty_d1):
+    __allowed_letters: {d1} 
+    __end: s1 
+
+new Edge(s1_d0):
+    __allowed_letters: {d0} 
+    __end: s0
+
+new Edge(s0_d1):
+    __allowed_letters: {d1} 
+    __end: s1

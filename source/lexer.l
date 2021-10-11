@@ -83,6 +83,6 @@ DOT "."
 {EMPTY_LINE}  {return T_EMPTY_LINE;}
 [\r ]*  { }
 <<EOF>> { return 0;}
-. { throw std::runtime_error("invalid character: " + std::string(yytext, yyleng)); return 1;}
+. { throw std::runtime_error("invalid character: " + std::string(yytext, yyleng) + " line: " + std::to_string(yylineno)); return 1;}
 
 %%

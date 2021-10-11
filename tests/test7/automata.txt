@@ -1,0 +1,98 @@
+_Alphabet {
+    d0,
+    d1,
+    d2,
+}
+
+_States {
+    empty,
+    n0,
+    ost1,
+    ost2,
+    ost3
+}
+
+_Edges {
+    to_n0,
+    f0_t0,
+    f0_t1,
+    f0_t2,
+    f1_t0,
+    f1_t1,
+    f1_t2,
+    f2_t0,
+    f2_t1,
+    f2_t2
+}
+
+_Q0 {
+ empty
+}
+
+new State(empty):
+    __comment: 'начальное состояние'
+    __edges: {to_n0, f0_t1, f0_t2}
+    __is_terminal: False
+
+new Edge(to_n0):
+    __end: n0
+    __allowed_letters: {d0}
+
+new State(ost0):
+    __comment: 'остаток 0'
+    __edges: {f0_t0, f0_t1, f0_t2}
+    __is_terminal: True
+
+new Edge(f0_t0):
+    __end: ost0
+    __allowed_letters: {d0}
+
+
+new Edge(f0_t1):
+    __end: ost1
+    __allowed_letters: {d1}
+
+new Edge(f0_t2):
+    __end: ost2
+    __allowed_letters: {d2}
+
+new State(ost1):
+    __comment: 'остаток 1'
+    __edges: {f1_t0, f1_t1, f1_t2}
+    __is_terminal: False
+
+new Edge(f1_t0):
+    __end: ost0
+    __allowed_letters: {d2}
+
+
+new Edge(f1_t1):
+    __end: ost1
+    __allowed_letters: {d0}
+
+new Edge(f1_t2):
+    __end: ost2
+    __allowed_letters: {d1}
+
+
+new State(ost2):
+    __comment: 'остаток 2'
+    __edges: {f2_t0, f2_t1, f2_t2}
+    __is_terminal: False
+
+new Edge(f2_t0):
+    __end: ost0
+    __allowed_letters: {d1}
+
+
+new Edge(f2_t1):
+    __end: ost1
+    __allowed_letters: {d2}
+
+new Edge(f2_t2):
+    __end: ost2
+    __allowed_letters: {d0}
+
+new State(n0):
+    __comment: 'число 0'
+    __is_terminal: True

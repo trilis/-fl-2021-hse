@@ -2007,11 +2007,9 @@ int main(int argc, char* argv[]) {
             auto res = automata().check(letters);
 
             if(res.first == 1) {
-                
                 std::cout << "True | Final state: " << (res.second->id) << " | " << (res.second->comment) << "\n";
             } 
             else if(res.first == 0) {
-                std::cout << res.second->is_terminal << "\n";
                 std::cout << "False | Final state: " << res.second->id << " | " << res.second->comment << "\n";
             } else if(res.first == -1){
                 std::cout << "False | Final state: " << "None" << "\n";

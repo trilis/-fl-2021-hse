@@ -1,0 +1,2 @@
+-----------------------Creating automata------------------------
+[Error] QO must be inizializate by one state

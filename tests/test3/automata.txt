@@ -1,0 +1,18 @@
+_Alphabet {
+    a, b, a, b, a, b
+}
+
+_States {
+    empty, empty
+}
+
+_Edges {
+    
+}
+
+_Q0{empty}
+
+new State(empty):
+    __edges: {}
+    __comment: 'начальное состояние'
+    __is_terminal: False
