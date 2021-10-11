@@ -10,25 +10,12 @@
 
 int yylex(); 
 int yyerror(const char *p) { 
-    std::cerr << "Syntax error" << std::endl;
+    std::cerr << p << std::endl;
     exit(1);
 }
 
 
 namespace parser {
-    
-    struct unavailible_name_exception : std::logic_error {
-        unavailible_name_exception(const std::string& e): logic_error(e) {}
-    };
-
-    struct link_exception : std::logic_error {
-        link_exception(const std::string& e): logic_error(e) {}
-    };
-
-    struct state_exception: std::logic_error {
-        state_exception(const std::string& e): logic_error(e) {}
-    };
-
 
 
     struct Node {
@@ -49,12 +36,12 @@ namespace parser {
     static void add_id(const std::string& id, bool is_beginnning, bool is_terminal) {
         
         if (used_names.count(id)) {
-            throw unavailible_name_exception("Repeated name \"" + id + "\"");
+            yyerror("Repeated name");
         }
 
         if (is_beginnning) {
             if (beginning) {
-                throw state_exception("Multiple beginning states");
+                yyerror("Multiple beginning states");
             }
             else {
                 beginning = new Node(is_terminal);
@@ -71,8 +58,7 @@ namespace parser {
 
     static void add_link(const std::string& id1, const std::string &link, const std::string& id2) {
         if (used_names.count(id1) == 0 || used_names.count(id2) == 0) {
-            throw unavailible_name_exception("No states with this name: \"" +
-                (used_names.count(id1) == 0 ? id1 : id2) + "\"");
+            yyerror("Unknown name of the state");
         }
 
         
@@ -82,7 +68,7 @@ namespace parser {
             for (char c = from; c <= to; ++c) {
                 if (regex_match(std::string({c}), reg)) {
                     if (used_names[id1]->used_symbols[c]) {
-                        throw link_exception("Link " + std::string({c}) + " is ambiguous");
+                        yyerror("Multiple links");
                     }
                     else {
                         used_names[id1]->used_symbols[c] = 1;
@@ -213,33 +199,18 @@ int main(int argc, char** argv) {
         return 1;
     }
 
-    try {
-        if (!parser::beginning) {
-            throw parser::state_exception("No beginning state");
-        }
-        if (!parser::is_terminal_exists) {
-            throw parser::state_exception("No terminal states");
-        }
-
-        std::cout << (parser::is_match(parser::beginning, buf.c_str()) ? "Valid" : "Invalid"); 
-        if (!parser::check_fullness()) {
-            std::cout << ", but automata is not full";
-        }
-        std::cout << std::endl;
-
-        return 0;
+    if (!parser::beginning) {
+        yyerror("No beginning state");
     }
-    catch(const parser::state_exception &e) {
-        std::cerr << e.what() << std::endl; 
-        return 1;
-    }
-    catch(const parser::link_exception &e) {
-        std::cerr << e.what() << std::endl; 
-        return 1;
-    }
-    catch(const parser::unavailible_name_exception &e) {
-        std::cerr << e.what() << std::endl; 
-        return 1;
+    if (!parser::is_terminal_exists) {
+        yyerror("No terminal states");
     }
 
+    std::cout << (parser::is_match(parser::beginning, buf.c_str()) ? "Valid" : "Invalid"); 
+    if (!parser::check_fullness()) {
+        std::cout << ", but automata is not full";
+    }
+    std::cout << std::endl;
+
+    return 0;
 }

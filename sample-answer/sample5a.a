@@ -1,2 +1,1 @@
-terminate called after throwing an instance of 'parser::link_exception'
-  what():  Link 9 is ambiguous
+Multiple links
