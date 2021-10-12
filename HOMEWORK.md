@@ -40,7 +40,16 @@ test2: ((a|b)(a|b))*
 Был еще тест, на котором с оптимизацией отработало меньше секунды, а без оптимизации больше 160 секунд, но мой компьютер умер и я решила не рисковать с такими тестами(
 
 
+Тест, на котором оптимизация работает долго: `(aba|bab|cdc)* ((a|b)f)*`, со строкой `abacdcbabafafbfabacdcbabafafbfabacdcbabafafbf` работает за '13.309543s'
+Без оптимизации компьютер зависает
 
+```cpp
+test_hard = Star(Concat(
+    Star(Alt(Alt(Concat(Concat(Char('a'), Char('b')), Char('a')),
+                 Concat(Concat(Char('b'), Char('a')), Char('b'))),
+             Concat(Concat(Char('c'), Char('d')), Char('c')))),
+    Star(Concat(Alt(Char('a'), Char('b')), Char('f')))))
+```
 
 
 
