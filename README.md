@@ -1,4 +1,4 @@
-[Документация](https://github.com/antlr/antlr4/tree/master/doc)
+[Документация](https://github.com/antlr/antlr4/tree/master/doc/index.md)
 
 [Грамматики для разных языков](https://github.com/antlr/grammars-v4)
 
