@@ -1,0 +1,3 @@
+
+Graph:
+Node(type:Programm, children:Node(type:Main function, children:Node(type:Function name: main)Node(type:Parametrs, children:Node(type:Sequence, children:Node(type:Identifier: a)Node(type:Sequence, children:Node(type:Identifier: b))))Node(type:Body, children:Node(type:Sequence2, children:Node(type:Operator, children:Node(type:Skip))))))

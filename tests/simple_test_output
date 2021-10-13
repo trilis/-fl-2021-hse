@@ -1,0 +1,14 @@
+
+Graph:
+v:11 (Programm)  ------->  v:10 (Main function),
+v:10 (Main function)  ------->  v:0 (Function name: main),  v:5 (Parametrs),  v:9 (Body),
+v:0 (Function name: main)
+v:5 (Parametrs)  ------->  v:4 (Sequence),
+v:4 (Sequence)  ------->  v:1 (Identifier: a),  v:3 (Sequence),
+v:1 (Identifier: a)
+v:3 (Sequence)  ------->  v:2 (Identifier: b),
+v:2 (Identifier: b)
+v:9 (Body)  ------->  v:8 (Sequence2),
+v:8 (Sequence2)  ------->  v:7 (Operator),
+v:7 (Operator)  ------->  v:6 (Skip),
+v:6 (Skip)

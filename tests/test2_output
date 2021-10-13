@@ -1,0 +1,370 @@
+
+Graph:
+v:369 (Programm)  ------->  v:368 (Main function),  v:281 (Comment: it is a comment ),  v:280 (Function),  v:141 (Function),
+v:368 (Main function)  ------->  v:282 (Function name: main),  v:284 (Parametrs),  v:367 (Body),
+v:282 (Function name: main)
+v:284 (Parametrs)  ------->  v:283 (Sequence),
+v:283 (Sequence)
+v:367 (Body)  ------->  v:366 (Sequence2),
+v:366 (Sequence2)  ------->  v:308 (Operator),  v:365 (Sequence2),
+v:308 (Operator)  ------->  v:285 (Identifier: a),  v:286 (=),  v:307 (Expression),
+v:285 (Identifier: a)
+v:286 (=)
+v:307 (Expression)  ------->  v:306 (T1),
+v:306 (T1)  ------->  v:305 (T2),
+v:305 (T2)  ------->  v:304 (T3),
+v:304 (T3)  ------->  v:303 (T4),
+v:303 (T4)  ------->  v:292 (T5),  v:290 (+),  v:302 (T4),
+v:292 (T5)  ------->  v:291 (T6),
+v:291 (T6)  ------->  v:289 (T7),
+v:289 (T7)  ------->  v:288 (T8),
+v:288 (T8)  ------->  v:287 (Num Literal: 2),
+v:287 (Num Literal: 2)
+v:290 (+)
+v:302 (T4)  ------->  v:301 (T5),
+v:301 (T5)  ------->  v:300 (T6),
+v:300 (T6)  ------->  v:299 (T3),
+v:299 (T3)  ------->  v:295 (T7),  v:296 (^),  v:298 (T8),
+v:295 (T7)  ------->  v:294 (T8),
+v:294 (T8)  ------->  v:293 (Num Literal: 5),
+v:293 (Num Literal: 5)
+v:296 (^)
+v:298 (T8)  ------->  v:297 (Num Literal: 7),
+v:297 (Num Literal: 7)
+v:365 (Sequence2)  ------->  v:327 (Operator),  v:364 (Sequence2),
+v:327 (Operator)  ------->  v:309 (Identifier: b),  v:310 (=),  v:326 (Expression),
+v:309 (Identifier: b)
+v:310 (=)
+v:326 (Expression)  ------->  v:325 (T1),
+v:325 (T1)  ------->  v:324 (T2),
+v:324 (T2)  ------->  v:323 (T3),
+v:323 (T3)  ------->  v:322 (T4),
+v:322 (T4)  ------->  v:321 (T5),
+v:321 (T5)  ------->  v:315 (T6),  v:314 (/),  v:320 (T5),
+v:315 (T6)  ------->  v:313 (T7),
+v:313 (T7)  ------->  v:312 (T8),
+v:312 (T8)  ------->  v:311 (Num Literal: 3),
+v:311 (Num Literal: 3)
+v:314 (/)
+v:320 (T5)  ------->  v:319 (T6),
+v:319 (T6)  ------->  v:318 (T7),
+v:318 (T7)  ------->  v:317 (T8),
+v:317 (T8)  ------->  v:316 (Num Literal: 4),
+v:316 (Num Literal: 4)
+v:364 (Sequence2)  ------->  v:346 (Operator),  v:363 (Sequence2),
+v:346 (Operator)  ------->  v:328 (Identifier: c),  v:329 (=),  v:345 (Expression),
+v:328 (Identifier: c)
+v:329 (=)
+v:345 (Expression)  ------->  v:344 (T1),
+v:344 (T1)  ------->  v:343 (T2),
+v:343 (T2)  ------->  v:342 (T3),
+v:342 (T3)  ------->  v:341 (T4),
+v:341 (T4)  ------->  v:340 (T5),
+v:340 (T5)  ------->  v:334 (T6),  v:333 (*),  v:339 (T5),
+v:334 (T6)  ------->  v:332 (T7),
+v:332 (T7)  ------->  v:331 (T8),
+v:331 (T8)  ------->  v:330 (Num Literal: 1),
+v:330 (Num Literal: 1)
+v:333 (*)
+v:339 (T5)  ------->  v:338 (T6),
+v:338 (T6)  ------->  v:337 (T7),
+v:337 (T7)  ------->  v:336 (T8),
+v:336 (T8)  ------->  v:335 (Num Literal: 4),
+v:335 (Num Literal: 4)
+v:363 (Sequence2)  ------->  v:351 (Operator),  v:362 (Sequence2),
+v:351 (Operator)  ------->  v:350 (Function call),
+v:350 (Function call)  ------->  v:347 (Identifier: func2),  v:349 (Parametrs),
+v:347 (Identifier: func2)
+v:349 (Parametrs)  ------->  v:348 (Sequence),
+v:348 (Sequence)
+v:362 (Sequence2)  ------->  v:361 (Operator),
+v:361 (Operator)  ------->  v:360 (Function call),
+v:360 (Function call)  ------->  v:352 (Identifier: func1),  v:359 (Parametrs),
+v:352 (Identifier: func1)
+v:359 (Parametrs)  ------->  v:358 (Sequence),
+v:358 (Sequence)  ------->  v:353 (Identifier: c),  v:357 (Sequence),
+v:353 (Identifier: c)
+v:357 (Sequence)  ------->  v:354 (Identifier: b),  v:356 (Sequence),
+v:354 (Identifier: b)
+v:356 (Sequence)  ------->  v:355 (Identifier: a),
+v:355 (Identifier: a)
+v:281 (Comment: it is a comment )
+v:280 (Function)  ------->  v:279 (Function name: func2),  v:144 (Parametrs),  v:278 (Body),
+v:279 (Function name: func2)
+v:144 (Parametrs)  ------->  v:143 (Sequence),
+v:143 (Sequence)
+v:278 (Body)  ------->  v:277 (Sequence2),
+v:277 (Sequence2)  ------->  v:157 (Operator),  v:276 (Sequence2),
+v:157 (Operator)  ------->  v:145 (Identifier: f),  v:146 (=),  v:156 (Expression),
+v:145 (Identifier: f)
+v:146 (=)
+v:156 (Expression)  ------->  v:155 (T1),
+v:155 (T1)  ------->  v:154 (T2),
+v:154 (T2)  ------->  v:153 (T3),
+v:153 (T3)  ------->  v:152 (T4),
+v:152 (T4)  ------->  v:151 (T5),
+v:151 (T5)  ------->  v:150 (T6),
+v:150 (T6)  ------->  v:149 (T7),
+v:149 (T7)  ------->  v:148 (T8),
+v:148 (T8)  ------->  v:147 (Binary num Literal: 1001),
+v:147 (Binary num Literal: 1001)
+v:276 (Sequence2)  ------->  v:170 (Operator),  v:275 (Sequence2),
+v:170 (Operator)  ------->  v:158 (Identifier: s),  v:159 (=),  v:169 (Expression),
+v:158 (Identifier: s)
+v:159 (=)
+v:169 (Expression)  ------->  v:168 (T1),
+v:168 (T1)  ------->  v:167 (T2),
+v:167 (T2)  ------->  v:166 (T3),
+v:166 (T3)  ------->  v:165 (T4),
+v:165 (T4)  ------->  v:164 (T5),
+v:164 (T5)  ------->  v:163 (T6),
+v:163 (T6)  ------->  v:162 (T7),
+v:162 (T7)  ------->  v:161 (T8),
+v:161 (T8)  ------->  v:160 (Binary num Literal: 1001101),
+v:160 (Binary num Literal: 1001101)
+v:275 (Sequence2)  ------->  v:183 (Operator),  v:274 (Sequence2),
+v:183 (Operator)  ------->  v:171 (Identifier: string),  v:172 (=),  v:182 (Expression),
+v:171 (Identifier: string)
+v:172 (=)
+v:182 (Expression)  ------->  v:181 (T1),
+v:181 (T1)  ------->  v:180 (T2),
+v:180 (T2)  ------->  v:179 (T3),
+v:179 (T3)  ------->  v:178 (T4),
+v:178 (T4)  ------->  v:177 (T5),
+v:177 (T5)  ------->  v:176 (T6),
+v:176 (T6)  ------->  v:175 (T7),
+v:175 (T7)  ------->  v:174 (T8),
+v:174 (T8)  ------->  v:173 (String Literal: <<abraCADABRA>>),
+v:173 (String Literal: <<abraCADABRA>>)
+v:274 (Sequence2)  ------->  v:273 (Operator),
+v:273 (Operator)  ------->  v:272 (While),
+v:272 (While)  ------->  v:207 (Expression),  v:271 (Body),
+v:207 (Expression)  ------->  v:206 (T1),
+v:206 (T1)  ------->  v:205 (T2),
+v:205 (T2)  ------->  v:204 (T3),
+v:204 (T3)  ------->  v:196 (T4),  v:190 (!=),  v:203 (T3),
+v:196 (T4)  ------->  v:195 (T5),
+v:195 (T5)  ------->  v:188 (T6),  v:185 (/),  v:194 (T5),
+v:188 (T6)  ------->  v:187 (T7),
+v:187 (T7)  ------->  v:186 (T8),
+v:186 (T8)  ------->  v:184 (Identifier: f),
+v:184 (Identifier: f)
+v:185 (/)
+v:194 (T5)  ------->  v:193 (T6),
+v:193 (T6)  ------->  v:192 (T7),
+v:192 (T7)  ------->  v:191 (T8),
+v:191 (T8)  ------->  v:189 (Identifier: s),
+v:189 (Identifier: s)
+v:190 (!=)
+v:203 (T3)  ------->  v:202 (T4),
+v:202 (T4)  ------->  v:201 (T5),
+v:201 (T5)  ------->  v:200 (T6),
+v:200 (T6)  ------->  v:199 (T7),
+v:199 (T7)  ------->  v:198 (T8),
+v:198 (T8)  ------->  v:197 (Identifier: ob1),
+v:197 (Identifier: ob1)
+v:271 (Body)  ------->  v:270 (Sequence2),
+v:270 (Sequence2)  ------->  v:217 (Operator),  v:269 (Sequence2),
+v:217 (Operator)  ------->  v:216 (Function call),
+v:216 (Function call)  ------->  v:208 (Identifier: func1),  v:215 (Parametrs),
+v:208 (Identifier: func1)
+v:215 (Parametrs)  ------->  v:214 (Sequence),
+v:214 (Sequence)  ------->  v:209 (Identifier: f),  v:213 (Sequence),
+v:209 (Identifier: f)
+v:213 (Sequence)  ------->  v:210 (Identifier: s),  v:212 (Sequence),
+v:210 (Identifier: s)
+v:212 (Sequence)  ------->  v:211 (Identifier: s),
+v:211 (Identifier: s)
+v:269 (Sequence2)  ------->  v:268 (Operator),
+v:268 (Operator)  ------->  v:267 (If),
+v:267 (If)  ------->  v:238 (Expression),  v:266 (Body),
+v:238 (Expression)  ------->  v:227 (T1),  v:219 (||),  v:237 (Expression),
+v:227 (T1)  ------->  v:226 (T2),
+v:226 (T2)  ------->  v:225 (T3),
+v:225 (T3)  ------->  v:224 (T4),
+v:224 (T4)  ------->  v:223 (T5),
+v:223 (T5)  ------->  v:222 (T6),
+v:222 (T6)  ------->  v:221 (T7),
+v:221 (T7)  ------->  v:220 (T8),
+v:220 (T8)  ------->  v:218 (Identifier: f),
+v:218 (Identifier: f)
+v:219 (||)
+v:237 (Expression)  ------->  v:236 (T1),
+v:236 (T1)  ------->  v:235 (T2),
+v:235 (T2)  ------->  v:234 (T3),
+v:234 (T3)  ------->  v:233 (T4),
+v:233 (T4)  ------->  v:232 (T5),
+v:232 (T5)  ------->  v:231 (T6),
+v:231 (T6)  ------->  v:230 (T7),
+v:230 (T7)  ------->  v:229 (T8),
+v:229 (T8)  ------->  v:228 (Identifier: s),
+v:228 (Identifier: s)
+v:266 (Body)  ------->  v:265 (Sequence2),
+v:265 (Sequence2)  ------->  v:264 (Operator),
+v:264 (Operator)  ------->  v:263 (If),
+v:263 (If)  ------->  v:258 (Expression),  v:262 (Body),
+v:258 (Expression)  ------->  v:257 (T1),
+v:257 (T1)  ------->  v:248 (T1),  v:240 (&&),  v:256 (T2),
+v:248 (T1)  ------->  v:247 (T2),
+v:247 (T2)  ------->  v:246 (T3),
+v:246 (T3)  ------->  v:245 (T4),
+v:245 (T4)  ------->  v:244 (T5),
+v:244 (T5)  ------->  v:243 (T6),
+v:243 (T6)  ------->  v:242 (T7),
+v:242 (T7)  ------->  v:241 (T8),
+v:241 (T8)  ------->  v:239 (Identifier: f),
+v:239 (Identifier: f)
+v:240 (&&)
+v:256 (T2)  ------->  v:255 (T3),
+v:255 (T3)  ------->  v:254 (T4),
+v:254 (T4)  ------->  v:253 (T5),
+v:253 (T5)  ------->  v:252 (T6),
+v:252 (T6)  ------->  v:251 (T7),
+v:251 (T7)  ------->  v:250 (T8),
+v:250 (T8)  ------->  v:249 (Identifier: s),
+v:249 (Identifier: s)
+v:262 (Body)  ------->  v:261 (Sequence2),
+v:261 (Sequence2)  ------->  v:260 (Operator),
+v:260 (Operator)  ------->  v:259 (Skip),
+v:259 (Skip)
+v:141 (Function)  ------->  v:140 (Function name: func1),  v:7 (Parametrs),  v:139 (Body),
+v:140 (Function name: func1)
+v:7 (Parametrs)  ------->  v:6 (Sequence),
+v:6 (Sequence)  ------->  v:1 (Identifier: f),  v:5 (Sequence),
+v:1 (Identifier: f)
+v:5 (Sequence)  ------->  v:2 (Identifier: s),  v:4 (Sequence),
+v:2 (Identifier: s)
+v:4 (Sequence)  ------->  v:3 (Identifier: t),
+v:3 (Identifier: t)
+v:139 (Body)  ------->  v:138 (Sequence2),
+v:138 (Sequence2)  ------->  v:137 (Operator),
+v:137 (Operator)  ------->  v:136 (If_else),
+v:136 (If_else)  ------->  v:25 (Expression),  v:47 (Body),  v:135 (Body),
+v:25 (Expression)  ------->  v:24 (T1),
+v:24 (T1)  ------->  v:23 (T2),
+v:23 (T2)  ------->  v:22 (T3),
+v:22 (T3)  ------->  v:14 (T4),  v:9 (==),  v:21 (T3),
+v:14 (T4)  ------->  v:13 (T5),
+v:13 (T5)  ------->  v:12 (T6),
+v:12 (T6)  ------->  v:11 (T7),
+v:11 (T7)  ------->  v:10 (T8),
+v:10 (T8)  ------->  v:8 (Identifier: f),
+v:8 (Identifier: f)
+v:9 (==)
+v:21 (T3)  ------->  v:20 (T4),
+v:20 (T4)  ------->  v:19 (T5),
+v:19 (T5)  ------->  v:18 (T6),
+v:18 (T6)  ------->  v:17 (T7),
+v:17 (T7)  ------->  v:16 (T8),
+v:16 (T8)  ------->  v:15 (Identifier: s),
+v:15 (Identifier: s)
+v:47 (Body)  ------->  v:46 (Sequence2),
+v:46 (Sequence2)  ------->  v:45 (Operator),
+v:45 (Operator)  ------->  v:26 (Identifier: t),  v:27 (=),  v:44 (Expression),
+v:26 (Identifier: t)
+v:27 (=)
+v:44 (Expression)  ------->  v:43 (T1),
+v:43 (T1)  ------->  v:42 (T2),
+v:42 (T2)  ------->  v:41 (T3),
+v:41 (T3)  ------->  v:40 (T4),
+v:40 (T4)  ------->  v:33 (T5),  v:29 (+),  v:39 (T4),
+v:33 (T5)  ------->  v:32 (T6),
+v:32 (T6)  ------->  v:31 (T7),
+v:31 (T7)  ------->  v:30 (T8),
+v:30 (T8)  ------->  v:28 (Identifier: t),
+v:28 (Identifier: t)
+v:29 (+)
+v:39 (T4)  ------->  v:38 (T5),
+v:38 (T5)  ------->  v:37 (T6),
+v:37 (T6)  ------->  v:36 (T7),
+v:36 (T7)  ------->  v:35 (T8),
+v:35 (T8)  ------->  v:34 (Num Literal: 1),
+v:34 (Num Literal: 1)
+v:135 (Body)  ------->  v:134 (Sequence2),
+v:134 (Sequence2)  ------->  v:133 (Operator),
+v:133 (Operator)  ------->  v:132 (If_else),
+v:132 (If_else)  ------->  v:65 (Expression),  v:87 (Body),  v:131 (Body),
+v:65 (Expression)  ------->  v:64 (T1),
+v:64 (T1)  ------->  v:63 (T2),
+v:63 (T2)  ------->  v:62 (T3),
+v:62 (T3)  ------->  v:54 (T4),  v:49 (>),  v:61 (T3),
+v:54 (T4)  ------->  v:53 (T5),
+v:53 (T5)  ------->  v:52 (T6),
+v:52 (T6)  ------->  v:51 (T7),
+v:51 (T7)  ------->  v:50 (T8),
+v:50 (T8)  ------->  v:48 (Identifier: f),
+v:48 (Identifier: f)
+v:49 (>)
+v:61 (T3)  ------->  v:60 (T4),
+v:60 (T4)  ------->  v:59 (T5),
+v:59 (T5)  ------->  v:58 (T6),
+v:58 (T6)  ------->  v:57 (T7),
+v:57 (T7)  ------->  v:56 (T8),
+v:56 (T8)  ------->  v:55 (Identifier: s),
+v:55 (Identifier: s)
+v:87 (Body)  ------->  v:86 (Sequence2),
+v:86 (Sequence2)  ------->  v:85 (Operator),
+v:85 (Operator)  ------->  v:66 (Identifier: f),  v:67 (=),  v:84 (Expression),
+v:66 (Identifier: f)
+v:67 (=)
+v:84 (Expression)  ------->  v:83 (T1),
+v:83 (T1)  ------->  v:82 (T2),
+v:82 (T2)  ------->  v:81 (T3),
+v:81 (T3)  ------->  v:80 (T4),
+v:80 (T4)  ------->  v:73 (T5),  v:69 (-),  v:79 (T4),
+v:73 (T5)  ------->  v:72 (T6),
+v:72 (T6)  ------->  v:71 (T7),
+v:71 (T7)  ------->  v:70 (T8),
+v:70 (T8)  ------->  v:68 (Identifier: f),
+v:68 (Identifier: f)
+v:69 (-)
+v:79 (T4)  ------->  v:78 (T5),
+v:78 (T5)  ------->  v:77 (T6),
+v:77 (T6)  ------->  v:76 (T7),
+v:76 (T7)  ------->  v:75 (T8),
+v:75 (T8)  ------->  v:74 (Num Literal: 1),
+v:74 (Num Literal: 1)
+v:131 (Body)  ------->  v:130 (Sequence2),
+v:130 (Sequence2)  ------->  v:129 (Operator),
+v:129 (Operator)  ------->  v:128 (If),
+v:128 (If)  ------->  v:105 (Expression),  v:127 (Body),
+v:105 (Expression)  ------->  v:104 (T1),
+v:104 (T1)  ------->  v:103 (T2),
+v:103 (T2)  ------->  v:102 (T3),
+v:102 (T3)  ------->  v:94 (T4),  v:89 (<),  v:101 (T3),
+v:94 (T4)  ------->  v:93 (T5),
+v:93 (T5)  ------->  v:92 (T6),
+v:92 (T6)  ------->  v:91 (T7),
+v:91 (T7)  ------->  v:90 (T8),
+v:90 (T8)  ------->  v:88 (Identifier: f),
+v:88 (Identifier: f)
+v:89 (<)
+v:101 (T3)  ------->  v:100 (T4),
+v:100 (T4)  ------->  v:99 (T5),
+v:99 (T5)  ------->  v:98 (T6),
+v:98 (T6)  ------->  v:97 (T7),
+v:97 (T7)  ------->  v:96 (T8),
+v:96 (T8)  ------->  v:95 (Identifier: s),
+v:95 (Identifier: s)
+v:127 (Body)  ------->  v:126 (Sequence2),
+v:126 (Sequence2)  ------->  v:125 (Operator),
+v:125 (Operator)  ------->  v:106 (Identifier: f),  v:107 (=),  v:124 (Expression),
+v:106 (Identifier: f)
+v:107 (=)
+v:124 (Expression)  ------->  v:123 (T1),
+v:123 (T1)  ------->  v:122 (T2),
+v:122 (T2)  ------->  v:121 (T3),
+v:121 (T3)  ------->  v:120 (T4),
+v:120 (T4)  ------->  v:113 (T5),  v:109 (+),  v:119 (T4),
+v:113 (T5)  ------->  v:112 (T6),
+v:112 (T6)  ------->  v:111 (T7),
+v:111 (T7)  ------->  v:110 (T8),
+v:110 (T8)  ------->  v:108 (Identifier: f),
+v:108 (Identifier: f)
+v:109 (+)
+v:119 (T4)  ------->  v:118 (T5),
+v:118 (T5)  ------->  v:117 (T6),
+v:117 (T6)  ------->  v:116 (T7),
+v:116 (T7)  ------->  v:115 (T8),
+v:115 (T8)  ------->  v:114 (Num Literal: 1),
+v:114 (Num Literal: 1)

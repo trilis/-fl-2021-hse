@@ -1,0 +1,25 @@
+func1 (f, s, t) {
+	if (f == s) {
+		t = t + 1; 	
+	} else {
+		t = t - 1;
+	};
+}
+func2 () {
+	f = 0b1001;
+	s = 0b1001101; 
+	while (f/s /= ob1) {
+		func1(f, s, s);
+		if (f) {
+			skip;
+		};
+	};
+}
+##it is a comment
+main () {
+	a = 2 + 5^7;
+	b = 3/4;
+	c = 1*4;
+	func2();
+	func1(c, b, a);
+}
