@@ -99,6 +99,20 @@ int main() {
                    {"meowacdxyxyxyg", false}};
     vec_tests.push_back(test7);
 
+
+    tests test8;
+    test8.name = "long complex regexpr for long time";
+    test8.re = Concat(Star(Concat(Alt(Star(Char(char_('a'))), Star(Char(char_('b')))), Concat(Alt(Char(char_('a')), Char(char_('b'))),Alt(Char(char_('a')), Char(char_('b')))))),
+                      Concat(Alt(Concat(Char(char_('a')), Char(char_('b'))), Concat(Char(char_('c')),Char(char_('d')))),
+                             Star(Concat(Alt(Char(char_('c')), Char(char_('d'))), Concat(Alt(Char(char_('c')), Char(char_('d'))),Alt(Char(char_('c')), Char(char_('d'))))))));
+    test8.str = "((a*|b*)(a|b)(a|b))*(ab|cd)((c|d)(c|d)(c|d))*";
+    test8.cases = {{"aaabacdccc", true},
+                   {"aaaabddd",     true},
+                   {"bbbbbaaaaaaabababbbbbbbaaaaaabbbbbbcdcccdddcccdddcdcdcd",        true},
+                   {"aaaaababbbbbdcccc",           false},
+                   {"bbbabccddd",         false}};
+    vec_tests.push_back(test8);
+
     freopen("result_optimized.txt", "w", stdout);
     for (auto test: vec_tests) {
         test.start();

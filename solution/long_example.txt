@@ -1,27 +1,31 @@
-Name: many stars
-Test: a*********
+Name: long complex regexpr for long time
+Test: ((a*|b*)(a|b)(a|b))*(ab|cd)((c|d)(c|d)(c|d))*
 
-Case: a
+Case: aaabacdccc
 Expected: True
 Match: True
-Time: 0.053179 ms
+Time: 0.127352 ms
 
-Case: aaaaaaaaaaaaa
+Case: aaaabddd
 Expected: True
 Match: True
-Time: 1000.48 ms
+Time: 0.126295 ms
 
-Case: baaaa
+Case: bbbbbaaaaaaabababbbbbbbaaaaaabbbbbbcdcccdddcccdddcdcdcd
+Expected: True
+Match: True
+Time: 30638.3 ms
+
+Case: aaaaababbbbbdcccc
 Expected: False
 Match: False
-Time: 0.014032 ms
+Time: 1.84037 ms
 
-Case: aaaaaaaaaaaaaac
+Case: bbbabccddd
 Expected: False
 Match: False
-Time: 2142.01 ms
+Time: 0.113832 ms
 
 
-Passed: 4/4
+Passed: 5/5
 -----------------------------------------------
-
