@@ -88,31 +88,8 @@ void test() {
   
 }
 
-
-int main(int argc, char* argv[]) {
-  freopen(argv[1], "r", stdin);
-  yyparse();
-  fclose(stdin);
-#ifdef HOME
-  cout << terminal_states.size() << endl;
-  cout << states.size() << endl;
-  cout << transitions.size() << endl;
-  cout << "start state: " << start_state << endl;
-  cout << "start state length: " << start_state.size() << endl;
-  for (auto & t : transitions) {
-    cout << t->from << ' ' << '{';
-    for (auto c : t->symbols) {
-      cout << c << ',';
-    }
-    cout << '}' << ' ' << t->to << endl;
-  }
-  for (auto & t : states) {
-    cout << t << endl;
-  }
-  for (auto & t : states) {
-    cout << t << endl;
-  }
-#endif
+int build_automata() {
+  int ret = 0;
   try {
     
     for (auto & s : states) {
@@ -145,11 +122,62 @@ int main(int argc, char* argv[]) {
     
   } catch(exception &e) {
     cout << e.what() << endl;
+    ret = 1;
   }
+  return ret;
+}
+
+void test_completeness() {
+  for (auto & s : states) {
+    if (!automata_map[s]->is_complete_state()) {
+      std::cout << "Automata is not complete! Try to fix it by looking at state " << s << std::endl;
+      return;
+    }
+  }
+  std::cout << "Automata is complete! Good for you!" << std::endl;
+}
+
+
+int main(int argc, char* argv[]) {
+  freopen(argv[1], "r", stdin);
+  int code = yyparse();
+  if (code) {
+    std::cout << "Parsing error occurred" << std::endl;
+    return code;
+  }
+  fclose(stdin);
+#ifdef HOME
+  std::cout << terminal_states.size() << std::endl;
+  std::cout << states.size() << std::endl;
+  std::cout << transitions.size() << std::endl;
+  std::cout << "start state: " << start_state << std::endl;
+  std::cout << "start state length: " << start_state.size() << std::endl;
+  for (auto & t : transitions) {
+    std::cout << t->from << ' ' << '{';
+    for (auto c : t->symbols) {
+      std::cout << c << ',';
+    }
+    std::cout << '}' << ' ' << t->to << std::endl;
+  }
+  for (auto & t : states) {
+    std::cout << t << std::endl;
+  }
+  for (auto & t : states) {
+    std::cout << t << std::endl;
+  }
+#endif
+
+  code = build_automata();
+
+  if (code) {
+    return code;
+  }
+
+  test_completeness();
 
   freopen(argv[2], "r", stdin);
   string word_to_validate;
-  cin >> word_to_validate;
+  std::cin >> word_to_validate;
   fclose(stdin);
 
   int cur_idx = 0;
@@ -158,18 +186,18 @@ int main(int argc, char* argv[]) {
   try {
     while (cur_idx < word_to_validate.size()) {
       #ifdef HOME
-      cout << "Current state is " << current_state->name << endl;
+      std::cout << "Current state is " << current_state->name << std::endl;
       #endif
       current_state = current_state->go(word_to_validate[cur_idx++]);
     }
   } catch (...) {
-    cout << "Word did not pass the check" << endl;
+    std::cout << "Word did not pass the check" << std::endl;
   }
 
   if (terminal_states_set.find(current_state->name) != terminal_states_set.end()) {
-    cout << "Word successfully passed check" << endl;
+    std::cout << "Word successfully passed check" << std::endl;
   } else {
-    cout << "Word did not pass the check" << endl;
+    std::cout << "Word did not pass the check" << std::endl;
   }
 
   return 0;

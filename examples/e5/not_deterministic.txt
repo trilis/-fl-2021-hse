@@ -1,0 +1,14 @@
+a {
+    states {
+        q0, q1 terminal, q2 terminal
+    }
+
+    start {
+        q0
+    }
+
+    transitions {
+        q0 --{'a', 'b'}--> q1,
+        q0 --{'a', 'c'}--> q2 
+    }
+}

@@ -20,9 +20,23 @@ struct AutomataState {
   } 
   void add_transition(char c, AutomataState *dest) {
     if (transition_map.find(c) != transition_map.end()) {
-      throw std::logic_error("There is ambiguity in transition description");
+      throw std::logic_error("Automata is not deterministic!");
     }
     transition_map[c] = dest;
+  }
+
+  bool is_complete_state() {
+    if (transition_map.find('*') != transition_map.end()) return true;
+    for (char i = 'a'; i <= 'z'; ++i) {
+      if (transition_map.find(i) == transition_map.end()) return false;
+    }
+    for (char i = 'A'; i <= 'Z'; ++i) {
+      if (transition_map.find(i) == transition_map.end()) return false;
+    }
+    for (char i = '0'; i <= '9'; ++i) {
+      if (transition_map.find(i) == transition_map.end()) return false;
+    }
+    return true;
   }
 };
 
