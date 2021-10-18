@@ -9,8 +9,8 @@
 
 
 STR_LITERAL     <<[a-zA-Z]+>>
-NUM_LITERAL_D   [1-9][0-9]*
-NUM_LITERAL_B   0b1[0-1]*
+NUM_LITERAL_D   [1-9][0-9]*|0
+NUM_LITERAL_B   0b1[0-1]*|ob0
 IF              if
 ELSE            else
 MAIN            main
