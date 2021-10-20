@@ -52,6 +52,9 @@ states: states VERTEX CONDITION                          {
         throw std::runtime_error("States are not unique");
     }
     if ($3 == 's' || $3 == 'u') {
+        if (!start.empty()) {
+            throw std::runtime_error("The starting vertex is not one");
+        }
         start = $2;
     }
     ver[$2] = $3; }
@@ -60,6 +63,9 @@ states: states VERTEX CONDITION                          {
         throw std::runtime_error("States are not unique");
     }
     if ($2 == 's' || $2 == 'u') {
+        if (!start.empty()) {
+            throw std::runtime_error("The starting vertex is not one");
+        }
         start = $1;
     }
     ver[$1] = $2; }
